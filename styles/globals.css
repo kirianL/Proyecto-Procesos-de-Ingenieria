@@ -1,0 +1,337 @@
+@import "tailwindcss";
+@import "./theme.css";
+
+/* ── Transiciones suaves y sin parpadeos ────────────────────────────── */
+/* Se eliminó @view-transition navigation:auto que causaba pantallazos negros/blancos
+   al competir con el ciclo de renderizado de Next.js. */
+
+/* ── Tokens de movimiento y superficies ─────────────────────────────── */
+:root {
+  --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-out-quick: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-spring: cubic-bezier(0.34, 1.4, 0.64, 1);
+  --dur-fast: 140ms;
+  --dur-base: 220ms;
+  --dur-slow: 360ms;
+
+  /* El lienzo es un paso más oscuro que las tarjetas, como en las
+     referencias: papel cálido detrás, superficie clara delante. */
+  --canvas: var(--sand-2);
+  --surface: var(--sand-1);
+  --surface-soft: var(--sand-2);
+  --surface-muted: var(--sand-3);
+  --line: var(--sand-4);
+
+  /* Skullet: un solo shimmer sincronizado para todos los esqueletos. */
+  --skullet: 1;
+  --skullet-base: rgb(28 22 16 / 0.085);
+  --skullet-highlight: rgb(255 255 255 / 0.72);
+  --skullet-radius: 0.375rem;
+  --skullet-animation: shimmer;
+  --skullet-speed: fast;
+}
+
+.dark {
+  --canvas: var(--sand-1);
+  --surface: var(--sand-2);
+  --surface-soft: var(--sand-3);
+  --surface-muted: var(--sand-4);
+  --line: var(--sand-4);
+
+  --skullet-base: rgb(255 255 255 / 0.095);
+  --skullet-highlight: rgb(255 255 255 / 0.18);
+}
+
+html {
+  scrollbar-gutter: stable;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  position: relative;
+  text-rendering: optimizeLegibility;
+}
+
+.root {
+  isolation: isolate;
+}
+
+.app-canvas {
+  background-color: var(--canvas);
+}
+
+/* ── Selección de texto ─────────────────────────────────────────────── */
+::selection {
+  background: var(--sand-5);
+  color: var(--sand-12);
+}
+
+/* ── Foco visible consistente ───────────────────────────────────────── */
+/* Solo controles de navegación: los campos de texto llevan su propio foco
+   suave para no duplicar el contorno nativo. */
+:where(
+  a,
+  button,
+  summary,
+  [role="button"],
+  [role="radio"],
+  [role="option"]
+):focus-visible {
+  outline: 2px solid var(--sand-8);
+  outline-offset: 2px;
+}
+
+/* ── Campos de formulario ───────────────────────────────────────────── */
+/* Borde de 1px siempre presente y foco progresivo: nada de saltos duros
+   al empezar a escribir. */
+.campo {
+  border-radius: 0.75rem;
+  border: 1px solid var(--sand-5);
+  background-color: var(--surface);
+  color: var(--sand-12);
+  caret-color: var(--sand-11);
+  transition:
+    border-color 170ms var(--ease-out-soft),
+    box-shadow 170ms var(--ease-out-soft),
+    background-color 170ms var(--ease-out-soft);
+}
+
+.campo::placeholder {
+  color: var(--sand-8);
+}
+
+.campo:hover {
+  border-color: var(--sand-6);
+}
+
+.campo:focus,
+.campo:focus-visible {
+  outline: none;
+  border-color: var(--sand-8);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--sand-7) 18%, transparent);
+}
+
+/* ── Entrada de página rápida y sin parpadeo (sin opacity: 0 agresivo) ── */
+@keyframes page-enter {
+  from {
+    opacity: 0.96;
+    transform: translateY(2px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.page-enter {
+  animation: page-enter 100ms var(--ease-out-quick) both;
+}
+
+/* ── Reveal escalonado para listas ──────────────────────────────────── */
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(9px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.stagger > * {
+  animation: rise-in 420ms var(--ease-out-soft) both;
+  animation-delay: calc(var(--stagger, 0) * 45ms);
+}
+
+/* Dentro de un bloque controlado por Skullet, el reveal y el barrido diagonal
+   lo gobierna Skullet directamente para garantizar 0px de desplazamiento. */
+[skullet-reveal] .stagger > *,
+[skullet-loading] .stagger > * {
+  animation: none !important;
+}
+
+/* ── Superficies ────────────────────────────────────────────────────── */
+.card {
+  border-radius: 1rem;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  box-shadow:
+    0 1px 2px rgba(28, 22, 16, 0.03),
+    0 1px 1px rgba(28, 22, 16, 0.02);
+  transition:
+    border-color var(--dur-base) var(--ease-out-soft),
+    background-color var(--dur-base) var(--ease-out-soft),
+    box-shadow var(--dur-base) var(--ease-out-soft),
+    transform var(--dur-base) var(--ease-out-soft);
+}
+
+.card-hover:hover {
+  border-color: var(--sand-5);
+  box-shadow:
+    0 1px 2px rgba(28, 22, 16, 0.03),
+    0 14px 30px -20px rgba(28, 22, 16, 0.35);
+  transform: translateY(-2px);
+}
+
+.card-hover:active {
+  transform: translateY(0);
+  box-shadow: 0 1px 2px rgba(28, 22, 16, 0.04);
+}
+
+/* Panel interior suave: filas de metadatos dentro de una tarjeta. */
+.surface-soft {
+  border-radius: 0.75rem;
+  border: 1px solid color-mix(in srgb, var(--line) 70%, transparent);
+  background: color-mix(in srgb, var(--surface-soft) 88%, transparent);
+}
+
+.icon-tile {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.75rem;
+  border: 1px solid var(--line);
+  background: var(--surface-soft);
+  color: var(--sand-11);
+}
+
+/* ── Badges de estado y prioridad ───────────────────────────────────── */
+/* Pastilla pastel sin borde: tinte suave + texto del mismo tono.
+   El punto (opcional) marca el estado, no la prioridad. */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  border-radius: 9999px;
+  border: 0;
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: 0;
+  white-space: nowrap;
+}
+
+.badge-dot {
+  width: 0.375rem;
+  height: 0.375rem;
+  flex-shrink: 0;
+  border-radius: 9999px;
+}
+
+/* Chip neutro para metadatos que no llevan categoría (usuario activo,
+   recuentos). Misma silueta que .badge. */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3125rem;
+  border-radius: 9999px;
+  border: 1px solid var(--line);
+  background: color-mix(in srgb, var(--surface-soft) 92%, transparent);
+  color: var(--sand-11);
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+}
+
+.chip-dot {
+  width: 0.3125rem;
+  height: 0.3125rem;
+  flex-shrink: 0;
+  border-radius: 9999px;
+}
+
+/* Icono de estado: silueta neutra, el color solo aparece en el glifo. */
+.tile-status {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.75rem;
+  border: 1px solid var(--line);
+  background: var(--surface-soft);
+  color: var(--sand-11);
+}
+
+/* Etiqueta pequeña de sección, en sans (no mono) como las referencias. */
+.section-label {
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  color: var(--sand-9);
+}
+
+/* ── Pop de menús ───────────────────────────────────────────────────── */
+@keyframes menu-pop {
+  from {
+    opacity: 0;
+    transform: translateY(-4px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.menu-pop {
+  animation: menu-pop 160ms var(--ease-out-soft) both;
+  transform-origin: top center;
+}
+
+/* ── Aparición simple ───────────────────────────────────────────────── */
+@keyframes fade-in-soft {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.fade-in {
+  animation: fade-in-soft var(--dur-base) var(--ease-out-soft) both;
+}
+
+/* ── Detalles tipográficos ──────────────────────────────────────────── */
+.num {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+}
+
+.titulo-pagina {
+  font-size: clamp(1.5rem, 1.15rem + 1.1vw, 1.875rem);
+  font-weight: 600;
+  line-height: 1.1;
+  letter-spacing: -0.028em;
+  text-wrap: balance;
+}
+
+/* ── Micro-interacción de error (sacudida sutil) ─────────────────────── */
+@keyframes shake-x {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-3px);
+  }
+  75% {
+    transform: translateX(3px);
+  }
+}
+
+.shake {
+  animation: shake-x 260ms var(--ease-out-soft);
+}
+
+/* ── Accesibilidad: respeta el sistema ──────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+}
