@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@base-ui/react": "^1.4.1",
+    "@paper-design/shaders-react": "^0.0.82",
     "@phosphor-icons/react": "^2.1.10",
     "@radix-ui/colors": "^3.0.0",
     "clsx": "^2.1.1",
