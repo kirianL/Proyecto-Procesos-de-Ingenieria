@@ -1,11 +1,6 @@
 @import "tailwindcss";
 @import "./theme.css";
 
-/* ── Transiciones suaves y sin parpadeos ────────────────────────────── */
-/* Se eliminó @view-transition navigation:auto que causaba pantallazos negros/blancos
-   al competir con el ciclo de renderizado de Next.js. */
-
-/* ── Tokens de movimiento y superficies ─────────────────────────────── */
 :root {
   --ease-out-soft: cubic-bezier(0.23, 1, 0.32, 1);
   --ease-out-quick: cubic-bezier(0.23, 1, 0.32, 1);
@@ -16,15 +11,12 @@
   --dur-base: 180ms;
   --dur-slow: 280ms;
 
-  /* El lienzo es un paso más oscuro que las tarjetas, como en las
-     referencias: papel cálido detrás, superficie clara delante. */
   --canvas: var(--sand-2);
   --surface: var(--sand-1);
   --surface-soft: var(--sand-2);
   --surface-muted: var(--sand-3);
   --line: var(--sand-5);
 
-  /* Skullet: un solo shimmer sincronizado para todos los esqueletos. */
   --skullet: 1;
   --skullet-base: rgb(28 22 16 / 0.085);
   --skullet-highlight: rgb(255 255 255 / 0.72);
@@ -64,9 +56,7 @@ body::-webkit-scrollbar,
   -ms-overflow-style: none;
 }
 
-/* En pantallas desktop de alta resolución / monitores 2K (1440p o >=1800px)
-   escalamos la base del documento a 125% (1.25rem = 20px) para que toda la interfaz,
-   cards, textos y botones se vean grandes, legibles y proporcionados de forma nativa. */
+/* Escala base en pantallas 2K (>=1800px) */
 @media (min-width: 1800px) {
   html {
     font-size: 125%;
@@ -110,15 +100,11 @@ button,
   background-color: var(--canvas);
 }
 
-/* ── Selección de texto ─────────────────────────────────────────────── */
 ::selection {
   background: var(--sand-5);
   color: var(--sand-12);
 }
 
-/* ── Foco visible consistente ───────────────────────────────────────── */
-/* Solo controles de navegación: los campos de texto llevan su propio foco
-   suave para no duplicar el contorno nativo. */
 :where(
   a,
   button,
@@ -131,9 +117,6 @@ button,
   outline-offset: 2px;
 }
 
-/* ── Campos de formulario ───────────────────────────────────────────── */
-/* Borde de 1px siempre presente y foco progresivo: nada de saltos duros
-   al empezar a escribir. */
 .campo {
   border-radius: 0.75rem;
   border: 1px solid var(--sand-5);
@@ -214,7 +197,6 @@ button,
   }
 }
 
-/* ── Entrada de página ultra-rápida y fluida (sub-90ms GPU composite) ── */
 @keyframes page-enter {
   from {
     opacity: 0.97;
@@ -231,7 +213,6 @@ button,
   will-change: opacity, transform;
 }
 
-/* ── Reveal escalonado para listas ──────────────────────────────────── */
 @keyframes rise-in {
   from {
     opacity: 0;
@@ -248,11 +229,7 @@ button,
   animation-delay: calc(min(var(--stagger, 0), 6) * 30ms);
 }
 
-/* Dentro de un bloque controlado por Skullet, el reveal lo gobierna Skullet
-   directamente para garantizar 0px de desplazamiento. Además, anulamos la
-   inyección de `content: "000000"` de Skullet sobre `<span />` decorativos
-   vacíos (puntos de estado, barras segmentadas, sparklines) para evitar que
-   se estiren horizontalmente en viewports móviles durante la medición. */
+/* Evita conflicto de animación con Skullet y evita estirar spans vacíos */
 [skullet-reveal] .stagger > *,
 [skullet-loading] .stagger > * {
   animation: none !important;
@@ -262,7 +239,6 @@ button,
   content: none !important;
 }
 
-/* ── Superficies ────────────────────────────────────────────────────── */
 .card {
   border-radius: 1rem;
   border: 1px solid var(--line);
@@ -313,7 +289,6 @@ button,
     0 4px 12px -6px rgba(0, 0, 0, 0.8);
 }
 
-/* Panel interior suave: filas de metadatos dentro de una tarjeta. */
 .surface-soft {
   border-radius: 0.75rem;
   border: 1px solid color-mix(in srgb, var(--line) 70%, transparent);
@@ -330,9 +305,6 @@ button,
   color: var(--sand-11);
 }
 
-/* ── Badges de estado y prioridad ───────────────────────────────────── */
-/* Pastilla pastel sin borde: tinte suave + texto del mismo tono.
-   El punto (opcional) marca el estado, no la prioridad. */
 .badge {
   display: inline-flex;
   align-items: center;
@@ -352,8 +324,6 @@ button,
   border-radius: 9999px;
 }
 
-/* Chip neutro para metadatos que no llevan categoría (usuario activo,
-   recuentos). Misma silueta que .badge. */
 .chip {
   display: inline-flex;
   align-items: center;
@@ -375,7 +345,6 @@ button,
   border-radius: 9999px;
 }
 
-/* Icono de estado: silueta neutra, el color solo aparece en el glifo. */
 .tile-status {
   display: inline-flex;
   align-items: center;
@@ -386,7 +355,6 @@ button,
   color: var(--sand-11);
 }
 
-/* Etiqueta pequeña de sección, en sans (no mono) como las referencias. */
 .section-label {
   font-size: 0.6875rem;
   font-weight: 500;
@@ -394,7 +362,6 @@ button,
   color: var(--sand-9);
 }
 
-/* ── Pop de menús ───────────────────────────────────────────────────── */
 @keyframes menu-pop {
   from {
     opacity: 0;
@@ -412,7 +379,6 @@ button,
   will-change: transform, opacity;
 }
 
-/* ── Aparición simple ───────────────────────────────────────────────── */
 @keyframes fade-in-soft {
   from {
     opacity: 0;
@@ -426,7 +392,6 @@ button,
   animation: fade-in-soft var(--dur-base) var(--ease-out-soft) both;
 }
 
-/* ── Slot text y números mecánicos: reserva de altura y baseline estable ── */
 .num {
   font-variant-numeric: tabular-nums;
   font-feature-settings: "tnum";
@@ -453,7 +418,6 @@ button,
   text-wrap: balance;
 }
 
-/* ── Micro-interacción de error (sacudida sutil) ─────────────────────── */
 @keyframes shake-x {
   0%,
   100% {
@@ -471,7 +435,6 @@ button,
   animation: shake-x 260ms var(--ease-out-soft);
 }
 
-/* ── Auroras estilo Vercel (borde superior e inferior en /login) ─────── */
 @keyframes aurora-float {
   0%,
   100% {
@@ -653,7 +616,6 @@ button,
   animation: grid-reveal-shimmer 1.8s cubic-bezier(0.45, 0, 0.55, 1) infinite;
 }
 
-/* ── Drawer móvil y Lightbox (estilo nativo iOS) ───────────────────── */
 .drawer-backdrop {
   transition: opacity var(--dur-slow) var(--ease-drawer);
 }
@@ -688,7 +650,6 @@ button,
   animation: lightbox-enter 180ms var(--ease-out-soft) both;
 }
 
-/* ── Accesibilidad: respeta el sistema ──────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
