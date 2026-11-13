@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import {
   BriefcaseIcon,
@@ -23,6 +23,7 @@ import { PageHeader } from "@/components/ui/PageHeader";
 import { SegmentedControl } from "@/components/ui/SegmentedControl";
 import { SkeletonContent } from "@/components/ui/Skeleton";
 import { TiempoRelativo } from "@/components/ui/TiempoRelativo";
+import { UserAvatar } from "@/components/ui/UserAvatar";
 import { useAtajos } from "@/hooks/useAtajos";
 import { cn } from "@/helpers/classname-helper";
 import {
@@ -312,9 +313,13 @@ export default function PerfilPage() {
                     <div className="flex items-end gap-3.5">
                       <div
                         skullet-block=""
-                        className="-mt-10 relative flex size-20 shrink-0 items-center justify-center rounded-full border-4 border-white bg-grayscale-2 font-mono text-[20px] font-bold text-grayscale-12 shadow-xs dark:border-[#121211] dark:bg-grayscale-3"
+                        className="-mt-10 relative flex size-20 shrink-0 items-center justify-center rounded-full border-4 border-white bg-grayscale-2 shadow-xs dark:border-[#121211] dark:bg-grayscale-3 overflow-hidden"
                       >
-                        {inicialesDe(usuario.nombre)}
+                        <UserAvatar
+                          userId={usuario.id}
+                          name={usuario.nombre}
+                          size={80}
+                        />
                       </div>
                       <div className="pt-2">
                         <h2 className="text-[18px] font-bold tracking-[-0.02em] text-grayscale-12">
@@ -538,62 +543,294 @@ export default function PerfilPage() {
 
           {/* Columna lateral derecha */}
           <div className="flex flex-col gap-4 lg:col-span-4">
-            {/* Jerarquía / Equipo */}
+            {/* Jerarquía y Estructura Organizacional */}
             <section className="card rounded-[1.25rem] border border-grayscale-4/90 bg-grayscale-2 p-1 shadow-2xs dark:border-white/[0.32] dark:bg-[#191917]">
-              <div className="rounded-[1rem] border border-grayscale-3/60 bg-white p-4 shadow-[0_1px_2px_rgba(28,22,16,0.03)] dark:border-white/[0.14] dark:bg-[#121211]">
-                <div className="mb-3 flex items-center gap-2">
-                  <span className="flex size-6.5 items-center justify-center rounded-lg bg-grayscale-2 text-grayscale-10 dark:bg-grayscale-3">
-                    <UsersThreeIcon size={13} />
+              <div className="relative overflow-hidden rounded-[1rem] border border-grayscale-3/60 bg-white p-4 shadow-[0_1px_2px_rgba(28,22,16,0.03)] dark:border-white/[0.14] dark:bg-[#121211]">
+                {/* Patrón de fondo técnico sutil */}
+                <div
+                  aria-hidden="true"
+                  className="pointer-events-none absolute inset-0 bg-[radial-gradient(#00000008_1px,transparent_1px)] dark:bg-[radial-gradient(#ffffff0a_1px,transparent_1px)] [background-size:12px_12px]"
+                />
+
+                {/* Header de la sección */}
+                <div className="relative z-10 mb-4 flex items-center justify-between border-b border-grayscale-3/60 pb-3 dark:border-white/[0.08]">
+                  <div className="flex items-center gap-2">
+                    <span className="flex size-6.5 items-center justify-center rounded-lg bg-grayscale-2 text-grayscale-10 dark:bg-grayscale-3">
+                      <UsersThreeIcon size={13} />
+                    </span>
+                    <div>
+                      <h3 className="text-[13px] font-semibold tracking-[-0.01em] text-grayscale-12">
+                        Estructura del área
+                      </h3>
+                      <p className="text-[10.5px] text-grayscale-9">
+                        Cadena de mando operativa
+                      </p>
+                    </div>
+                  </div>
+                  <span className="inline-flex items-center rounded-md bg-grayscale-2 px-2 py-0.5 font-mono text-[10px] text-grayscale-9 dark:bg-white/[0.06]">
+                    4 miembros
                   </span>
-                  <h3 className="text-[13px] font-semibold tracking-[-0.01em] text-grayscale-12">
-                    Estructura del área
-                  </h3>
                 </div>
 
-                <div className="space-y-2">
-                  {jerarquia.map((miembro, idx) => {
-                    const esActual = miembro.id === usuario.id;
+                {/* Diagrama jerárquico interactivo con flujo de partículas */}
+                <div className="relative z-10 flex flex-col items-center">
+                  {/* Nivel 1: Dirección / Jefatura */}
+                  {(() => {
+                    const lider = jerarquia.find((u) => u.rol === "JEFATURA");
+                    if (!lider) return null;
+                    const esActual = lider.id === usuario.id;
+
                     return (
-                      <div
-                        key={miembro.id}
-                        className={cn(
-                          "relative flex items-center gap-2.5 rounded-xl px-2.5 py-2 transition-colors",
-                          esActual
-                            ? "bg-grayscale-2/90 ring-1 ring-grayscale-4/80 dark:bg-white/[0.06] dark:ring-white/[0.12]"
-                            : "hover:bg-grayscale-1/70 dark:hover:bg-white/[0.02]",
-                        )}
-                      >
-                        <span
+                      <div className="group relative w-full transition-transform duration-200 hover:-translate-y-0.5">
+                        <div
                           className={cn(
-                            "flex size-8 shrink-0 items-center justify-center rounded-full font-mono text-[11px] font-semibold",
+                            "relative flex items-center gap-3 rounded-2xl border p-3 transition-all duration-200",
                             esActual
-                              ? "bg-grayscale-12 text-grayscale-1 dark:bg-white dark:text-[#121211]"
-                              : "border border-grayscale-3/80 bg-grayscale-2 text-grayscale-10 dark:border-white/[0.14] dark:bg-white/[0.06]",
+                              ? "border-emerald-500/40 bg-emerald-500/[0.03] shadow-[0_2px_12px_rgba(16,185,129,0.06)] dark:border-emerald-500/35 dark:bg-emerald-500/[0.05]"
+                              : "border-grayscale-3/80 bg-grayscale-1/70 hover:border-grayscale-5 hover:bg-grayscale-1 hover:shadow-2xs dark:border-white/[0.10] dark:bg-[#161614] dark:hover:border-white/[0.20]",
                           )}
                         >
-                          {inicialesDe(miembro.nombre)}
-                        </span>
-                        <div className="min-w-0 flex-1">
-                          <div className="flex items-center gap-1.5">
-                            <p className="truncate text-[12px] font-semibold text-grayscale-12">
-                              {nombreLimpio(miembro.nombre)}
-                            </p>
-                            {esActual ? (
-                              <span className="shrink-0 rounded-md bg-white px-1.5 py-0.5 font-mono text-[9.5px] font-medium text-grayscale-10 ring-1 ring-grayscale-3 dark:bg-white/[0.08] dark:text-grayscale-11 dark:ring-white/[0.08]">
-                                Tú
-                              </span>
-                            ) : null}
+                          <div className="relative shrink-0">
+                            <UserAvatar
+                              userId={lider.id}
+                              name={lider.nombre}
+                              size={40}
+                              className={cn(
+                                "ring-2 transition-transform duration-200 group-hover:scale-105",
+                                esActual
+                                  ? "ring-emerald-500/50 dark:ring-emerald-400/50"
+                                  : "ring-grayscale-3 dark:ring-white/15",
+                              )}
+                            />
                           </div>
-                          <p className="truncate text-[10.5px] text-grayscale-9">
-                            {miembro.cargo}
-                          </p>
+
+                          <div className="min-w-0 flex-1">
+                            <div className="flex items-center justify-between gap-1.5">
+                              <p className="truncate text-[13px] font-semibold text-grayscale-12">
+                                {nombreLimpio(lider.nombre)}
+                              </p>
+                              <div className="flex items-center gap-1 shrink-0">
+                                {esActual ? (
+                                  <span className="rounded-md bg-emerald-500/10 px-1.5 py-0.5 font-mono text-[9px] font-medium text-emerald-700 dark:text-emerald-400">
+                                    Tú
+                                  </span>
+                                ) : null}
+                                <span className="rounded-md bg-grayscale-2 px-1.5 py-0.5 font-mono text-[9px] text-grayscale-10 dark:bg-white/[0.06] dark:text-grayscale-8">
+                                  Dirección
+                                </span>
+                              </div>
+                            </div>
+                            <p className="truncate text-[11px] font-medium text-grayscale-10">
+                              {lider.cargo}
+                            </p>
+                            <p className="truncate font-mono text-[9.5px] text-grayscale-8">
+                              {lider.departamento}
+                            </p>
+                          </div>
                         </div>
-                        <span className="shrink-0 font-mono text-[9.5px] text-grayscale-8">
-                          N{idx + 1}
-                        </span>
                       </div>
                     );
-                  })}
+                  })()}
+
+                  {/* Conector dinámico Animado Nivel 1 a Nivel 2 (Flujo de puntitos) */}
+                  <div className="relative flex h-8 w-full items-center justify-center">
+                    <svg
+                      className="h-full w-full overflow-visible"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      {/* Línea base estática */}
+                      <line
+                        x1="50%"
+                        y1="0"
+                        x2="50%"
+                        y2="100%"
+                        className="stroke-grayscale-3/70 stroke-[1.5] dark:stroke-white/[0.08]"
+                      />
+                      {/* Flujo animado de puntitos */}
+                      <line
+                        x1="50%"
+                        y1="0"
+                        x2="50%"
+                        y2="100%"
+                        className="animate-flow-dots stroke-grayscale-9 dark:stroke-emerald-400/90"
+                        strokeWidth="2.5"
+                      />
+                    </svg>
+                    {/* Nodo de enlace con pulso suave */}
+                    <div className="animate-pulse-node absolute size-2 rounded-full border border-white bg-grayscale-9 shadow-2xs dark:border-[#121211] dark:bg-emerald-400" />
+                  </div>
+
+                  {/* Nivel 2: Supervisión Técnica */}
+                  {(() => {
+                    const tecnicos = jerarquia.filter((u) => u.rol === "TECNICO");
+                    if (tecnicos.length === 0) return null;
+
+                    return (
+                      <div className="relative z-10 w-full space-y-2">
+                        {tecnicos.map((tecnico) => {
+                          const esActual = tecnico.id === usuario.id;
+                          return (
+                            <div
+                              key={tecnico.id}
+                              className="group relative transition-transform duration-200 hover:-translate-y-0.5"
+                            >
+                              <div
+                                className={cn(
+                                  "relative flex items-center gap-3 rounded-2xl border p-2.5 transition-all duration-200",
+                                  esActual
+                                    ? "border-emerald-500/40 bg-emerald-500/[0.03] shadow-[0_2px_12px_rgba(16,185,129,0.06)] dark:border-emerald-500/35 dark:bg-emerald-500/[0.05]"
+                                    : "border-grayscale-3/80 bg-grayscale-1/70 hover:border-grayscale-5 hover:bg-grayscale-1 hover:shadow-2xs dark:border-white/[0.10] dark:bg-[#161614] dark:hover:border-white/[0.20]",
+                                )}
+                              >
+                                <div className="relative shrink-0">
+                                  <UserAvatar
+                                    userId={tecnico.id}
+                                    name={tecnico.nombre}
+                                    size={36}
+                                    className={cn(
+                                      "ring-2 transition-transform duration-200 group-hover:scale-105",
+                                      esActual
+                                        ? "ring-emerald-500/50 dark:ring-emerald-400/50"
+                                        : "ring-grayscale-3 dark:ring-white/15",
+                                    )}
+                                  />
+                                </div>
+
+                                <div className="min-w-0 flex-1">
+                                  <div className="flex items-center justify-between gap-1.5">
+                                    <p className="truncate text-[12.5px] font-semibold text-grayscale-12">
+                                      {nombreLimpio(tecnico.nombre)}
+                                    </p>
+                                    <div className="flex items-center gap-1 shrink-0">
+                                      {esActual ? (
+                                        <span className="rounded-md bg-emerald-500/10 px-1.5 py-0.5 font-mono text-[9px] font-medium text-emerald-700 dark:text-emerald-400">
+                                          Tú
+                                        </span>
+                                      ) : null}
+                                      <span className="rounded-md bg-grayscale-2 px-1.5 py-0.5 font-mono text-[9px] text-grayscale-10 dark:bg-white/[0.06] dark:text-grayscale-8">
+                                        Técnico
+                                      </span>
+                                    </div>
+                                  </div>
+                                  <p className="truncate text-[11px] font-medium text-grayscale-10">
+                                    {tecnico.cargo}
+                                  </p>
+                                  <p className="truncate font-mono text-[9px] text-grayscale-8">
+                                    {tecnico.departamento}
+                                  </p>
+                                </div>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    );
+                  })()}
+
+                  {/* Bifurcación en 2 ramas con curvas Bézier y flujo de puntitos */}
+                  <div className="relative h-9 w-full">
+                    <svg
+                      className="h-full w-full overflow-visible"
+                      viewBox="0 0 100 36"
+                      preserveAspectRatio="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      {/* Pistas base estáticas */}
+                      <path
+                        d="M 50 0 C 50 16, 25 16, 25 36"
+                        fill="none"
+                        vectorEffect="non-scaling-stroke"
+                        strokeWidth="1.5"
+                        className="stroke-grayscale-3/70 dark:stroke-white/[0.08]"
+                      />
+                      <path
+                        d="M 50 0 C 50 16, 75 16, 75 36"
+                        fill="none"
+                        vectorEffect="non-scaling-stroke"
+                        strokeWidth="1.5"
+                        className="stroke-grayscale-3/70 dark:stroke-white/[0.08]"
+                      />
+
+                      {/* Flujo animado de puntitos por ambas ramas */}
+                      <path
+                        d="M 50 0 C 50 16, 25 16, 25 36"
+                        fill="none"
+                        vectorEffect="non-scaling-stroke"
+                        strokeWidth="2.5"
+                        className="animate-flow-dots stroke-grayscale-9 dark:stroke-emerald-400/90"
+                      />
+                      <path
+                        d="M 50 0 C 50 16, 75 16, 75 36"
+                        fill="none"
+                        vectorEffect="non-scaling-stroke"
+                        strokeWidth="2.5"
+                        className="animate-flow-dots stroke-grayscale-9 dark:stroke-emerald-400/90"
+                      />
+                    </svg>
+
+                    {/* Nodo central de bifurcación */}
+                    <div className="animate-pulse-node absolute left-1/2 top-0 -translate-x-1/2 size-2 rounded-full border border-white bg-grayscale-9 shadow-2xs dark:border-[#121211] dark:bg-emerald-400" />
+                  </div>
+
+                  {/* Nivel 3: Base Operativa en 2 Columnas Interactivas */}
+                  {(() => {
+                    const empleados = jerarquia.filter((u) => u.rol === "EMPLEADO");
+                    if (empleados.length === 0) return null;
+
+                    return (
+                      <div className="relative z-10 grid w-full grid-cols-2 gap-2">
+                        {empleados.map((empleado) => {
+                          const esActual = empleado.id === usuario.id;
+                          return (
+                            <div
+                              key={empleado.id}
+                              className="group relative transition-transform duration-200 hover:-translate-y-0.5"
+                            >
+                              <div
+                                className={cn(
+                                  "relative flex h-full flex-col justify-between rounded-xl border p-2.5 transition-all duration-200",
+                                  esActual
+                                    ? "border-emerald-500/40 bg-emerald-500/[0.03] shadow-[0_2px_12px_rgba(16,185,129,0.06)] dark:border-emerald-500/35 dark:bg-emerald-500/[0.05]"
+                                    : "border-grayscale-3/80 bg-grayscale-1/70 hover:border-grayscale-5 hover:bg-grayscale-1 hover:shadow-2xs dark:border-white/[0.10] dark:bg-[#161614] dark:hover:border-white/[0.20]",
+                                )}
+                              >
+                                <div className="flex items-center justify-between gap-1.5">
+                                  <div className="relative shrink-0">
+                                    <UserAvatar
+                                      userId={empleado.id}
+                                      name={empleado.nombre}
+                                      size={30}
+                                      className={cn(
+                                        "ring-1.5 transition-transform duration-200 group-hover:scale-105",
+                                        esActual
+                                          ? "ring-emerald-500/50 dark:ring-emerald-400/50"
+                                          : "ring-grayscale-3 dark:ring-white/15",
+                                      )}
+                                    />
+                                  </div>
+
+                                  {esActual ? (
+                                    <span className="rounded-md bg-emerald-500/10 px-1.5 py-0.5 font-mono text-[8.5px] font-medium text-emerald-700 dark:text-emerald-400">
+                                      Tú
+                                    </span>
+                                  ) : null}
+                                </div>
+
+                                <div className="mt-2 min-w-0">
+                                  <p className="truncate text-[11.5px] font-semibold text-grayscale-12">
+                                    {nombreLimpio(empleado.nombre)}
+                                  </p>
+                                  <p className="truncate font-mono text-[9.5px] text-grayscale-9">
+                                    {empleado.cargo}
+                                  </p>
+                                </div>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    );
+                  })()}
                 </div>
               </div>
             </section>

@@ -10,7 +10,8 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { recordarUsuario } from "@/components/mantenimiento/SesionSync";
 import { cn } from "@/helpers/classname-helper";
-import { iniciales, nombreLimpio } from "@/helpers/iniciales";
+import { nombreLimpio } from "@/helpers/iniciales";
+import { UserAvatar } from "@/components/ui/UserAvatar";
 import {
   setUsuarioActual,
   USUARIOS_INICIALES,
@@ -89,9 +90,12 @@ export function RoleSelector({
         )}
       >
         <div className={cn("flex min-w-0 items-center", !iconOnly && "gap-2.5")}>
-          <span className="flex size-8 shrink-0 items-center justify-center rounded-full border border-grayscale-3 bg-grayscale-2 font-mono text-[10px] font-semibold text-grayscale-11 dark:border-white/[0.14] dark:bg-[#232320]">
-            {iniciales(usuarioActual.nombre)}
-          </span>
+          <UserAvatar
+            userId={usuarioActual.id}
+            name={usuarioActual.nombre}
+            size={32}
+            className="ring-1 ring-black/10 dark:ring-white/20"
+          />
           {!iconOnly ? (
             <div className="flex min-w-0 flex-col leading-none">
               <span className="truncate text-[12.5px] font-semibold text-grayscale-12">
@@ -153,9 +157,12 @@ export function RoleSelector({
                     )}
                   >
                     <div className="flex min-w-0 items-center gap-2">
-                      <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-grayscale-3 font-mono text-[9px] font-semibold text-grayscale-11">
-                        {iniciales(user.nombre)}
-                      </span>
+                      <UserAvatar
+                        userId={user.id}
+                        name={user.nombre}
+                        size={24}
+                        className="ring-1 ring-black/10 dark:ring-white/20"
+                      />
                       <div className="flex min-w-0 flex-col leading-none">
                         <span className="truncate text-[12px] font-medium">
                           {nombreLimpio(user.nombre)}

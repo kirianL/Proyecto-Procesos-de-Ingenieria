@@ -676,6 +676,64 @@ button,
   animation: lightbox-enter 180ms var(--ease-out-soft) both;
 }
 
+@keyframes line-flow {
+  from {
+    stroke-dashoffset: 24;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+.animate-line-flow {
+  stroke-dasharray: 6 6;
+  animation: line-flow 1.2s linear infinite;
+}
+
+@keyframes pulse-flow {
+  0% {
+    stroke-dashoffset: 24;
+  }
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+
+.animate-pulse-flow {
+  stroke-dasharray: 6 6;
+  animation: pulse-flow 1.2s linear infinite;
+}
+
+@keyframes signal-glow {
+  0%, 100% {
+    transform: scale(0.92);
+    opacity: 0.6;
+  }
+  50% {
+    transform: scale(1.18);
+    opacity: 1;
+  }
+}
+
+.animate-signal-glow {
+  animation: signal-glow 2.2s ease-in-out infinite;
+}
+
+@keyframes pulse-node {
+  0%, 100% {
+    transform: scale(0.92);
+    opacity: 0.75;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 1;
+  }
+}
+
+.animate-pulse-node {
+  animation: pulse-node 2.2s ease-in-out infinite;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

@@ -12,6 +12,8 @@
     "check": "biome check ."
   },
   "dependencies": {
+    "@avatune/pacovqzz-theme": "^2.1.1",
+    "@avatune/react": "^2.2.0",
     "@base-ui/react": "^1.4.1",
     "@paper-design/shaders-react": "^0.0.82",
     "@phosphor-icons/react": "^2.1.10",
