@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import {
   CalendarBlankIcon,
@@ -113,8 +113,8 @@ export default function HistorialSolicitudPage({ params }: Props) {
 
           <div className="grid gap-3.5 sm:grid-cols-3">
             {/* Apertura */}
-            <div className="card flex min-w-0 flex-col rounded-[1.25rem] border border-grayscale-4/80 bg-[#f5f4f2] p-1 shadow-2xs dark:border-white/[0.08] dark:bg-[#141413]">
-              <div className="flex min-w-0 flex-1 flex-col justify-between rounded-[1rem] border border-grayscale-3/60 bg-white px-4 py-3.5 shadow-[0_1px_2px_rgba(28,22,16,0.03)] dark:border-white/[0.07] dark:bg-[#1c1c1b]">
+            <div className="card-shell flex min-w-0 flex-col">
+              <div className="card-panel flex min-w-0 flex-1 flex-col justify-between px-4 py-3.5">
                 <div className="flex items-center justify-between gap-2.5">
                   <div className="flex min-w-0 items-center gap-1.5">
                     <span
@@ -145,8 +145,8 @@ export default function HistorialSolicitudPage({ params }: Props) {
             </div>
 
             {/* Último cambio */}
-            <div className="card flex min-w-0 flex-col rounded-[1.25rem] border border-grayscale-4/80 bg-[#f5f4f2] p-1 shadow-2xs dark:border-white/[0.08] dark:bg-[#141413]">
-              <div className="flex min-w-0 flex-1 flex-col justify-between rounded-[1rem] border border-grayscale-3/60 bg-white px-4 py-3.5 shadow-[0_1px_2px_rgba(28,22,16,0.03)] dark:border-white/[0.07] dark:bg-[#1c1c1b]">
+            <div className="card-shell flex min-w-0 flex-col">
+              <div className="card-panel flex min-w-0 flex-1 flex-col justify-between px-4 py-3.5">
                 <div className="flex items-center justify-between gap-2.5">
                   <div className="flex min-w-0 items-center gap-1.5">
                     <span
@@ -178,8 +178,8 @@ export default function HistorialSolicitudPage({ params }: Props) {
             </div>
 
             {/* Estado actual */}
-            <div className="card flex min-w-0 flex-col rounded-[1.25rem] border border-grayscale-4/80 bg-[#f5f4f2] p-1 shadow-2xs dark:border-white/[0.08] dark:bg-[#141413]">
-              <div className="flex min-w-0 flex-1 flex-col justify-between rounded-[1rem] border border-grayscale-3/60 bg-white px-4 py-3.5 shadow-[0_1px_2px_rgba(28,22,16,0.03)] dark:border-white/[0.07] dark:bg-[#1c1c1b]">
+            <div className="card-shell flex min-w-0 flex-col">
+              <div className="card-panel flex min-w-0 flex-1 flex-col justify-between px-4 py-3.5">
                 <div className="flex items-center justify-between gap-2.5">
                   <div className="flex min-w-0 items-center gap-1.5">
                     <span
@@ -245,8 +245,8 @@ export default function HistorialSolicitudPage({ params }: Props) {
             </div>
           </div>
 
-          <section className="card rounded-[1.25rem] border border-grayscale-4/80 bg-[#f5f4f2] p-1 shadow-2xs dark:border-white/[0.08] dark:bg-[#141413]">
-            <div className="rounded-[1rem] border border-grayscale-3/60 bg-white p-5 shadow-[0_1px_2px_rgba(28,22,16,0.03)] dark:border-white/[0.07] dark:bg-[#1c1c1b]">
+          <section className="card-shell">
+            <div className="card-panel p-5">
               <div>
                 <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
                   <h2 className="text-[14px] font-semibold tracking-[-0.01em] text-grayscale-12">

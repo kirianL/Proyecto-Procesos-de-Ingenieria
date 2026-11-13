@@ -291,8 +291,8 @@ export default function Home() {
         {/* COLUMNA DERECHA: Radar de Atención Inmediata & SLA */}
         <aside className="flex flex-col gap-4 min-w-0">
           {/* Card 1: Foco Operativo y Casos en Riesgo de SLA */}
-          <div className="card rounded-[1.25rem] border border-grayscale-4/80 bg-[#f5f4f2] p-1 shadow-2xs dark:border-white/[0.08] dark:bg-[#141413]">
-            <div className="rounded-[1rem] border border-grayscale-3/60 bg-white p-4 shadow-[0_1px_2px_rgba(28,22,16,0.03)] dark:border-white/[0.07] dark:bg-[#1c1c1b]">
+          <div className="card-shell">
+            <div className="card-panel p-4">
               <div className="flex items-center justify-between gap-2 border-b border-grayscale-3/70 pb-3 dark:border-white/[0.14]">
                 <div className="flex items-center gap-2">
                   <span className="flex size-6 items-center justify-center rounded-lg bg-red-500/10 text-red-600 dark:text-red-400">
@@ -398,8 +398,8 @@ export default function Home() {
           </div>
 
           {/* Card 2: Desglose de carga activa con visualizador de ticks */}
-          <div className="card rounded-[1.25rem] border border-grayscale-4/80 bg-[#f5f4f2] p-1 shadow-2xs dark:border-white/[0.08] dark:bg-[#141413]">
-            <div className="rounded-[1rem] border border-grayscale-3/60 bg-white p-4 shadow-[0_1px_2px_rgba(28,22,16,0.03)] dark:border-white/[0.07] dark:bg-[#1c1c1b]">
+          <div className="card-shell">
+            <div className="card-panel p-4">
               <div className="flex items-baseline justify-between gap-2">
                 <span className="text-[12.5px] font-semibold text-grayscale-12">
                   Carga activa

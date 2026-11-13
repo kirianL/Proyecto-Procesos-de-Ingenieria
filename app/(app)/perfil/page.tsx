@@ -399,10 +399,10 @@ export default function PerfilPage() {
           <div className="flex flex-col gap-4 lg:col-span-8">
             {/* Tarjeta cabecera con banner e identidad */}
             <section
-              className="card rounded-[1.25rem] border border-grayscale-4/80 bg-[#f5f4f2] p-1 shadow-2xs dark:border-white/[0.08] dark:bg-[#141413]"
+              className="card-shell"
               style={{ "--stagger": 0 } as CSSProperties}
             >
-              <div className="overflow-hidden rounded-[1rem] border border-grayscale-3/60 bg-white shadow-[0_1px_2px_rgba(28,22,16,0.03)] dark:border-white/[0.07] dark:bg-[#1c1c1b]">
+              <div className="card-panel overflow-hidden">
                 {/* Banner ilustrado */}
                 <div
                   skullet-block=""
@@ -512,10 +512,10 @@ export default function PerfilPage() {
               {tab === "resumen" && (
               <>
                 <section
-                  className="card rounded-[1.25rem] border border-grayscale-4/80 bg-[#f5f4f2] p-1 shadow-2xs dark:border-white/[0.08] dark:bg-[#141413]"
+                  className="card-shell"
                   style={{ "--stagger": 1 } as CSSProperties}
                 >
-                  <div className="rounded-[1rem] border border-grayscale-3/60 bg-white p-5 shadow-[0_1px_2px_rgba(28,22,16,0.03)] dark:border-white/[0.07] dark:bg-[#1c1c1b]">
+                  <div className="card-panel p-5">
                     <div className="mb-3 flex items-center gap-2">
                       <span className="flex size-6.5 items-center justify-center rounded-lg bg-grayscale-2 text-grayscale-10 dark:bg-grayscale-3">
                         <UserIcon size={13} />
@@ -554,10 +554,10 @@ export default function PerfilPage() {
                 </section>
 
                 <section
-                  className="card rounded-[1.25rem] border border-grayscale-4/80 bg-[#f5f4f2] p-1 shadow-2xs dark:border-white/[0.08] dark:bg-[#141413]"
+                  className="card-shell"
                   style={{ "--stagger": 1 } as CSSProperties}
                 >
-                  <div className="rounded-[1rem] border border-grayscale-3/60 bg-white p-5 shadow-[0_1px_2px_rgba(28,22,16,0.03)] dark:border-white/[0.07] dark:bg-[#1c1c1b]">
+                  <div className="card-panel p-5">
                     <div className="mb-3 flex items-center gap-2">
                       <span className="flex size-6.5 items-center justify-center rounded-lg bg-grayscale-2 text-grayscale-10 dark:bg-grayscale-3">
                         <TagIcon size={13} />
@@ -599,8 +599,8 @@ export default function PerfilPage() {
             )}
 
             {tab === "actividad" && (
-              <section className="card rounded-[1.25rem] border border-grayscale-4/80 bg-[#f5f4f2] p-1 shadow-2xs dark:border-white/[0.08] dark:bg-[#141413]">
-                <div className="rounded-[1rem] border border-grayscale-3/60 bg-white p-4 sm:p-5 shadow-[0_1px_2px_rgba(28,22,16,0.03)] dark:border-white/[0.07] dark:bg-[#1c1c1b] space-y-3.5">
+              <section className="card-shell">
+                <div className="card-panel p-4 sm:p-5 space-y-3.5">
                   {/* Cabecera y controles de filtro */}
                   <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                     <div>
@@ -818,8 +818,8 @@ export default function PerfilPage() {
           {/* Columna lateral derecha */}
           <div className="flex flex-col gap-4 lg:col-span-4">
             {/* Jerarquía y Estructura Organizacional */}
-            <section className="card rounded-[1.25rem] border border-grayscale-4/80 bg-[#f5f4f2] p-1 shadow-2xs dark:border-white/[0.08] dark:bg-[#141413]">
-              <div className="relative overflow-hidden rounded-[1rem] border border-grayscale-3/60 bg-white p-4 shadow-[0_1px_2px_rgba(28,22,16,0.03)] dark:border-white/[0.07] dark:bg-[#1c1c1b]">
+            <section className="card-shell">
+              <div className="card-panel relative overflow-hidden p-4">
                 {/* Patrón de fondo técnico sutil */}
                 <div
                   aria-hidden="true"
@@ -1051,8 +1051,8 @@ export default function PerfilPage() {
             </section>
 
             {/* Detalles adicionales */}
-            <section className="card rounded-[1.25rem] border border-grayscale-4/80 bg-[#f5f4f2] p-1 shadow-2xs dark:border-white/[0.08] dark:bg-[#141413]">
-              <div className="rounded-[1rem] border border-grayscale-3/60 bg-white p-4 shadow-[0_1px_2px_rgba(28,22,16,0.03)] dark:border-white/[0.07] dark:bg-[#1c1c1b]">
+            <section className="card-shell">
+              <div className="card-panel p-4">
                 <div className="mb-3 flex items-center gap-2">
                   <span className="flex size-6.5 items-center justify-center rounded-lg bg-grayscale-2 text-grayscale-10 dark:bg-grayscale-3">
                     <IdentificationBadgeIcon size={13} />

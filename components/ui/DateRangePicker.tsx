@@ -438,9 +438,9 @@ export function DateRangePicker({
             backfaceVisibility: "hidden",
           }}
         >
-          <div className="rounded-[1.25rem] border border-grayscale-4/80 bg-[#f5f4f2] p-1 shadow-[0_18px_40px_-15px_rgba(24,24,22,0.18)] dark:border-white/[0.15] dark:bg-[#1a1a18] dark:shadow-[0_24px_48px_-14px_rgba(0,0,0,0.82)]">
+          <div className="card-shell shadow-[0_18px_40px_-15px_rgba(24,24,22,0.18)] dark:border-white/[0.14] dark:shadow-[0_24px_48px_-14px_rgba(0,0,0,0.82)]">
             <div
-              className="rounded-[1rem] border border-grayscale-3/70 bg-white p-3.5 dark:border-white/[0.08] dark:bg-[#121211]"
+              className="card-panel p-3.5"
               style={{
                 opacity: visible ? 1 : 0,
                 transform: visible || reducirMovimiento.current

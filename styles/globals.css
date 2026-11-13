@@ -16,6 +16,10 @@
   --surface-soft: var(--sand-2);
   --surface-muted: var(--sand-3);
   --line: var(--sand-5);
+  --card-shell-bg: #f5f4f2;
+  --card-panel-bg: #ffffff;
+  --card-border: #e5e4e0;
+  --card-divider: #eae9e5;
 
   --skullet: 1;
   --skullet-base: rgb(28 22 16 / 0.085);
@@ -26,11 +30,15 @@
 }
 
 .dark {
-  --canvas: #0b0b0a;
-  --surface: #141413;
-  --surface-soft: #1b1b19;
+  --canvas: #181817;
+  --surface: #1b1b1a;
+  --surface-soft: #131312;
   --surface-muted: #242422;
-  --line: rgba(255, 255, 255, 0.32);
+  --line: rgba(255, 255, 255, 0.08);
+  --card-shell-bg: #131312;
+  --card-panel-bg: #1b1b1a;
+  --card-border: rgba(255, 255, 255, 0.08);
+  --card-divider: rgba(255, 255, 255, 0.07);
 
   --skullet-base: rgb(255 255 255 / 0.085);
   --skullet-highlight: rgb(255 255 255 / 0.16);
@@ -314,6 +322,46 @@ button,
     box-shadow:
       inset 0 1px 0 0 rgba(255, 255, 255, 0.06),
       0 4px 12px -6px rgba(0, 0, 0, 0.8);
+  }
+
+  .card-shell {
+    overflow: hidden;
+    border-radius: 1.25rem;
+    border: 1px solid var(--card-border);
+    background-color: var(--card-shell-bg);
+    box-shadow: 0 1px 2px rgba(28, 22, 16, 0.03);
+    transition:
+      border-color var(--dur-base) var(--ease-out-soft),
+      box-shadow var(--dur-base) var(--ease-out-soft),
+      transform var(--dur-base) var(--ease-out-soft);
+  }
+
+  .card-panel {
+    border-bottom: 1px solid var(--card-divider);
+    border-bottom-left-radius: 1rem;
+    border-bottom-right-radius: 1rem;
+    background-color: var(--card-panel-bg);
+  }
+
+  .dark .card-shell {
+    box-shadow:
+      inset 0 1px 0 0 rgba(255, 255, 255, 0.03),
+      0 6px 20px -12px rgba(0, 0, 0, 0.55);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .card-shell-hover:hover {
+      border-color: #d6d4ce;
+      box-shadow: 0 8px 20px -14px rgba(28, 22, 16, 0.16);
+      transform: translateY(-2px);
+    }
+
+    .dark .card-shell-hover:hover {
+      border-color: rgba(255, 255, 255, 0.16);
+      box-shadow:
+        inset 0 1px 0 0 rgba(255, 255, 255, 0.05),
+        0 14px 28px -14px rgba(0, 0, 0, 0.72);
+    }
   }
 }
 

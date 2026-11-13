@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import {
   ArrowRightIcon,
@@ -258,8 +258,8 @@ export default function AtencionYCierrePage({ params }: Props) {
           />
 
           {/* 1. Tarjeta de contexto del expediente */}
-          <section className="card rounded-[1.25rem] border border-grayscale-4/80 bg-[#f5f4f2] p-1 shadow-2xs dark:border-white/[0.08] dark:bg-[#141413]">
-            <div className="rounded-[1rem] border border-grayscale-3/60 bg-white p-4 sm:p-5 shadow-[0_1px_2px_rgba(28,22,16,0.03)] dark:border-white/[0.07] dark:bg-[#1c1c1b] space-y-3.5">
+          <section className="card-shell">
+            <div className="card-panel p-4 sm:p-5 space-y-3.5">
               <div className="flex items-start justify-between gap-3">
                 <div className="flex min-w-0 items-start gap-3">
                   <span
@@ -357,8 +357,8 @@ export default function AtencionYCierrePage({ params }: Props) {
               </div>
             )}
 
-            <div className="card rounded-[1.25rem] border border-grayscale-4/80 bg-[#f5f4f2] p-1 shadow-2xs dark:border-white/[0.08] dark:bg-[#141413]">
-              <div className="rounded-[1rem] border border-grayscale-3/60 bg-white p-5 shadow-[0_1px_2px_rgba(28,22,16,0.03)] dark:border-white/[0.07] dark:bg-[#1c1c1b] space-y-5">
+            <div className="card-shell">
+              <div className="card-panel p-5 space-y-5">
                 
                 {/* Bloque A: Escala de resolución limpia con separadores `|` */}
                 <div className="rounded-xl border border-grayscale-3/75 bg-grayscale-1/60 p-3.5 dark:border-white/[0.1] dark:bg-[#171715]">

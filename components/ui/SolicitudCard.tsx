@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import type { Icon } from "@phosphor-icons/react";
 import { ArrowRightIcon, MapPinIcon } from "@phosphor-icons/react/dist/ssr";
@@ -52,13 +52,13 @@ export function SolicitudCard({
   const contenido = (
     <article
       className={cn(
-        "card rounded-[1.25rem] border border-grayscale-4/80 bg-[#f5f4f2] p-1 shadow-2xs hover:border-grayscale-5 hover:shadow-xs dark:border-white/[0.08] dark:bg-[#141413] dark:hover:border-white/[0.14]",
-        href && "card-hover cursor-pointer",
+        "card-shell card-shell-hover",
+        href && "cursor-pointer",
         className,
       )}
     >
-      {/* ISLA SUPERIOR BLANCA: título, metadatos directos, estado y descripción */}
-      <div className="rounded-[1rem] border border-grayscale-3/60 bg-white p-4 shadow-[0_1px_2px_rgba(28,22,16,0.03)] dark:border-white/[0.07] dark:bg-[#1c1c1b]">
+      {/* PANEL SUPERIOR: título, metadatos directos, estado y descripción */}
+      <div className="card-panel p-4">
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0 flex-1">
             <h3
