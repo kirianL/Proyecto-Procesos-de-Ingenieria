@@ -52,13 +52,13 @@ export function SolicitudCard({
   const contenido = (
     <article
       className={cn(
-        "card rounded-[1.25rem] border border-grayscale-4/90 bg-grayscale-2 p-1 shadow-2xs hover:border-grayscale-5 hover:shadow-xs dark:border-white/[0.32] dark:bg-[#191917] dark:hover:border-white/[0.42]",
+        "card rounded-[1.25rem] border border-grayscale-4/80 bg-[#f5f4f2] p-1 shadow-2xs hover:border-grayscale-5 hover:shadow-xs dark:border-white/[0.08] dark:bg-[#141413] dark:hover:border-white/[0.14]",
         href && "card-hover cursor-pointer",
         className,
       )}
     >
       {/* ISLA SUPERIOR BLANCA: título, metadatos directos, estado y descripción */}
-      <div className="rounded-[1rem] border border-grayscale-3/60 bg-white p-4 shadow-[0_1px_2px_rgba(28,22,16,0.03)] dark:border-white/[0.14] dark:bg-[#121211]">
+      <div className="rounded-[1rem] border border-grayscale-3/60 bg-white p-4 shadow-[0_1px_2px_rgba(28,22,16,0.03)] dark:border-white/[0.07] dark:bg-[#1c1c1b]">
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0 flex-1">
             <h3

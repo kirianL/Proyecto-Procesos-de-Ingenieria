@@ -90,13 +90,13 @@ export function MetricCard({
   return (
     <div
       className={cn(
-        "card flex min-w-0 flex-col rounded-[1.25rem] border border-grayscale-4/90 bg-grayscale-2 p-1 shadow-2xs transition-[border-color,box-shadow,background-color] duration-200 hover:border-grayscale-5 hover:shadow-xs dark:border-white/[0.32] dark:bg-[#191917] dark:hover:border-white/[0.42]",
+        "card flex min-w-0 flex-col rounded-[1.25rem] border border-grayscale-4/80 bg-[#f5f4f2] p-1 shadow-2xs transition-[border-color,box-shadow,background-color] duration-200 hover:border-grayscale-5 hover:shadow-xs dark:border-white/[0.08] dark:bg-[#141413] dark:hover:border-white/[0.14]",
         className,
       )}
       style={{ "--stagger": delay } as CSSProperties}
     >
       {/* CUERPO SUPERIOR: isla blanca enmarcada dentro del chasis gris */}
-      <div className="flex min-w-0 flex-1 flex-col justify-between rounded-[1rem] border border-grayscale-3/60 bg-white px-4 py-3.5 shadow-[0_1px_2px_rgba(28,22,16,0.03)] dark:border-white/[0.14] dark:bg-[#121211]">
+      <div className="flex min-w-0 flex-1 flex-col justify-between rounded-[1rem] border border-grayscale-3/60 bg-white px-4 py-3.5 shadow-[0_1px_2px_rgba(28,22,16,0.03)] dark:border-white/[0.07] dark:bg-[#1c1c1b]">
         {/* Fila superior: label + icono */}
         <div className="flex items-center justify-between gap-2.5">
           <div className="flex min-w-0 items-center gap-1.5">
