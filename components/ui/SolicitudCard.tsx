@@ -8,6 +8,7 @@ import {
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { EstadoBadge } from "@/components/mantenimiento/EstadoBadge";
+import { SlaBadge } from "@/components/mantenimiento/SlaPanel";
 import { PrioridadChip } from "@/components/ui/PrioridadChip";
 import { TiempoRelativo } from "@/components/ui/TiempoRelativo";
 import { cn } from "@/helpers/classname-helper";
@@ -96,6 +97,8 @@ export function SolicitudCard({
           </span>
           <span className="text-grayscale-5 dark:text-grayscale-5/50">•</span>
           <PrioridadChip prioridad={solicitud.prioridad} />
+          <span className="text-grayscale-5 dark:text-grayscale-5/50">•</span>
+          <SlaBadge solicitud={solicitud} />
           {pie && (
             <>
               <span className="text-grayscale-5 dark:text-grayscale-5/50">•</span>

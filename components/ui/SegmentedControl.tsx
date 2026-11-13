@@ -61,9 +61,12 @@ export function SegmentedControl<T extends string>({
     return () => observador.disconnect();
   }, [value, items.length]);
 
+  const hayActivo = items.some((item) => item.id === value);
+
   const mover = (direccion: 1 | -1) => {
     const indice = items.findIndex((item) => item.id === value);
-    const siguiente = (indice + direccion + items.length) % items.length;
+    const base = indice === -1 ? (direccion === 1 ? -1 : 0) : indice;
+    const siguiente = (base + direccion + items.length) % items.length;
     onChange(items[siguiente].id);
     const boton = botones.current.get(items[siguiente].id);
     boton?.focus();
@@ -92,7 +95,10 @@ export function SegmentedControl<T extends string>({
       {pill && (
         <span
           aria-hidden
-          className="pointer-events-none absolute rounded-lg border border-black/[0.04] bg-grayscale-1 shadow-[0_1px_2px_rgba(28,22,16,0.08)] transition-[left,top,width,height] duration-[280ms] ease-[cubic-bezier(0.22,1,0.36,1)] dark:border-white/[0.04] dark:bg-grayscale-3"
+          className={cn(
+            "pointer-events-none absolute rounded-lg border border-black/[0.04] bg-grayscale-1 shadow-[0_1px_2px_rgba(28,22,16,0.08)] transition-[left,top,width,height,opacity,transform] duration-[280ms] ease-[cubic-bezier(0.22,1,0.36,1)] dark:border-white/[0.04] dark:bg-grayscale-3",
+            hayActivo ? "scale-100 opacity-100" : "scale-95 opacity-0",
+          )}
           style={{
             left: pill.left,
             top: pill.top,

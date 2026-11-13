@@ -13,6 +13,7 @@ import { useEffect, useRef, useState } from "react";
 import { AccesoRestringido } from "@/components/mantenimiento/AccesoRestringido";
 import { BottomBar } from "@/components/mantenimiento/BottomBar";
 import Button from "@/components/public/Button";
+import { EvidenceUploader } from "@/components/ui/EvidenceUploader";
 import { PageHeader } from "@/components/ui/PageHeader";
 import {
   OPCIONES_PRIORIDAD,
@@ -27,7 +28,7 @@ import { nombreLimpio } from "@/helpers/iniciales";
 import { useAtajos } from "@/hooks/useAtajos";
 import { puedeCrearSolicitud } from "@/lib/mantenimiento/auth";
 import { crearSolicitud, getUsuarioActual } from "@/lib/mantenimiento/store";
-import type { Usuario } from "@/lib/mantenimiento/types";
+import type { AdjuntoEvidencia, Usuario } from "@/lib/mantenimiento/types";
 
 const ETIQUETA = "block text-[12.5px] font-medium text-grayscale-11";
 const TOTAL_SEGMENTOS = 12;
@@ -56,6 +57,7 @@ export default function NuevaSolicitudPage() {
   const [ubicacion, setUbicacion] = useState("");
   const [descripcion, setDescripcion] = useState("");
   const [prioridad, setPrioridad] = useState<Prioridad>("MEDIA");
+  const [adjuntos, setAdjuntos] = useState<AdjuntoEvidencia[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [intento, setIntento] = useState(0);
   const [enviando, setEnviando] = useState(false);
@@ -94,6 +96,11 @@ export default function NuevaSolicitudPage() {
   const segmentosReporte =
     camposListos === 0 ? 0 : camposListos === 1 ? 4 : camposListos === 2 ? 8 : 12;
 
+  const faltaTitulo = intento > 0 && !titulo.trim();
+  const faltaUbicacion = intento > 0 && !ubicacion.trim();
+  const faltaDescripcion = intento > 0 && !descripcion.trim();
+  const hayFaltantes = faltaTitulo || faltaUbicacion || faltaDescripcion;
+
   const detalleLen = descripcion.trim().length;
   const segmentosDetalle =
     detalleLen === 0
@@ -118,16 +125,17 @@ export default function NuevaSolicitudPage() {
     event.preventDefault();
     setError(null);
 
-    const faltante = !titulo.trim()
-      ? "El título de la solicitud es obligatorio."
-      : !ubicacion.trim()
-        ? "La ubicación es obligatoria."
-        : !descripcion.trim()
-          ? "Describe el problema con detalle para poder atenderlo."
-          : null;
+    const faltantes: string[] = [];
+    if (!titulo.trim()) faltantes.push("título");
+    if (!ubicacion.trim()) faltantes.push("ubicación");
+    if (!descripcion.trim()) faltantes.push("descripción");
 
-    if (faltante) {
-      setError(faltante);
+    if (faltantes.length > 0) {
+      const detalleFaltantes =
+        faltantes.length === 1
+          ? faltantes[0]
+          : `${faltantes.slice(0, -1).join(", ")} y ${faltantes[faltantes.length - 1]}`;
+      setError(`Completa los campos marcados en rojo: ${detalleFaltantes}.`);
       setIntento((valor) => valor + 1);
       return;
     }
@@ -140,12 +148,19 @@ export default function NuevaSolicitudPage() {
         ubicacion,
         descripcion,
         prioridad,
+        adjuntos,
       });
 
       fetch("/api/solicitudes", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ titulo, ubicacion, descripcion, prioridad }),
+        body: JSON.stringify({
+          titulo,
+          ubicacion,
+          descripcion,
+          prioridad,
+          adjuntos,
+        }),
       }).catch(() => {});
 
       router.push(`/solicitudes/${nueva.id}`);
@@ -257,7 +272,11 @@ export default function NuevaSolicitudPage() {
                     <span
                       className={cn(
                         "truncate text-left transition-colors duration-200",
-                        tituloListo ? "font-semibold text-grayscale-12" : "text-grayscale-8",
+                        faltaTitulo
+                          ? "font-semibold text-red-600 dark:text-red-400"
+                          : tituloListo
+                            ? "font-semibold text-grayscale-12"
+                            : "text-grayscale-8",
                       )}
                     >
                       1. Requerimiento
@@ -265,9 +284,11 @@ export default function NuevaSolicitudPage() {
                     <span
                       className={cn(
                         "truncate text-center transition-colors duration-200",
-                        ubicacionLista
-                          ? "font-semibold text-grayscale-12"
-                          : "text-grayscale-8",
+                        faltaUbicacion
+                          ? "font-semibold text-red-600 dark:text-red-400"
+                          : ubicacionLista
+                            ? "font-semibold text-grayscale-12"
+                            : "text-grayscale-8",
                       )}
                     >
                       2. Ubicación
@@ -275,9 +296,11 @@ export default function NuevaSolicitudPage() {
                     <span
                       className={cn(
                         "truncate text-right transition-colors duration-200",
-                        descripcionLista
-                          ? "font-semibold text-grayscale-12"
-                          : "text-grayscale-8",
+                        faltaDescripcion
+                          ? "font-semibold text-red-600 dark:text-red-400"
+                          : descripcionLista
+                            ? "font-semibold text-grayscale-12"
+                            : "text-grayscale-8",
                       )}
                     >
                       3. Detalle
@@ -321,9 +344,23 @@ export default function NuevaSolicitudPage() {
                 {/* Bloque C: Título del requerimiento */}
                 <div className="space-y-1.5">
                   <div className="flex items-center justify-between gap-2">
-                    <label htmlFor="titulo" className={ETIQUETA}>
+                    <label
+                      htmlFor="titulo"
+                      className={cn(
+                        ETIQUETA,
+                        faltaTitulo && "text-red-600 dark:text-red-400",
+                      )}
+                    >
                       Título del requerimiento{" "}
-                      <span className="text-grayscale-9">*</span>
+                      <span
+                        className={cn(
+                          faltaTitulo
+                            ? "text-red-600 dark:text-red-400"
+                            : "text-grayscale-9",
+                        )}
+                      >
+                        *
+                      </span>
                     </label>
                     <span className="num font-mono text-[10.5px] text-grayscale-8">
                       <SlotNumber value={titulo.length} />/120
@@ -333,19 +370,50 @@ export default function NuevaSolicitudPage() {
                     id="titulo"
                     type="text"
                     maxLength={120}
+                    aria-invalid={faltaTitulo}
                     placeholder="Ej. Gotera en el techo del laboratorio 2"
                     value={titulo}
-                    onChange={(event) => setTitulo(event.target.value)}
+                    onChange={(event) => {
+                      const val = event.target.value;
+                      setTitulo(val);
+                      if (
+                        error &&
+                        val.trim() &&
+                        ubicacion.trim() &&
+                        descripcion.trim()
+                      ) {
+                        setError(null);
+                      }
+                    }}
                     className="campo w-full px-3.5 py-2.5 text-[16px] sm:text-[13.5px]"
                   />
+                  {faltaTitulo && (
+                    <p className="text-[11px] font-medium text-red-600 dark:text-red-400">
+                      Falta el título del requerimiento
+                    </p>
+                  )}
                 </div>
 
                 {/* Bloque D: Ubicación física con sugerencias táctiles */}
                 <div className="space-y-2">
                   <div className="flex flex-wrap items-baseline justify-between gap-x-2 gap-y-0.5">
-                    <label htmlFor="ubicacion" className={ETIQUETA}>
+                    <label
+                      htmlFor="ubicacion"
+                      className={cn(
+                        ETIQUETA,
+                        faltaUbicacion && "text-red-600 dark:text-red-400",
+                      )}
+                    >
                       Ubicación física{" "}
-                      <span className="text-grayscale-9">*</span>
+                      <span
+                        className={cn(
+                          faltaUbicacion
+                            ? "text-red-600 dark:text-red-400"
+                            : "text-grayscale-9",
+                        )}
+                      >
+                        *
+                      </span>
                     </label>
                     <span className="text-[11px] text-grayscale-9">
                       Edificio, piso, nave o área exacta
@@ -356,16 +424,39 @@ export default function NuevaSolicitudPage() {
                     <input
                       id="ubicacion"
                       type="text"
+                      aria-invalid={faltaUbicacion}
                       placeholder="Ej. Edificio B · Piso 2, Oficina 204"
                       value={ubicacion}
-                      onChange={(event) => setUbicacion(event.target.value)}
+                      onChange={(event) => {
+                        const val = event.target.value;
+                        setUbicacion(val);
+                        if (
+                          error &&
+                          titulo.trim() &&
+                          val.trim() &&
+                          descripcion.trim()
+                        ) {
+                          setError(null);
+                        }
+                      }}
                       className="campo w-full py-2.5 pl-9 pr-3.5 text-[16px] sm:text-[13.5px]"
                     />
                     <MapPinIcon
                       size={15}
-                      className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-grayscale-8"
+                      className={cn(
+                        "pointer-events-none absolute left-3 top-1/2 -translate-y-1/2",
+                        faltaUbicacion
+                          ? "text-red-500 dark:text-red-400"
+                          : "text-grayscale-8",
+                      )}
                     />
                   </div>
+
+                  {faltaUbicacion && (
+                    <p className="text-[11px] font-medium text-red-600 dark:text-red-400">
+                      Falta indicar la ubicación física
+                    </p>
+                  )}
 
                   <div className="flex flex-wrap items-center gap-1.5">
                     {UBICACIONES_SUGERIDAS.map((sugerencia) => {
@@ -375,7 +466,12 @@ export default function NuevaSolicitudPage() {
                         <button
                           key={sugerencia}
                           type="button"
-                          onClick={() => setUbicacion(sugerencia)}
+                          onClick={() => {
+                            setUbicacion(sugerencia);
+                            if (error && titulo.trim() && descripcion.trim()) {
+                              setError(null);
+                            }
+                          }}
                           className={cn(
                             "cursor-pointer rounded-lg border px-2.5 py-1 text-[11px] transition-[background-color,border-color,color,transform] duration-150 active:scale-[0.97]",
                             seleccionada
@@ -404,9 +500,23 @@ export default function NuevaSolicitudPage() {
                 {/* Bloque F: Descripción detallada con medidor en vivo */}
                 <div className="space-y-2">
                   <div className="flex items-center justify-between gap-2">
-                    <label htmlFor="descripcion" className={ETIQUETA}>
+                    <label
+                      htmlFor="descripcion"
+                      className={cn(
+                        ETIQUETA,
+                        faltaDescripcion && "text-red-600 dark:text-red-400",
+                      )}
+                    >
                       Descripción detallada{" "}
-                      <span className="text-grayscale-9">*</span>
+                      <span
+                        className={cn(
+                          faltaDescripcion
+                            ? "text-red-600 dark:text-red-400"
+                            : "text-grayscale-9",
+                        )}
+                      >
+                        *
+                      </span>
                     </label>
                     <span
                       className={cn(
@@ -422,18 +532,41 @@ export default function NuevaSolicitudPage() {
                     id="descripcion"
                     rows={4}
                     maxLength={800}
+                    aria-invalid={faltaDescripcion}
                     placeholder="Describe los síntomas, equipos involucrados, horarios y cualquier antecedente relevante…"
                     value={descripcion}
-                    onChange={(event) => setDescripcion(event.target.value)}
+                    onChange={(event) => {
+                      const val = event.target.value;
+                      setDescripcion(val);
+                      if (
+                        error &&
+                        titulo.trim() &&
+                        ubicacion.trim() &&
+                        val.trim()
+                      ) {
+                        setError(null);
+                      }
+                    }}
                     className="campo w-full resize-y px-3.5 py-2.5 text-[16px] leading-relaxed sm:text-[13.5px]"
                   />
 
                   <div className="flex flex-wrap items-center justify-between gap-2 pt-0.5">
-                    <span className="text-[11px] text-grayscale-9">
-                      <SlotText
-                        text={guiaDescripcion}
-                        options={{ duration: 220, stagger: 8, bounce: 0.18 }}
-                      />
+                    <span
+                      className={cn(
+                        "text-[11px]",
+                        faltaDescripcion
+                          ? "font-medium text-red-600 dark:text-red-400"
+                          : "text-grayscale-9",
+                      )}
+                    >
+                      {faltaDescripcion ? (
+                        "Falta describir el problema con detalle"
+                      ) : (
+                        <SlotText
+                          text={guiaDescripcion}
+                          options={{ duration: 220, stagger: 8, bounce: 0.18 }}
+                        />
+                      )}
                     </span>
 
                     <div
@@ -461,13 +594,39 @@ export default function NuevaSolicitudPage() {
                     </div>
                   </div>
                 </div>
+
+                {/* Bloque G: Evidencia gráfica (drag & drop / cámara) */}
+                <div className="space-y-2">
+                  <div className="flex flex-wrap items-baseline justify-between gap-x-2 gap-y-0.5">
+                    <span className={ETIQUETA}>Evidencia fotográfica</span>
+                    <span className="text-[11px] text-grayscale-9">
+                      Ayuda al técnico a llevar el equipo o repuesto adecuado
+                    </span>
+                  </div>
+                  <EvidenceUploader
+                    value={adjuntos}
+                    onChange={setAdjuntos}
+                    etapa="REPORTE"
+                  />
+                </div>
               </div>
 
               {/* Pie inferior del chasis dual-tone responsivo */}
               <div className="flex flex-col gap-2.5 px-3.5 py-2.5 sm:flex-row sm:items-center sm:justify-between">
-                <span className="text-[11px] text-grayscale-9">
+                <span
+                  className={cn(
+                    "text-[11px]",
+                    hayFaltantes
+                      ? "font-medium text-red-600 dark:text-red-400"
+                      : "text-grayscale-9",
+                  )}
+                >
                   <SlotText
-                    text={estadoPie}
+                    text={
+                      hayFaltantes
+                        ? "Faltan datos obligatorios marcados en rojo"
+                        : estadoPie
+                    }
                     options={{ duration: 220, stagger: 10, bounce: 0.2 }}
                   />
                 </span>

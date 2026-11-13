@@ -2,6 +2,7 @@ import { verificarRolPermitido, verificarSesionActiva } from "./auth";
 import { adaptadorCorreoStub } from "./notificaciones";
 import { ejecutarTransaccion, repositorio } from "./persistencia";
 import {
+  type AdjuntoEvidencia,
   DominioError,
   type Estado,
   type EventoHistorial,
@@ -18,6 +19,7 @@ export interface CrearSolicitudInput {
   descripcion: string;
   ubicacion: string;
   prioridad?: Prioridad;
+  adjuntos?: AdjuntoEvidencia[];
 }
 
 export interface CambiarEstadoInput {
@@ -25,6 +27,7 @@ export interface CambiarEstadoInput {
   solicitudId: string;
   nuevoEstado: Estado;
   nota: string;
+  adjuntos?: AdjuntoEvidencia[];
 }
 
 /**
@@ -66,6 +69,11 @@ export function registrarSolicitud(input: CrearSolicitudInput): Solicitud {
       ? input.prioridad
       : "MEDIA";
 
+  const adjuntosIniciales =
+    Array.isArray(input.adjuntos) && input.adjuntos.length > 0
+      ? input.adjuntos.map((a) => ({ ...a }))
+      : undefined;
+
   const nuevaSolicitud = ejecutarTransaccion((tx) => {
     const nuevoId = `SOL-${tx.contarSolicitudes() + 101}`;
     const fechaActual = new Date().toISOString();
@@ -80,6 +88,7 @@ export function registrarSolicitud(input: CrearSolicitudInput): Solicitud {
       prioridad,
       creadaEn: fechaActual,
       cerradaEn: null,
+      ...(adjuntosIniciales ? { adjuntos: adjuntosIniciales } : {}),
     };
 
     const eventoInicial: EventoHistorial = {
@@ -90,6 +99,7 @@ export function registrarSolicitud(input: CrearSolicitudInput): Solicitud {
       estadoNuevo: "REGISTRADA",
       nota: "Solicitud registrada por el empleado.",
       fecha: fechaActual,
+      ...(adjuntosIniciales ? { adjuntos: adjuntosIniciales } : {}),
     };
 
     tx.insertarSolicitud(solicitud);
@@ -152,9 +162,18 @@ export function transicionarEstadoSolicitud(
     );
   }
 
+  const adjuntosNuevos =
+    Array.isArray(input.adjuntos) && input.adjuntos.length > 0
+      ? input.adjuntos.map((a) => ({ ...a }))
+      : undefined;
+
   // RNF03 / CI01: Actualización de estado e inserción de evento en una única transacción atómica
   const solicitudActualizada = ejecutarTransaccion((tx) => {
     const fechaActual = new Date().toISOString();
+    const adjuntosCombinados = [
+      ...(solicitudActual.adjuntos ?? []),
+      ...(adjuntosNuevos ?? []),
+    ];
 
     const actualizada: Solicitud = {
       ...solicitudActual,
@@ -163,6 +182,9 @@ export function transicionarEstadoSolicitud(
         input.nuevoEstado === "CERRADA"
           ? fechaActual
           : solicitudActual.cerradaEn,
+      ...(adjuntosCombinados.length > 0
+        ? { adjuntos: adjuntosCombinados }
+        : {}),
     };
 
     const nuevoEvento: EventoHistorial = {
@@ -173,6 +195,7 @@ export function transicionarEstadoSolicitud(
       estadoNuevo: input.nuevoEstado,
       nota: notaLimpia || null,
       fecha: fechaActual,
+      ...(adjuntosNuevos ? { adjuntos: adjuntosNuevos } : {}),
     };
 
     tx.actualizarSolicitud(actualizada);

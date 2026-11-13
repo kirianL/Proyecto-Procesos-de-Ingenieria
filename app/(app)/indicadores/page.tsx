@@ -2,9 +2,12 @@
 
 import {
   ArrowRightIcon,
+  BuildingsIcon,
   CheckCircleIcon,
   ClockIcon,
+  DownloadSimpleIcon,
   EyeIcon,
+  FileTextIcon,
   HourglassIcon,
   TargetIcon,
   TrendUpIcon,
@@ -15,42 +18,101 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { AccesoRestringido } from "@/components/mantenimiento/AccesoRestringido";
 import { BottomBar } from "@/components/mantenimiento/BottomBar";
+import { DateRangePicker } from "@/components/ui/DateRangePicker";
 import { MetricCard } from "@/components/ui/MetricCard";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { OPCIONES_PRIORIDAD } from "@/components/ui/PriorityPicker";
-import { SlotNumber } from "@/components/ui/SlotNumber";
 import {
   SegmentedControl,
   type Segmento,
 } from "@/components/ui/SegmentedControl";
 import { SkeletonContent } from "@/components/ui/Skeleton";
+import { SlotNumber } from "@/components/ui/SlotNumber";
 import { cn } from "@/helpers/classname-helper";
 import { nombreLimpio } from "@/helpers/iniciales";
 import { useAtajos } from "@/hooks/useAtajos";
 import { puedeVerIndicadores } from "@/lib/mantenimiento/auth";
 import { METAS_ACADEMICAS_ODS12 } from "@/lib/mantenimiento/consultas";
+import { calcularEstadoSla } from "@/lib/mantenimiento/sla";
 import {
   getBandejaMantenimiento,
   getUsuarioActual,
+  getUsuarios,
   SOLICITUDES_MUESTRA,
 } from "@/lib/mantenimiento/store";
 import type { Estado, Solicitud, Usuario } from "@/lib/mantenimiento/types";
 
 const META_HORAS = 48;
 
-type Periodo = "TODO" | "7D" | "30D";
+type Periodo = "TODO" | "7D" | "30D" | "90D" | "CUSTOM";
 
 const PERIODOS: Segmento<Periodo>[] = [
   { id: "TODO", label: "Histórico" },
-  { id: "7D", label: "Últimos 7 días" },
-  { id: "30D", label: "Últimos 30 días" },
+  { id: "7D", label: "7 días" },
+  { id: "30D", label: "Este mes" },
+  { id: "90D", label: "Trimestre" },
 ];
 
-const DIAS_POR_PERIODO: Record<Periodo, number | null> = {
+const DIAS_POR_PERIODO: Record<Exclude<Periodo, "CUSTOM">, number | null> = {
   TODO: null,
   "7D": 7,
   "30D": 30,
+  "90D": 90,
 };
+
+function formatearIsoLocal(fecha: Date): string {
+  const y = fecha.getFullYear();
+  const m = String(fecha.getMonth() + 1).padStart(2, "0");
+  const d = String(fecha.getDate()).padStart(2, "0");
+  return `${y}-${m}-${d}`;
+}
+
+function fechaInputHoy(): string {
+  return formatearIsoLocal(new Date());
+}
+
+function fechaInputHaceDias(dias: number): string {
+  const fecha = new Date();
+  fecha.setDate(fecha.getDate() - dias);
+  return formatearIsoLocal(fecha);
+}
+
+function formatearRangoEtiqueta(desde: string, hasta: string): string {
+  const parsear = (iso: string) => {
+    const [y, m, d] = iso.slice(0, 10).split("-").map(Number);
+    return y && m && d ? new Date(y, m - 1, d) : new Date();
+  };
+  const formatoCorto = new Intl.DateTimeFormat("es-MX", {
+    day: "numeric",
+    month: "short",
+  });
+  const formatoConAnio = new Intl.DateTimeFormat("es-MX", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
+  if (!desde && !hasta) return "el rango seleccionado";
+  if (desde === hasta) return `el ${formatoConAnio.format(parsear(desde))}`;
+  const d = parsear(desde);
+  const h = parsear(hasta);
+  if (d.getFullYear() === h.getFullYear()) {
+    return `${formatoCorto.format(d)} – ${formatoConAnio.format(h)}`;
+  }
+  return `${formatoConAnio.format(d)} – ${formatoConAnio.format(h)}`;
+}
+
+function escaparCsv(valor: string | number): string {
+  const texto = String(valor ?? "");
+  return `"${texto.replace(/"/g, '""')}"`;
+}
+
+function escaparHtml(valor: string | number): string {
+  return String(valor ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
 
 const DOT_ESTADO: Record<Estado, string> = {
   REGISTRADA: "bg-amber-8",
@@ -63,6 +125,10 @@ export default function IndicadoresPage() {
   const [usuario, setUsuario] = useState<Usuario>(getUsuarioActual());
   const [solicitudes, setSolicitudes] = useState<Solicitud[] | null>(null);
   const [periodo, setPeriodo] = useState<Periodo>("TODO");
+  const [fechaDesde, setFechaDesde] = useState<string>(() =>
+    fechaInputHaceDias(30),
+  );
+  const [fechaHasta, setFechaHasta] = useState<string>(() => fechaInputHoy());
   const [montado, setMontado] = useState(false);
 
   useEffect(() => {
@@ -93,16 +159,39 @@ export default function IndicadoresPage() {
 
   const cargando = solicitudes === null;
   const lista = solicitudes ?? SOLICITUDES_MUESTRA;
+  const usuariosMap = new Map(getUsuarios().map((u) => [u.id, u]));
 
-  const dias = DIAS_POR_PERIODO[periodo];
   const ahora = Date.now();
   const enPeriodo =
-    dias === null
-      ? lista
-      : lista.filter(
-          (solicitud) =>
-            ahora - new Date(solicitud.creadaEn).getTime() <= dias * 86400000,
-        );
+    periodo === "CUSTOM"
+      ? lista.filter((solicitud) => {
+          const t = new Date(solicitud.creadaEn).getTime();
+          const inicio = fechaDesde
+            ? new Date(`${fechaDesde}T00:00:00`).getTime()
+            : -Infinity;
+          const fin = fechaHasta
+            ? new Date(`${fechaHasta}T23:59:59.999`).getTime()
+            : Infinity;
+          return t >= inicio && t <= fin;
+        })
+      : DIAS_POR_PERIODO[periodo] === null
+        ? lista
+        : lista.filter(
+            (solicitud) =>
+              ahora - new Date(solicitud.creadaEn).getTime() <=
+              (DIAS_POR_PERIODO[periodo] as number) * 86400000,
+          );
+
+  const etiquetaPeriodo =
+    periodo === "TODO"
+      ? "todo el histórico"
+      : periodo === "7D"
+        ? "los últimos 7 días"
+        : periodo === "30D"
+          ? "este mes (30 días)"
+          : periodo === "90D"
+            ? "el último trimestre (90 días)"
+            : formatearRangoEtiqueta(fechaDesde, fechaHasta);
 
   const totales = enPeriodo.length;
   const porEstado: Record<Estado, number> = {
@@ -180,6 +269,313 @@ export default function IndicadoresPage() {
       ? Math.min(100, Math.round((tiempoMedioHoras / META_HORAS) * 100))
       : 0;
 
+  // Desglose por departamento + cumplimiento SLA
+  const departamentosMap = new Map<
+    string,
+    {
+      departamento: string;
+      totales: number;
+      abiertas: number;
+      cerradas: number;
+      slaEnMeta: number;
+      horasAcumuladas: number;
+      conCierre: number;
+    }
+  >();
+
+  let totalSlaEnMeta = 0;
+  for (const sol of enPeriodo) {
+    const sla = calcularEstadoSla(sol, ahora);
+    const cumpleSla =
+      sla.estadoSla === "EN_MARGEN" || sla.estadoSla === "CUMPLIDO";
+    if (cumpleSla) totalSlaEnMeta += 1;
+
+    const dep =
+      usuariosMap.get(sol.creadorId)?.departamento ?? "Área general";
+    const actual = departamentosMap.get(dep) ?? {
+      departamento: dep,
+      totales: 0,
+      abiertas: 0,
+      cerradas: 0,
+      slaEnMeta: 0,
+      horasAcumuladas: 0,
+      conCierre: 0,
+    };
+
+    actual.totales += 1;
+    if (sol.estado === "CERRADA") {
+      actual.cerradas += 1;
+      if (sol.cerradaEn) {
+        const hrs = Math.max(
+          0.5,
+          (new Date(sol.cerradaEn).getTime() -
+            new Date(sol.creadaEn).getTime()) /
+            3600000,
+        );
+        actual.horasAcumuladas += hrs;
+        actual.conCierre += 1;
+      }
+    } else {
+      actual.abiertas += 1;
+    }
+    if (cumpleSla) actual.slaEnMeta += 1;
+
+    departamentosMap.set(dep, actual);
+  }
+
+  const porDepartamento = Array.from(departamentosMap.values())
+    .map((d) => ({
+      ...d,
+      pctCarga: totales > 0 ? Math.round((d.totales / totales) * 100) : 0,
+      pctSla: d.totales > 0 ? Math.round((d.slaEnMeta / d.totales) * 100) : 100,
+      tiempoMedio:
+        d.conCierre > 0
+          ? Number((d.horasAcumuladas / d.conCierre).toFixed(1))
+          : null,
+    }))
+    .sort((a, b) => b.totales - a.totales);
+
+  const porcentajeSlaGlobal =
+    totales > 0 ? Math.round((totalSlaEnMeta / totales) * 100) : 100;
+
+  const exportarCsv = () => {
+    const filas: string[] = [];
+    filas.push(
+      ["REPORTE EJECUTIVO DE MANTENIMIENTO", etiquetaPeriodo]
+        .map(escaparCsv)
+        .join(","),
+    );
+    filas.push(
+      ["Generado por", nombreLimpio(usuario.nombre), "Fecha", fechaInputHoy()]
+        .map(escaparCsv)
+        .join(","),
+    );
+    filas.push("");
+    filas.push(
+      [
+        "KPI",
+        "Valor",
+      ]
+        .map(escaparCsv)
+        .join(","),
+    );
+    filas.push(["Total solicitudes", totales].map(escaparCsv).join(","));
+    filas.push(["Pendientes", porEstado.REGISTRADA].map(escaparCsv).join(","));
+    filas.push(["En proceso", porEstado.EN_PROCESO].map(escaparCsv).join(","));
+    filas.push(["Cerradas", cerradas].map(escaparCsv).join(","));
+    filas.push(
+      ["Efectividad de cierre (%)", `${porcentajeCumplimiento}%`]
+        .map(escaparCsv)
+        .join(","),
+    );
+    filas.push(
+      [
+        "Tiempo medio resolución (h)",
+        tiempoMedioHoras === null ? "Sin datos" : `${tiempoMedioHoras} h`,
+      ]
+        .map(escaparCsv)
+        .join(","),
+    );
+    filas.push(
+      ["Cumplimiento SLA global (%)", `${porcentajeSlaGlobal}%`]
+        .map(escaparCsv)
+        .join(","),
+    );
+    filas.push("");
+    filas.push(
+      [
+        "Departamento",
+        "Totales",
+        "Abiertas",
+        "Cerradas",
+        "Tiempo medio (h)",
+        "Cumplimiento SLA (%)",
+      ]
+        .map(escaparCsv)
+        .join(","),
+    );
+    for (const dep of porDepartamento) {
+      filas.push(
+        [
+          dep.departamento,
+          dep.totales,
+          dep.abiertas,
+          dep.cerradas,
+          dep.tiempoMedio ?? "—",
+          `${dep.pctSla}%`,
+        ]
+          .map(escaparCsv)
+          .join(","),
+      );
+    }
+    filas.push("");
+    filas.push(
+      [
+        "ID",
+        "Título",
+        "Departamento",
+        "Ubicación",
+        "Prioridad",
+        "Estado",
+        "SLA",
+        "Fecha creación",
+        "Fecha cierre",
+      ]
+        .map(escaparCsv)
+        .join(","),
+    );
+    for (const sol of enPeriodo) {
+      const dep =
+        usuariosMap.get(sol.creadorId)?.departamento ?? "Área general";
+      const sla = calcularEstadoSla(sol, ahora);
+      filas.push(
+        [
+          sol.id,
+          sol.titulo,
+          dep,
+          sol.ubicacion,
+          sol.prioridad,
+          sol.estado,
+          sla.etiquetaEstado,
+          sol.creadaEn.slice(0, 16).replace("T", " "),
+          sol.cerradaEn ? sol.cerradaEn.slice(0, 16).replace("T", " ") : "—",
+        ]
+          .map(escaparCsv)
+          .join(","),
+      );
+    }
+
+    const blob = new Blob([`\uFEFF${filas.join("\n")}`], {
+      type: "text/csv;charset=utf-8;",
+    });
+    const url = URL.createObjectURL(blob);
+    const enlace = document.createElement("a");
+    enlace.href = url;
+    enlace.download = `reporte-mantenimiento-${fechaInputHoy()}.csv`;
+    document.body.appendChild(enlace);
+    enlace.click();
+    document.body.removeChild(enlace);
+    URL.revokeObjectURL(url);
+  };
+
+  const exportarPdf = () => {
+    const ventana = window.open("", "_blank", "width=960,height=720");
+    if (!ventana) {
+      window.print();
+      return;
+    }
+
+    const filasDepartamentos = porDepartamento
+      .map(
+        (d) =>
+          `<tr>
+            <td>${escaparHtml(d.departamento)}</td>
+            <td class="num">${d.totales}</td>
+            <td class="num">${d.abiertas}</td>
+            <td class="num">${d.cerradas}</td>
+            <td class="num">${d.tiempoMedio !== null ? `${d.tiempoMedio} h` : "—"}</td>
+            <td class="num">${d.pctSla}%</td>
+          </tr>`,
+      )
+      .join("");
+
+    const filasSolicitudes = enPeriodo
+      .map((s) => {
+        const dep =
+          usuariosMap.get(s.creadorId)?.departamento ?? "Área general";
+        const sla = calcularEstadoSla(s, ahora);
+        return `<tr>
+          <td class="mono">${escaparHtml(s.id)}</td>
+          <td>${escaparHtml(s.titulo)}</td>
+          <td>${escaparHtml(dep)}</td>
+          <td>${escaparHtml(s.prioridad)}</td>
+          <td>${escaparHtml(s.estado)}</td>
+          <td>${escaparHtml(sla.etiquetaEstado)}</td>
+        </tr>`;
+      })
+      .join("");
+
+    ventana.document.write(`<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <title>Reporte Ejecutivo de Mantenimiento · ${escaparHtml(fechaInputHoy())}</title>
+  <style>
+    @page { margin: 18mm; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Inter", sans-serif; color: #18181b; margin: 0; padding: 24px; line-height: 1.45; }
+    .header { display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 1px solid #e4e4e7; padding-bottom: 14px; margin-bottom: 20px; }
+    .eyebrow { font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: #71717a; }
+    h1 { font-size: 22px; margin: 4px 0 0; letter-spacing: -0.02em; }
+    .meta { text-align: right; font-size: 11px; color: #52525b; font-family: ui-monospace, monospace; }
+    .kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 24px; }
+    .kpi { border: 1px solid #e4e4e7; border-radius: 10px; padding: 12px 14px; background: #fafafa; }
+    .kpi-label { font-size: 11px; color: #71717a; }
+    .kpi-val { font-size: 22px; font-weight: 700; margin-top: 4px; font-family: ui-monospace, monospace; }
+    h2 { font-size: 14px; margin: 22px 0 10px; letter-spacing: -0.01em; }
+    table { width: 100%; border-collapse: collapse; font-size: 12px; }
+    th, td { border-bottom: 1px solid #e4e4e7; padding: 8px 10px; text-align: left; }
+    th { font-size: 11px; color: #52525b; background: #f4f4f5; font-weight: 600; }
+    .num { text-align: right; font-family: ui-monospace, monospace; }
+    .mono { font-family: ui-monospace, monospace; font-size: 11px; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div>
+      <div class="eyebrow">Servicios Internos · Mantenimiento</div>
+      <h1>Balance Operativo e Indicadores</h1>
+    </div>
+    <div class="meta">
+      <div>Período: ${escaparHtml(etiquetaPeriodo)}</div>
+      <div>Emitido: ${escaparHtml(fechaInputHoy())} · ${escaparHtml(nombreLimpio(usuario.nombre))}</div>
+    </div>
+  </div>
+
+  <div class="kpis">
+    <div class="kpi"><div class="kpi-label">Total solicitudes</div><div class="kpi-val">${totales}</div></div>
+    <div class="kpi"><div class="kpi-label">Cerradas (${porcentajeCumplimiento}%)</div><div class="kpi-val">${cerradas}</div></div>
+    <div class="kpi"><div class="kpi-label">Tiempo medio</div><div class="kpi-val">${tiempoMedioHoras !== null ? `${tiempoMedioHoras}h` : "—"}</div></div>
+    <div class="kpi"><div class="kpi-label">Cumplimiento SLA</div><div class="kpi-val">${porcentajeSlaGlobal}%</div></div>
+  </div>
+
+  <h2>Distribución y desempeño por departamento</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Departamento</th>
+        <th class="num">Totales</th>
+        <th class="num">Abiertas</th>
+        <th class="num">Cerradas</th>
+        <th class="num">Tiempo medio</th>
+        <th class="num">SLA en meta</th>
+      </tr>
+    </thead>
+    <tbody>${filasDepartamentos || '<tr><td colspan="6">Sin registros en el período.</td></tr>'}</tbody>
+  </table>
+
+  <h2>Detalle de solicitudes del período</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Título</th>
+        <th>Departamento</th>
+        <th>Prioridad</th>
+        <th>Estado</th>
+        <th>SLA</th>
+      </tr>
+    </thead>
+    <tbody>${filasSolicitudes || '<tr><td colspan="6">Sin solicitudes en el período.</td></tr>'}</tbody>
+  </table>
+</body>
+</html>`);
+    ventana.document.close();
+    ventana.focus();
+    setTimeout(() => {
+      ventana.print();
+    }, 250);
+  };
+
   return (
     <div className="flex flex-1 flex-col justify-between gap-6 md:gap-7">
       <div className="flex flex-col gap-4 md:gap-5">
@@ -189,32 +585,65 @@ export default function IndicadoresPage() {
           titulo="Resumen e indicadores"
           descripcion="Desempeño de la infraestructura, tiempos de ciclo y tasa de resolución del período."
           acciones={
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-grayscale-2 px-2.5 py-1 text-[11px] text-grayscale-10 dark:bg-grayscale-2/70">
-              <EyeIcon size={12} weight="bold" />
-              Solo lectura
-            </span>
+            <div className="flex flex-wrap items-center gap-2">
+              <button
+                type="button"
+                onClick={exportarCsv}
+                className="inline-flex h-8 cursor-pointer items-center gap-1.5 rounded-xl border border-grayscale-3 bg-white px-3 text-[12px] font-medium text-grayscale-11 shadow-2xs transition-colors hover:border-grayscale-5 hover:text-grayscale-12 dark:border-grayscale-4/50 dark:bg-grayscale-2"
+              >
+                <DownloadSimpleIcon size={13} weight="bold" />
+                <span>Exportar CSV</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={exportarPdf}
+                className="inline-flex h-8 cursor-pointer items-center gap-1.5 rounded-xl border border-grayscale-4 bg-grayscale-12 px-3 text-[12px] font-medium text-grayscale-1 shadow-2xs transition-opacity hover:opacity-90 dark:bg-grayscale-12 dark:text-grayscale-1"
+              >
+                <FileTextIcon size={13} weight="bold" />
+                <span>Reporte PDF</span>
+              </button>
+
+              <span className="inline-flex h-8 items-center gap-1.5 rounded-xl bg-grayscale-2 px-2.5 text-[11px] text-grayscale-10 dark:bg-grayscale-2/70">
+                <EyeIcon size={12} weight="bold" />
+                Solo lectura
+              </span>
+            </div>
           }
         />
 
         <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-          <SegmentedControl
-            items={PERIODOS}
-            value={periodo}
-            onChange={setPeriodo}
-            ariaLabel="Filtrar indicadores por período"
-          />
-          <p className="text-[11.5px] leading-snug text-grayscale-9 md:max-w-[46%] md:text-right inline-flex items-center gap-1 md:justify-end">
-            <SlotNumber value={totales} className="font-semibold text-grayscale-11" />
+          <div className="flex flex-wrap items-center gap-2">
+            <SegmentedControl
+              items={PERIODOS}
+              value={periodo}
+              onChange={setPeriodo}
+              ariaLabel="Filtrar indicadores por período"
+            />
+            <DateRangePicker
+              desde={fechaDesde}
+              hasta={fechaHasta}
+              activo={periodo === "CUSTOM"}
+              fechasConActividad={lista.map((s) => s.creadaEn)}
+              onActivate={() => setPeriodo("CUSTOM")}
+              onChange={({ desde, hasta }) => {
+                setFechaDesde(desde);
+                setFechaHasta(hasta);
+                setPeriodo("CUSTOM");
+              }}
+              onClear={() => setPeriodo("TODO")}
+            />
+          </div>
+          <p className="inline-flex items-center gap-1 text-[11.5px] leading-snug text-grayscale-9 md:max-w-[42%] md:justify-end md:text-right">
+            <SlotNumber
+              value={totales}
+              className="font-semibold text-grayscale-11"
+            />
             <span>
               {totales === 1
                 ? "solicitud considerada"
                 : "solicitudes consideradas"}{" "}
-              en{" "}
-              {periodo === "TODO"
-                ? "todo el histórico"
-                : periodo === "7D"
-                  ? "los últimos 7 días"
-                  : "los últimos 30 días"}
+              en {etiquetaPeriodo}
             </span>
           </p>
         </div>
@@ -646,6 +1075,101 @@ export default function IndicadoresPage() {
               </div>
             </section>
 
+            {/* Distribución y SLA por departamento */}
+            <section className="card flex flex-col rounded-[1.25rem] border border-grayscale-3/85 bg-grayscale-2 p-1 shadow-2xs dark:border-grayscale-4/40 dark:bg-grayscale-3/50">
+              <div className="rounded-[1rem] border border-grayscale-3/60 bg-white px-5 py-4 shadow-[0_1px_2px_rgba(28,22,16,0.03)] dark:border-grayscale-4/30 dark:bg-grayscale-2 space-y-4">
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <div className="flex items-center gap-2">
+                    <span
+                      skullet-block=""
+                      className="flex size-6.5 items-center justify-center rounded-lg bg-grayscale-2 text-grayscale-10 dark:bg-grayscale-3"
+                    >
+                      <BuildingsIcon size={13} />
+                    </span>
+                    <h2 className="text-[13px] font-semibold tracking-[-0.01em] text-grayscale-12">
+                      Distribución y SLA por departamento
+                    </h2>
+                  </div>
+
+                  <span className="inline-flex items-center gap-1.5 font-mono text-[11px] text-grayscale-10">
+                    <span>SLA en meta:</span>
+                    <SlotNumber
+                      value={porcentajeSlaGlobal}
+                      suffix="%"
+                      className="font-bold text-grayscale-12"
+                    />
+                  </span>
+                </div>
+
+                {porDepartamento.length === 0 ? (
+                  <p className="py-3 text-[12px] text-grayscale-9">
+                    No hay solicitudes registradas dentro del rango seleccionado.
+                  </p>
+                ) : (
+                  <div className="grid gap-2.5 sm:grid-cols-2">
+                    {porDepartamento.map((dep) => (
+                      <div
+                        key={dep.departamento}
+                        className="rounded-xl border border-grayscale-3/70 bg-grayscale-1/60 p-3.5 dark:border-grayscale-4/40 dark:bg-grayscale-3/30"
+                      >
+                        <div className="flex items-baseline justify-between gap-2">
+                          <span className="truncate text-[12.5px] font-semibold text-grayscale-12">
+                            {dep.departamento}
+                          </span>
+                          <span className="shrink-0 font-mono text-[11px] text-grayscale-9">
+                            <SlotNumber
+                              value={dep.totales}
+                              className="font-bold text-grayscale-12"
+                            />{" "}
+                            · {dep.pctCarga}%
+                          </span>
+                        </div>
+
+                        <div
+                          skullet-block=""
+                          className="mt-2.5 grid grid-cols-12 gap-1"
+                          aria-hidden
+                        >
+                          {Array.from({ length: 12 }).map((_, i) => {
+                            const lleno = i < Math.max(1, Math.round((dep.pctCarga / 100) * 12));
+                            return (
+                              <div
+                                key={i}
+                                className={cn(
+                                  "h-1.5 w-full rounded-[2px]",
+                                  lleno
+                                    ? dep.pctSla >= 75
+                                      ? "bg-emerald-600/80"
+                                      : "bg-amber-500/80"
+                                    : "bg-grayscale-3/75 dark:bg-grayscale-4/40",
+                                )}
+                              />
+                            );
+                          })}
+                        </div>
+
+                        <div className="mt-2.5 flex flex-wrap items-center justify-between gap-2 font-mono text-[10.5px] text-grayscale-9">
+                          <span>
+                            {dep.cerradas} cerradas · {dep.abiertas} abiertas
+                          </span>
+                          <span>
+                            {dep.tiempoMedio !== null
+                              ? `${dep.tiempoMedio}h prom · `
+                              : ""}
+                            SLA {dep.pctSla}%
+                          </span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              <div className="px-4 py-2 text-[11px] text-grayscale-9">
+                Desempeño técnico segmentado por área solicitante
+              </div>
+            </section>
+
             {/* Metas operativas y de sostenibilidad */}
             <section className="card rounded-[1.25rem] border border-grayscale-3/85 bg-grayscale-2 p-1 shadow-2xs dark:border-grayscale-4/40 dark:bg-grayscale-3/50">
               <div className="rounded-[1rem] border border-grayscale-3/60 bg-white p-5 shadow-[0_1px_2px_rgba(28,22,16,0.03)] dark:border-grayscale-4/30 dark:bg-grayscale-2 space-y-3.5">
@@ -726,13 +1250,7 @@ export default function IndicadoresPage() {
 
       <BottomBar
         statusInfo={{
-          title: `${totales} solicitudes consolidadas · ${
-            periodo === "TODO"
-              ? "histórico"
-              : periodo === "7D"
-                ? "7 días"
-                : "30 días"
-          }`,
+          title: `${totales} solicitudes consolidadas · ${etiquetaPeriodo}`,
           subtitle: `Supervisión de ${nombreLimpio(usuario.nombre)} · ${usuario.cargo}`,
         }}
         primaryLabel="Ver bandeja general"

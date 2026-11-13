@@ -15,7 +15,10 @@ import { use, useEffect, useRef, useState } from "react";
 import { AccesoRestringido } from "@/components/mantenimiento/AccesoRestringido";
 import { BottomBar } from "@/components/mantenimiento/BottomBar";
 import { EstadoBadge } from "@/components/mantenimiento/EstadoBadge";
+import { SlaPanel } from "@/components/mantenimiento/SlaPanel";
 import Button from "@/components/public/Button";
+import { EvidenceGallery } from "@/components/ui/EvidenceGallery";
+import { EvidenceUploader } from "@/components/ui/EvidenceUploader";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { PrioridadChip } from "@/components/ui/PrioridadChip";
 import { SkeletonContent } from "@/components/ui/Skeleton";
@@ -33,6 +36,7 @@ import {
   getUsuarioActual,
 } from "@/lib/mantenimiento/store";
 import {
+  type AdjuntoEvidencia,
   type Estado,
   type SolicitudConDetalles,
   TRANSICIONES_VALIDAS,
@@ -119,6 +123,7 @@ export default function AtencionYCierrePage({ params }: Props) {
   const [usuario, setUsuario] = useState<Usuario>(getUsuarioActual());
   const [nuevoEstado, setNuevoEstado] = useState<Estado>("EN_PROCESO");
   const [nota, setNota] = useState("");
+  const [adjuntos, setAdjuntos] = useState<AdjuntoEvidencia[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [intento, setIntento] = useState(0);
   const [guardando, setGuardando] = useState(false);
@@ -170,6 +175,7 @@ export default function AtencionYCierrePage({ params }: Props) {
   const permitidos = TRANSICIONES_VALIDAS[ficha.estado];
   const notaObligatoria = nuevoEstado === "CERRADA";
   const sinTransiciones = permitidos.length === 0;
+  const faltaNota = intento > 0 && notaObligatoria && !nota.trim();
 
   const indiceActual = ETAPAS_FLUJO.findIndex((e) => e.estado === ficha.estado);
   const indiceDestino = sinTransiciones
@@ -203,12 +209,13 @@ export default function AtencionYCierrePage({ params }: Props) {
         autorId: usuario.id,
         nuevoEstado,
         nota,
+        adjuntos,
       });
 
       fetch(`/api/solicitudes/${solicitud.id}/estado`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ nuevoEstado, nota }),
+        body: JSON.stringify({ nuevoEstado, nota, adjuntos }),
       }).catch(() => {});
 
       router.push(`/solicitudes/${solicitud.id}`);
@@ -309,6 +316,16 @@ export default function AtencionYCierrePage({ params }: Props) {
                   </span>
                 </div>
               </div>
+
+              <SlaPanel solicitud={ficha} />
+
+              {ficha.adjuntos && ficha.adjuntos.length > 0 && (
+                <EvidenceGallery
+                  adjuntos={ficha.adjuntos}
+                  titulo="Evidencia adjunta del expediente"
+                  compacto
+                />
+              )}
             </div>
 
             <div className="flex items-center justify-between px-4 py-2 text-[11px] text-grayscale-9">
@@ -473,7 +490,12 @@ export default function AtencionYCierrePage({ params }: Props) {
                             role="radio"
                             aria-checked={activo}
                             disabled={!habilitada}
-                            onClick={() => setNuevoEstado(accion.estado)}
+                            onClick={() => {
+                              setNuevoEstado(accion.estado);
+                              if (accion.estado !== "CERRADA" && error) {
+                                setError(null);
+                              }
+                            }}
                             className={cn(
                               "group relative flex flex-col justify-between rounded-xl border p-4 text-left transition-all duration-200",
                               activo
@@ -582,10 +604,24 @@ export default function AtencionYCierrePage({ params }: Props) {
                 {!sinTransiciones && (
                   <div className="space-y-2">
                     <div className="flex flex-wrap items-baseline justify-between gap-2">
-                      <label htmlFor="nota" className={ETIQUETA_BASE}>
+                      <label
+                        htmlFor="nota"
+                        className={cn(
+                          ETIQUETA_BASE,
+                          faltaNota && "text-red-600 dark:text-red-400",
+                        )}
+                      >
                         Dictamen y nota técnica{" "}
                         {notaObligatoria ? (
-                          <span className="text-grayscale-9">*</span>
+                          <span
+                            className={cn(
+                              faltaNota
+                                ? "text-red-600 dark:text-red-400"
+                                : "text-grayscale-9",
+                            )}
+                          >
+                            *
+                          </span>
                         ) : (
                           <span className="text-[11px] font-normal text-grayscale-9">
                             (opcional)
@@ -596,7 +632,14 @@ export default function AtencionYCierrePage({ params }: Props) {
                       <span className="font-mono text-[10.5px] text-grayscale-9">
                         {notaObligatoria ? (
                           <>
-                            <span className="font-medium text-grayscale-11">
+                            <span
+                              className={cn(
+                                "font-medium",
+                                faltaNota
+                                  ? "text-red-600 dark:text-red-400"
+                                  : "text-grayscale-11",
+                              )}
+                            >
                               Obligatoria al cerrar
                             </span>{" "}
                             <span className="text-grayscale-5">|</span> Informe de cierre
@@ -613,14 +656,49 @@ export default function AtencionYCierrePage({ params }: Props) {
                     <textarea
                       id="nota"
                       rows={4}
+                      aria-invalid={faltaNota}
                       value={nota}
-                      onChange={(event) => setNota(event.target.value)}
+                      onChange={(event) => {
+                        const val = event.target.value;
+                        setNota(val);
+                        if (error && val.trim()) {
+                          setError(null);
+                        }
+                      }}
                       placeholder={
                         notaObligatoria
                           ? "Describe el trabajo efectuado, refacciones instaladas, pruebas de verificación y conformidad del área…"
                           : "Anota observaciones iniciales del diagnóstico o materiales requeridos…"
                       }
                       className="campo w-full resize-y px-3.5 py-2.5 text-[16px] leading-relaxed sm:text-[13px]"
+                    />
+
+                    {faltaNota && (
+                      <p className="text-[11px] font-medium text-red-600 dark:text-red-400">
+                        Falta registrar el dictamen técnico para poder cerrar la solicitud.
+                      </p>
+                    )}
+                  </div>
+                )}
+
+                {/* Bloque D: Evidencia técnica de intervención */}
+                {!sinTransiciones && (
+                  <div className="space-y-2">
+                    <div className="flex flex-wrap items-baseline justify-between gap-2">
+                      <span className={ETIQUETA_BASE}>
+                        Evidencia de intervención{" "}
+                        <span className="text-[11px] font-normal text-grayscale-9">
+                          (opcional)
+                        </span>
+                      </span>
+                      <span className="font-mono text-[10.5px] text-grayscale-9">
+                        Fotografía de diagnóstico o trabajo terminado
+                      </span>
+                    </div>
+                    <EvidenceUploader
+                      value={adjuntos}
+                      onChange={setAdjuntos}
+                      etapa="ATENCION"
                     />
                   </div>
                 )}

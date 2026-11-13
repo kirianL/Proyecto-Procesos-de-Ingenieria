@@ -13,6 +13,7 @@ import {
 } from "./persistencia";
 import { registrarSolicitud, transicionarEstadoSolicitud } from "./solicitudes";
 import type {
+  AdjuntoEvidencia,
   Estado,
   EventoConAutor,
   IndicadoresResumen,
@@ -93,6 +94,7 @@ export function crearSolicitud(params: {
   descripcion: string;
   ubicacion: string;
   prioridad?: Prioridad;
+  adjuntos?: AdjuntoEvidencia[];
 }): Solicitud {
   const usuario = repositorio.obtenerUsuarioPorId(params.creadorId);
   return registrarSolicitud({
@@ -101,6 +103,7 @@ export function crearSolicitud(params: {
     descripcion: params.descripcion,
     ubicacion: params.ubicacion,
     prioridad: params.prioridad,
+    adjuntos: params.adjuntos,
   });
 }
 
@@ -109,6 +112,7 @@ export function cambiarEstadoSolicitud(params: {
   autorId: string;
   nuevoEstado: Estado;
   nota: string;
+  adjuntos?: AdjuntoEvidencia[];
 }): Solicitud {
   const usuario = repositorio.obtenerUsuarioPorId(params.autorId);
   return transicionarEstadoSolicitud({
@@ -116,6 +120,7 @@ export function cambiarEstadoSolicitud(params: {
     solicitudId: params.solicitudId,
     nuevoEstado: params.nuevoEstado,
     nota: params.nota,
+    adjuntos: params.adjuntos,
   });
 }
 

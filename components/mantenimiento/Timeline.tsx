@@ -4,6 +4,7 @@ import {
   WrenchIcon,
 } from "@phosphor-icons/react/dist/ssr";
 import type { CSSProperties } from "react";
+import { EvidenceGallery } from "@/components/ui/EvidenceGallery";
 import { TiempoRelativo } from "@/components/ui/TiempoRelativo";
 import { cn } from "@/helpers/classname-helper";
 import { fechaCompleta } from "@/helpers/fecha";
@@ -121,6 +122,14 @@ export function Timeline({ eventos, className }: TimelineProps) {
                       {evento.nota}
                     </p>
                   </div>
+                )}
+
+                {evento.adjuntos && evento.adjuntos.length > 0 && (
+                  <EvidenceGallery
+                    adjuntos={evento.adjuntos}
+                    compacto
+                    className="mt-2.5"
+                  />
                 )}
 
                 <span className="sr-only">{fechaCompleta(evento.fecha)}</span>

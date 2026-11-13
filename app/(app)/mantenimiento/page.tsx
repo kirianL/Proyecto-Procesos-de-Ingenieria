@@ -1,8 +1,10 @@
 "use client";
 
 import {
+  BookmarkSimpleIcon,
   CheckCircleIcon,
   MagnifyingGlassIcon,
+  PlusIcon,
   StackIcon,
   TrayIcon,
   WrenchIcon,
@@ -26,12 +28,14 @@ import {
 import { SkeletonContent } from "@/components/ui/Skeleton";
 import { SlotNumber } from "@/components/ui/SlotNumber";
 import { SolicitudCard } from "@/components/ui/SolicitudCard";
+import { cn } from "@/helpers/classname-helper";
 import { nombreLimpio } from "@/helpers/iniciales";
 import { useAtajos } from "@/hooks/useAtajos";
 import {
   puedeGestionarAtencion,
   puedeVerBandejaTecnica,
 } from "@/lib/mantenimiento/auth";
+import { calcularEstadoSla } from "@/lib/mantenimiento/sla";
 import {
   getBandejaMantenimiento,
   getUsuarioActual,
@@ -98,7 +102,7 @@ export default function BandejaMantenimientoPage() {
       prioridad === "TODAS" || solicitud.prioridad === prioridad;
     const coincideBusqueda =
       consulta.length === 0 ||
-      `${solicitud.id} ${solicitud.titulo} ${solicitud.ubicacion}`
+      `${solicitud.id} ${solicitud.titulo} ${solicitud.ubicacion} ${solicitud.descripcion}`
         .toLowerCase()
         .includes(consulta);
 
@@ -106,7 +110,9 @@ export default function BandejaMantenimientoPage() {
   });
 
   const hayFiltrosActivos =
-    filtro !== "TODAS" || prioridad !== "TODAS" || busqueda.trim().length > 0;
+    filtro !== "TODAS" ||
+    prioridad !== "TODAS" ||
+    busqueda.trim().length > 0;
 
   const limpiarFiltros = () => {
     setFiltro("TODAS");
@@ -182,7 +188,9 @@ export default function BandejaMantenimientoPage() {
         <SegmentedControl
           items={TABS}
           value={filtro}
-          onChange={setFiltro}
+          onChange={(nuevoEstado) => {
+            setFiltro(nuevoEstado);
+          }}
           ariaLabel="Filtrar solicitudes por estado"
         />
 
@@ -195,7 +203,9 @@ export default function BandejaMantenimientoPage() {
             <input
               type="search"
               value={busqueda}
-              onChange={(event) => setBusqueda(event.target.value)}
+              onChange={(event) => {
+                setBusqueda(event.target.value);
+              }}
               placeholder="Buscar por ID, título o ubicación…"
               aria-label="Buscar solicitudes"
               className="campo w-full py-2 pl-9 pr-3 text-[16px] sm:text-[13px]"
@@ -209,9 +219,9 @@ export default function BandejaMantenimientoPage() {
             <select
               id="filtro-prioridad"
               value={prioridad}
-              onChange={(event) =>
-                setPrioridad(event.target.value as PrioridadFiltro)
-              }
+              onChange={(event) => {
+                setPrioridad(event.target.value as PrioridadFiltro);
+              }}
               className="campo h-[38px] w-full cursor-pointer px-3 text-[16px] sm:w-auto sm:text-[12.5px]"
             >
               <option value="TODAS">Todas las prioridades</option>

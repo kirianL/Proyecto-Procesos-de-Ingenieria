@@ -15,8 +15,10 @@ import { use, useEffect, useState } from "react";
 import { AccesoRestringido } from "@/components/mantenimiento/AccesoRestringido";
 import { BottomBar } from "@/components/mantenimiento/BottomBar";
 import { EstadoBadge } from "@/components/mantenimiento/EstadoBadge";
+import { SlaPanel } from "@/components/mantenimiento/SlaPanel";
 import { Timeline } from "@/components/mantenimiento/Timeline";
 import Button from "@/components/public/Button";
+import { EvidenceGallery } from "@/components/ui/EvidenceGallery";
 import { InfoPanel, InfoRow } from "@/components/ui/InfoPanel";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { PrioridadChip } from "@/components/ui/PrioridadChip";
@@ -191,6 +193,15 @@ export default function DetalleSolicitudPage({ params }: Props) {
                   </p>
                 </div>
               </div>
+
+              <SlaPanel solicitud={ficha} />
+
+              {ficha.adjuntos && ficha.adjuntos.length > 0 && (
+                <EvidenceGallery
+                  adjuntos={ficha.adjuntos}
+                  titulo="Evidencia gráfica"
+                />
+              )}
 
               {ficha.cerradaEn && (
                 <div className="surface-soft flex items-start gap-2.5 px-4 py-3 text-[12px] text-grayscale-11 border border-emerald-500/20 bg-emerald-500/5">

@@ -108,7 +108,10 @@ export default function LoginPage() {
   const [mostrarPassword, setMostrarPassword] = useState(false);
   const [enviando, setEnviando] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [intento, setIntento] = useState(0);
   const [perfilActivoId, setPerfilActivoId] = useState<string | null>(null);
+
+  const faltaCorreo = intento > 0 && !correo.trim();
 
   useEffect(() => {
     for (const ruta of Object.values(DESTINOS)) {
@@ -146,6 +149,7 @@ export default function LoginPage() {
     e.preventDefault();
     if (!correo.trim()) {
       setError("Ingresa una dirección de correo institucional.");
+      setIntento((v) => v + 1);
       return;
     }
 
@@ -215,11 +219,16 @@ export default function LoginPage() {
           )}
 
           {/* Formulario abierto directamente sobre el lienzo */}
-          <form onSubmit={handleSubmit} className="space-y-3.5">
+          <form onSubmit={handleSubmit} noValidate className="space-y-3.5">
             <div className="space-y-1.5">
               <label
                 htmlFor="login-email"
-                className="block text-[12px] font-medium text-grayscale-11"
+                className={cn(
+                  "block text-[12px] font-medium",
+                  faltaCorreo
+                    ? "text-red-600 dark:text-red-400"
+                    : "text-grayscale-11",
+                )}
               >
                 Correo electrónico
               </label>
@@ -227,7 +236,7 @@ export default function LoginPage() {
                 id="login-email"
                 type="email"
                 autoComplete="email"
-                required
+                aria-invalid={faltaCorreo}
                 value={correo}
                 onChange={(e) => {
                   setCorreo(e.target.value);
@@ -236,6 +245,11 @@ export default function LoginPage() {
                 placeholder="nombre@organizacion.com"
                 className="campo w-full px-3.5 py-2.5 text-[16px] shadow-[0_1px_2px_rgba(28,22,16,0.03)] sm:text-[13.5px]"
               />
+              {faltaCorreo && (
+                <p className="text-[11px] font-medium text-red-600 dark:text-red-400">
+                  Falta ingresar tu correo institucional.
+                </p>
+              )}
             </div>
 
             <div className="space-y-1.5">

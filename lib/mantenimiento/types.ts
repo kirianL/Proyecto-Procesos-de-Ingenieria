@@ -22,6 +22,16 @@ export interface Usuario {
   departamento: string;
 }
 
+export interface AdjuntoEvidencia {
+  id: string;
+  nombre: string;
+  url: string;
+  tipo: string;
+  tamanoBytes: number;
+  etapa: "REPORTE" | "ATENCION";
+  creadoEn: string;
+}
+
 export interface Solicitud {
   id: string;
   creadorId: string;
@@ -32,6 +42,7 @@ export interface Solicitud {
   prioridad: Prioridad;
   creadaEn: string;
   cerradaEn: string | null;
+  adjuntos?: AdjuntoEvidencia[];
 }
 
 export interface EventoHistorial {
@@ -42,6 +53,7 @@ export interface EventoHistorial {
   estadoNuevo: Estado;
   nota: string | null;
   fecha: string;
+  adjuntos?: AdjuntoEvidencia[];
 }
 
 /**

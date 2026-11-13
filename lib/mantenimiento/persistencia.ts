@@ -1,9 +1,57 @@
 import {
+  type AdjuntoEvidencia,
   DominioError,
   type EventoHistorial,
   type Solicitud,
   type Usuario,
 } from "./types";
+
+function crearSvgDataUri(titulo: string, subtitulo: string, acento: string): string {
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="960" height="600" viewBox="0 0 960 600" fill="none"><rect width="960" height="600" fill="#171716"/><rect x="36" y="36" width="888" height="528" rx="20" fill="#1F1F1D" stroke="#343430" stroke-width="2"/><path d="M120 430L280 270L410 350L590 190L840 370" stroke="${acento}" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" opacity="0.85"/><circle cx="590" cy="190" r="24" fill="${acento}" fill-opacity="0.2" stroke="${acento}" stroke-width="3"/><text x="72" y="102" fill="#E6E5E0" font-family="ui-monospace, monospace" font-size="22" font-weight="600">${titulo}</text><text x="72" y="138" fill="#9E9D95" font-family="ui-sans-serif, sans-serif" font-size="18">${subtitulo}</text><text x="72" y="520" fill="#706F68" font-family="ui-monospace, monospace" font-size="14">REGISTRO VISUAL DE INSPECCION · MANTENIMIENTO INTERNO</text></svg>`;
+  return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
+}
+
+const EVIDENCIA_TUBERIA: AdjuntoEvidencia = {
+  id: "ADJ-101-A",
+  nombre: "inspeccion-tuberia-lab3.svg",
+  url: crearSvgDataUri(
+    "SOL-101 · Fuga en línea de suministro",
+    "Laboratorio 3 - Ala Norte · Registro inicial de humedad",
+    "#EA580C",
+  ),
+  tipo: "image/svg+xml",
+  tamanoBytes: 42800,
+  etapa: "REPORTE",
+  creadoEn: new Date(Date.now() - 1000 * 60 * 60 * 3).toISOString(),
+};
+
+const EVIDENCIA_CLIMA_REPORTE: AdjuntoEvidencia = {
+  id: "ADJ-102-A",
+  nombre: "tablero-temperatura-servidores.svg",
+  url: crearSvgDataUri(
+    "SOL-102 · Lectura térmica 27.4 °C",
+    "Sala de Servidores - Piso 1 · Alerta de climatización",
+    "#DC2626",
+  ),
+  tipo: "image/svg+xml",
+  tamanoBytes: 38400,
+  etapa: "REPORTE",
+  creadoEn: new Date(Date.now() - 1000 * 60 * 60 * 18).toISOString(),
+};
+
+const EVIDENCIA_CLIMA_TECNICA: AdjuntoEvidencia = {
+  id: "ADJ-102-B",
+  nombre: "manometro-r410a-revision.svg",
+  url: crearSvgDataUri(
+    "SOL-102 · Diagnóstico R-410A",
+    "Válvula de servicio · Verificación de presión en condensador",
+    "#2563EB",
+  ),
+  tipo: "image/svg+xml",
+  tamanoBytes: 51200,
+  etapa: "ATENCION",
+  creadoEn: new Date(Date.now() - 1000 * 60 * 60 * 10).toISOString(),
+};
 
 export const USUARIOS_INICIALES: Usuario[] = [
   {
@@ -52,6 +100,7 @@ export const SOLICITUDES_INICIALES: Solicitud[] = [
     prioridad: "ALTA",
     creadaEn: new Date(Date.now() - 1000 * 60 * 60 * 3).toISOString(),
     cerradaEn: null,
+    adjuntos: [EVIDENCIA_TUBERIA],
   },
   {
     id: "SOL-102",
@@ -64,6 +113,7 @@ export const SOLICITUDES_INICIALES: Solicitud[] = [
     prioridad: "URGENTE",
     creadaEn: new Date(Date.now() - 1000 * 60 * 60 * 18).toISOString(),
     cerradaEn: null,
+    adjuntos: [EVIDENCIA_CLIMA_REPORTE, EVIDENCIA_CLIMA_TECNICA],
   },
   {
     id: "SOL-103",
@@ -154,6 +204,7 @@ export const HISTORIAL_INICIAL: EventoHistorial[] = [
     estadoNuevo: "EN_PROCESO",
     nota: "Inspección técnica iniciada. Se detecta fuga menor de gas refrigerante R-410A.",
     fecha: new Date(Date.now() - 1000 * 60 * 60 * 10).toISOString(),
+    adjuntos: [EVIDENCIA_CLIMA_TECNICA],
   },
   {
     id: "EVT-04",
@@ -290,11 +341,20 @@ interface EstadoRepositorio {
   simularFalloHistorial: boolean;
 }
 
+const clonarAdjuntos = (lista?: AdjuntoEvidencia[]) =>
+  lista ? lista.map((item) => ({ ...item })) : undefined;
+
 const clonarSolicitudes = (lista: Solicitud[]): Solicitud[] =>
-  lista.map((item) => ({ ...item }));
+  lista.map((item) => ({
+    ...item,
+    ...(item.adjuntos ? { adjuntos: clonarAdjuntos(item.adjuntos) } : {}),
+  }));
 
 const clonarHistorial = (lista: EventoHistorial[]): EventoHistorial[] =>
-  lista.map((item) => ({ ...item }));
+  lista.map((item) => ({
+    ...item,
+    ...(item.adjuntos ? { adjuntos: clonarAdjuntos(item.adjuntos) } : {}),
+  }));
 
 const globalStore = globalThis as unknown as {
   __mantenimientoRepo?: EstadoRepositorio;

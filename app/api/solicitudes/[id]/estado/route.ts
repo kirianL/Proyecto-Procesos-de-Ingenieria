@@ -4,7 +4,7 @@ import {
   resolverUsuarioSesionServidor,
 } from "@/lib/mantenimiento/http-auth";
 import { transicionarEstadoSolicitud } from "@/lib/mantenimiento/solicitudes";
-import type { Estado } from "@/lib/mantenimiento/types";
+import type { AdjuntoEvidencia, Estado } from "@/lib/mantenimiento/types";
 
 interface Context {
   params: Promise<{ id: string }>;
@@ -27,6 +27,9 @@ export async function PATCH(request: NextRequest, context: Context) {
       solicitudId: id,
       nuevoEstado: body.nuevoEstado as Estado,
       nota: typeof body.nota === "string" ? body.nota : "",
+      adjuntos: Array.isArray(body.adjuntos)
+        ? (body.adjuntos as AdjuntoEvidencia[])
+        : undefined,
     });
 
     return NextResponse.json({ ok: true, data: actualizada });

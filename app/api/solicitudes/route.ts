@@ -4,7 +4,7 @@ import {
   resolverUsuarioSesionServidor,
 } from "@/lib/mantenimiento/http-auth";
 import { registrarSolicitud } from "@/lib/mantenimiento/solicitudes";
-import type { Prioridad } from "@/lib/mantenimiento/types";
+import type { AdjuntoEvidencia, Prioridad } from "@/lib/mantenimiento/types";
 
 /**
  * POST /api/solicitudes
@@ -23,6 +23,9 @@ export async function POST(request: NextRequest) {
       descripcion: typeof body.descripcion === "string" ? body.descripcion : "",
       ubicacion: typeof body.ubicacion === "string" ? body.ubicacion : "",
       prioridad: body.prioridad as Prioridad | undefined,
+      adjuntos: Array.isArray(body.adjuntos)
+        ? (body.adjuntos as AdjuntoEvidencia[])
+        : undefined,
     });
 
     return NextResponse.json({ ok: true, data: nueva }, { status: 201 });
