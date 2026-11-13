@@ -372,7 +372,11 @@ export default function AtencionYCierrePage({ params }: Props) {
                   </div>
 
                   {/* Pista de 12 segmentos (sin palito negro que ensucie el final) */}
-                  <div className="mt-3 grid grid-cols-12 gap-1.5" aria-hidden>
+                  <div
+                    skullet-block=""
+                    className="mt-3 grid grid-cols-12 gap-1.5"
+                    aria-hidden
+                  >
                     {Array.from({ length: TOTAL_SEGMENTOS }).map((_, idx) => {
                       const pos = idx + 1;
                       const activo = pos <= segmentosCubiertos;
@@ -384,10 +388,10 @@ export default function AtencionYCierrePage({ params }: Props) {
                             : "bg-emerald-600/80";
 
                       return (
-                        <span
+                        <div
                           key={pos}
                           className={cn(
-                            "h-2.5 w-full rounded-[3px] transition-all duration-300",
+                            "h-2.5 w-full rounded-[3px] transition-colors duration-300",
                             activo
                               ? colorBarra
                               : "bg-grayscale-3/75 dark:bg-grayscale-4/40",
@@ -543,12 +547,13 @@ export default function AtencionYCierrePage({ params }: Props) {
 
                             {/* Fila 4: Pie con mini-barras (`||||||||....`) | regla */}
                             <div className="mt-3.5 flex items-center justify-between gap-2 border-t border-grayscale-3/60 pt-2.5 text-[10.5px] text-grayscale-9 dark:border-grayscale-4/30">
-                              <span
+                              <div
                                 aria-hidden
+                                skullet-block=""
                                 className="flex items-center gap-[2px]"
                               >
                                 {Array.from({ length: 12 }).map((_, t) => (
-                                  <span
+                                  <div
                                     key={t}
                                     className={cn(
                                       "h-2.5 w-[2.5px] rounded-full transition-colors duration-300",
@@ -560,7 +565,7 @@ export default function AtencionYCierrePage({ params }: Props) {
                                     )}
                                   />
                                 ))}
-                              </span>
+                              </div>
 
                               <span className="font-mono text-[10px] text-grayscale-9">
                                 {yaCompletada ? "Etapa actual" : accion.regla}

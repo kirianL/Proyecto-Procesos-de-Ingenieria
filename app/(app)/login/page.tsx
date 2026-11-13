@@ -2,82 +2,52 @@
 
 import {
   ArrowRightIcon,
-  BriefcaseIcon,
   CheckCircleIcon,
-  ClipboardTextIcon,
   EyeIcon,
+  EyeSlashIcon,
+  GlobeIcon,
+  KeyIcon,
   ShieldCheckIcon,
-  StarIcon,
-  UserGearIcon,
-  UserIcon,
+  SparkleIcon,
   WrenchIcon,
 } from "@phosphor-icons/react/dist/ssr";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
-import type { CSSProperties } from "react";
-import { BottomBar } from "@/components/mantenimiento/BottomBar";
+import { useState } from "react";
 import { recordarUsuario } from "@/components/mantenimiento/SesionSync";
-import { PageHeader } from "@/components/ui/PageHeader";
-import { SkeletonContent } from "@/components/ui/Skeleton";
-import { SlotNumber } from "@/components/ui/SlotNumber";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { cn } from "@/helpers/classname-helper";
-import { iniciales, nombreLimpio } from "@/helpers/iniciales";
-import { useAtajos } from "@/hooks/useAtajos";
+import { nombreLimpio } from "@/helpers/iniciales";
 import {
-  getBandejaMantenimiento,
-  getIndicadores,
-  getSolicitudesPorCreador,
   setUsuarioActual,
   USUARIOS_INICIALES,
 } from "@/lib/mantenimiento/store";
 import type { Usuario } from "@/lib/mantenimiento/types";
 
-const ROL_CONFIG: Record<
-  Usuario["rol"],
-  {
-    icon: typeof UserIcon;
-    bannerGradient: string;
-    avatarBorder: string;
-    destino: string;
-    tagline: string;
-    nivelAcceso: string;
-  }
-> = {
-  EMPLEADO: {
-    icon: UserIcon,
-    bannerGradient:
-      "from-emerald-600 via-teal-600 to-emerald-400 dark:from-emerald-800 dark:via-teal-800 dark:to-emerald-600",
-    avatarBorder:
-      "border-emerald-500/30 text-emerald-800 dark:text-emerald-300",
-    destino: "/mis-solicitudes",
-    tagline: "Reporte y seguimiento directo de infraestructura",
-    nivelAcceso: "Nivel 1 · Operación",
-  },
-  TECNICO: {
-    icon: UserGearIcon,
-    bannerGradient:
-      "from-blue-600 via-indigo-600 to-sky-400 dark:from-blue-800 dark:via-indigo-800 dark:to-sky-600",
-    avatarBorder: "border-blue-500/30 text-blue-800 dark:text-blue-300",
-    destino: "/mantenimiento",
-    tagline: "Atención técnica, diagnóstico y cierre de órdenes",
-    nivelAcceso: "Nivel 2 · Servicio",
-  },
-  JEFATURA: {
-    icon: BriefcaseIcon,
-    bannerGradient:
-      "from-amber-600 via-orange-600 to-amber-400 dark:from-amber-800 dark:via-orange-800 dark:to-amber-600",
-    avatarBorder: "border-amber-500/30 text-amber-800 dark:text-amber-300",
-    destino: "/indicadores",
-    tagline: "Supervisión de KPIs, MTTR y carga por prioridad",
-    nivelAcceso: "Nivel 3 · Dirección",
-  },
+const DESTINOS: Record<Usuario["rol"], string> = {
+  EMPLEADO: "/mis-solicitudes",
+  TECNICO: "/mantenimiento",
+  JEFATURA: "/indicadores",
 };
 
 export default function LoginPage() {
   const router = useRouter();
 
-  const entrar = (user: Usuario) => {
+  const [correo, setCorreo] = useState("");
+  const [password, setPassword] = useState("");
+  const [mostrarPassword, setMostrarPassword] = useState(false);
+  const [enviando, setEnviando] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [perfilActivoId, setPerfilActivoId] = useState<string | null>(null);
+
+  const autenticarUsuario = (user: Usuario) => {
+    setEnviando(true);
+    setPerfilActivoId(user.id);
+    setError(null);
+
     setUsuarioActual(user.id);
     recordarUsuario(user.id);
+
     if (typeof window !== "undefined") {
       window.dispatchEvent(
         new CustomEvent("usuario-cambiado", { detail: user }),
@@ -90,207 +60,304 @@ export default function LoginPage() {
       body: JSON.stringify({ usuarioId: user.id }),
     }).catch(() => {});
 
-    router.push(ROL_CONFIG[user.rol].destino);
+    // Micro-delay para animación nativa de éxito antes de navegar
+    setTimeout(() => {
+      router.push(DESTINOS[user.rol]);
+    }, 280);
   };
 
-  useAtajos({
-    ...Object.fromEntries(
-      USUARIOS_INICIALES.map((user, index) => [
-        String(index + 1),
-        () => entrar(user),
-      ]),
-    ),
-    escape: () => router.push("/"),
-  });
-
-  // Metadatos calculados para las 3 columnas de estadísticas de cada perfil
-  interface StatItem {
-    label: string;
-    valor: number | string;
-    icon: typeof StarIcon;
-    suffix?: string;
-    isText?: boolean;
-  }
-
-  const statsPorUsuario = (user: Usuario): StatItem[] => {
-    if (user.rol === "EMPLEADO") {
-      const creadas = getSolicitudesPorCreador(user.id);
-      const resueltas = creadas.filter((s) => s.estado === "CERRADA").length;
-      return [
-        { label: "Reportes", valor: creadas.length, icon: ClipboardTextIcon },
-        { label: "Resueltas", valor: resueltas, icon: CheckCircleIcon },
-        {
-          label: "Alcance",
-          valor: "Edificio",
-          icon: ShieldCheckIcon,
-          isText: true,
-        },
-      ];
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!correo.trim()) {
+      setError("Ingresa una dirección de correo institucional.");
+      return;
     }
 
-    if (user.rol === "TECNICO") {
-      const cola = getBandejaMantenimiento();
-      const enProceso = cola.filter((s) => s.estado === "EN_PROCESO").length;
-      return [
-        { label: "En cola", valor: cola.length, icon: WrenchIcon },
-        { label: "En curso", valor: enProceso, icon: ClipboardTextIcon },
-        { label: "Efectividad", valor: 98, suffix: "%", icon: StarIcon },
-      ];
-    }
+    // Buscar si coincide con alguno de los usuarios demostrativos
+    const match = USUARIOS_INICIALES.find(
+      (u) =>
+        u.correo.toLowerCase() === correo.trim().toLowerCase() ||
+        u.id.toLowerCase() === correo.trim().toLowerCase(),
+    );
 
-    const ind = getIndicadores();
-    return [
-      { label: "MTTR", valor: 39, suffix: "h", icon: StarIcon },
-      {
-        label: "Cierre",
-        valor: ind.porcentajeCumplimiento,
-        suffix: "%",
-        icon: CheckCircleIcon,
-      },
-      { label: "Auditoría", valor: "Total", icon: EyeIcon, isText: true },
-    ];
+    if (match) {
+      autenticarUsuario(match);
+    } else {
+      // Si ingresó cualquier otro correo, iniciamos con Empleado A como fallback
+      const fallback = USUARIOS_INICIALES[0];
+      autenticarUsuario(fallback);
+    }
   };
 
   return (
-    <div className="flex flex-1 flex-col justify-between gap-6">
-      <div className="space-y-6">
-        <PageHeader
-          eyebrow="Control de acceso"
-          titulo="Selecciona tu cuenta"
-          descripcion="Inicia sesión con tu perfil corporativo para acceder al portal de mantenimiento e infraestructura."
-        />
+    <div className="flex min-h-screen w-full flex-col lg:flex-row bg-white dark:bg-grayscale-1">
+      {/* ── PANEL IZQUIERDO: Formulario de Login estilo Koyeb / Cloudflare ── */}
+      <div className="flex flex-1 flex-col justify-between px-6 py-8 sm:px-12 md:px-16 lg:px-20 xl:px-24">
+        {/* Barra superior con branding y selector de tema */}
+        <header className="flex items-center justify-between">
+          <Link
+            href="/"
+            className="flex items-center gap-2.5 transition-opacity hover:opacity-85"
+          >
+            <span className="flex size-8 items-center justify-center rounded-xl bg-grayscale-12 text-white dark:bg-white dark:text-grayscale-12">
+              <WrenchIcon size={16} weight="bold" />
+            </span>
+            <div className="leading-none">
+              <span className="font-mono text-[13px] font-bold tracking-tight text-grayscale-12">
+                MANTENIMIENTO
+              </span>
+              <span className="block text-[10px] text-grayscale-9">
+                Servicios Internos
+              </span>
+            </div>
+          </Link>
 
-        <SkeletonContent
-          id="login-perfiles"
-          minLoadMs={280}
-          label="Cargando perfiles disponibles"
-        >
-          <div className="stagger grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-            {USUARIOS_INICIALES.map((user, index) => {
-              const cfg = ROL_CONFIG[user.rol];
-              const RoleIcon = cfg.icon;
-              const handle = `@${user.correo.split("@")[0]}`;
-              const stats = statsPorUsuario(user);
-
-              return (
-                <article
-                  key={user.id}
-                  style={{ "--stagger": index } as CSSProperties}
-                  className="card flex flex-col justify-between rounded-[1.4rem] border border-grayscale-3/85 bg-white p-3.5 shadow-2xs transition-all duration-200 hover:border-grayscale-4 hover:shadow-xs dark:border-grayscale-4/40 dark:bg-grayscale-2"
-                >
-                  <div className="flex-1 space-y-3">
-                    {/* 1. Banner superior gradiente con avatar circular superpuesto */}
-                    <div className="relative">
-                      <div
-                        className={cn(
-                          "h-20 w-full rounded-2xl bg-gradient-to-tr shadow-inner",
-                          cfg.bannerGradient,
-                        )}
-                      />
-
-                      {/* Avatar circular empotrado */}
-                      <div className="absolute -bottom-5 left-3.5 flex items-center">
-                        <span
-                          skullet-block=""
-                          className={cn(
-                            "flex size-12 items-center justify-center rounded-full border-2 border-white bg-grayscale-1 font-mono text-[12px] font-bold shadow-xs dark:border-grayscale-2 dark:bg-grayscale-3",
-                            cfg.avatarBorder,
-                          )}
-                        >
-                          {iniciales(user.nombre)}
-                        </span>
-                      </div>
-                    </div>
-
-                    {/* 2. Cabecera con Nombre, Handle, Rol y Nivel de acceso */}
-                    <div className="pt-4 px-1">
-                      <div className="flex items-start justify-between gap-2">
-                        <div className="min-w-0 flex-1">
-                          <h2 className="truncate text-[15px] font-bold tracking-tight text-grayscale-12">
-                            {nombreLimpio(user.nombre)}
-                          </h2>
-                          <p className="truncate font-mono text-[11px] text-grayscale-9">
-                            {handle}
-                          </p>
-                        </div>
-
-                        {/* Etiqueta compacta de rol */}
-                        <span className="inline-flex shrink-0 items-center gap-1 font-mono text-[11px] font-medium text-grayscale-9">
-                          <RoleIcon size={12} weight="bold" />
-                          <span>{user.rol}</span>
-                        </span>
-                      </div>
-
-                      <p className="mt-2 text-[11.5px] leading-relaxed text-grayscale-10 line-clamp-2">
-                        {user.cargo} · {user.departamento}
-                      </p>
-                    </div>
-
-                    {/* 3. Métricas en 3 columnas como en la referencia (Rating, Posts, Followers) */}
-                    <div className="grid grid-cols-3 gap-1 rounded-xl border border-grayscale-3/60 bg-grayscale-1/60 p-2.5 text-center dark:border-grayscale-4/30 dark:bg-grayscale-3/30">
-                      {stats.map((col, cIdx) => {
-                        const ColIcon = col.icon;
-                        return (
-                          <div
-                            key={cIdx}
-                            className="flex flex-col items-center"
-                          >
-                            <span className="flex items-center gap-1 font-mono text-[13px] font-bold text-grayscale-12">
-                              <ColIcon
-                                size={12}
-                                weight="bold"
-                                className="text-grayscale-9 shrink-0"
-                              />
-                              {col.isText ? (
-                                <span>{col.valor}</span>
-                              ) : (
-                                <SlotNumber
-                                  value={col.valor as number}
-                                  suffix={col.suffix}
-                                  className="font-bold font-mono text-[13px]"
-                                />
-                              )}
-                            </span>
-                            <span className="mt-0.5 text-[10px] font-medium text-grayscale-9">
-                              {col.label}
-                            </span>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </div>
-
-                  {/* 4. Botón inferior ancho "Entrar como este perfil" con flecha circular */}
-                  <div className="pt-3">
-                    <button
-                      type="button"
-                      onClick={() => entrar(user)}
-                      className="group flex w-full cursor-pointer items-center justify-between rounded-xl bg-grayscale-12 px-4 py-2.5 text-[12.5px] font-semibold text-white transition-all duration-150 hover:bg-grayscale-11 active:scale-[0.99] dark:bg-white dark:text-grayscale-12 dark:hover:bg-grayscale-2"
-                    >
-                      <span>Entrar al perfil</span>
-                      <span className="flex size-6 items-center justify-center rounded-full bg-white/15 transition-transform duration-200 group-hover:translate-x-0.5 dark:bg-black/10">
-                        <ArrowRightIcon size={12} weight="bold" />
-                      </span>
-                    </button>
-                  </div>
-                </article>
-              );
-            })}
+          <div className="flex items-center gap-3">
+            <span className="hidden sm:inline-flex items-center gap-1.5 font-mono text-[11px] text-grayscale-9">
+              <span className="size-1.5 rounded-full bg-emerald-500 animate-pulse" />
+              <span>Sistema en línea</span>
+            </span>
+            <ThemeToggle />
           </div>
-        </SkeletonContent>
+        </header>
+
+        {/* Contenedor central perfectamente centrado y con max-width nativo (sin zoom en iOS) */}
+        <main className="mx-auto my-auto w-full max-w-[420px] py-10">
+          <div className="space-y-6">
+            <div className="space-y-2">
+              <h1 className="text-[26px] font-bold tracking-[-0.025em] text-grayscale-12 sm:text-[28px]">
+                Iniciar sesión
+              </h1>
+              <p className="text-[13px] leading-relaxed text-grayscale-9">
+                Ingresa con tu correo corporativo o selecciona un perfil rápido
+                para acceder a la plataforma.
+              </p>
+            </div>
+
+            {error && (
+              <div
+                role="alert"
+                className="rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-[12.5px] text-red-600 dark:text-red-400"
+              >
+                {error}
+              </div>
+            )}
+
+            {/* Formulario directo */}
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="space-y-1.5">
+                <label
+                  htmlFor="login-email"
+                  className="block text-[12.5px] font-medium text-grayscale-11"
+                >
+                  Tu dirección de correo electrónico
+                </label>
+                <div className="relative">
+                  <input
+                    id="login-email"
+                    type="email"
+                    autoComplete="email"
+                    required
+                    value={correo}
+                    onChange={(e) => {
+                      setCorreo(e.target.value);
+                      if (error) setError(null);
+                    }}
+                    placeholder="nombre@organizacion.com"
+                    /* text-[16px] en mobile previene el zoom forzado de Safari iOS, en desktop pasa a 14px */
+                    className="w-full rounded-xl border border-grayscale-4 bg-white px-3.5 py-2.5 text-[16px] sm:text-[14px] text-grayscale-12 placeholder:text-grayscale-8 transition-all duration-150 focus:border-grayscale-12 focus:outline-none focus:ring-1 focus:ring-grayscale-12 dark:border-grayscale-4 dark:bg-grayscale-2 dark:focus:border-white dark:focus:ring-white"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-1.5">
+                <div className="flex items-center justify-between text-[12.5px]">
+                  <label
+                    htmlFor="login-password"
+                    className="font-medium text-grayscale-11"
+                  >
+                    Contraseña
+                  </label>
+                  <span className="font-mono text-[11px] text-grayscale-8">
+                    (opcional en demo)
+                  </span>
+                </div>
+                <div className="relative">
+                  <input
+                    id="login-password"
+                    type={mostrarPassword ? "text" : "password"}
+                    autoComplete="current-password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="••••••••••••"
+                    className="w-full rounded-xl border border-grayscale-4 bg-white py-2.5 pl-3.5 pr-10 text-[16px] sm:text-[14px] text-grayscale-12 placeholder:text-grayscale-8 transition-all duration-150 focus:border-grayscale-12 focus:outline-none focus:ring-1 focus:ring-grayscale-12 dark:border-grayscale-4 dark:bg-grayscale-2 dark:focus:border-white dark:focus:ring-white"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setMostrarPassword(!mostrarPassword)}
+                    aria-label={mostrarPassword ? "Ocultar" : "Mostrar"}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-grayscale-8 transition-colors hover:text-grayscale-12"
+                  >
+                    {mostrarPassword ? (
+                      <EyeSlashIcon size={16} />
+                    ) : (
+                      <EyeIcon size={16} />
+                    )}
+                  </button>
+                </div>
+              </div>
+
+              {/* Botón principal estilo Koyeb (negro sólido, blanco en dark, hover suave) */}
+              <button
+                type="submit"
+                disabled={enviando}
+                className="group flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl bg-grayscale-12 py-2.5 px-4 text-[13.5px] font-semibold text-white shadow-2xs transition-all duration-150 hover:bg-grayscale-11 active:scale-[0.99] disabled:opacity-50 dark:bg-white dark:text-grayscale-12 dark:hover:bg-grayscale-2"
+              >
+                <span>
+                  {enviando ? "Autenticando..." : "Continuar con correo electrónico"}
+                </span>
+                <ArrowRightIcon
+                  size={14}
+                  weight="bold"
+                  className="transition-transform duration-200 group-hover:translate-x-0.5"
+                />
+              </button>
+            </form>
+
+            {/* Separador sutil con línea y texto central */}
+            <div className="relative my-6 flex items-center justify-center">
+              <span className="w-full border-t border-grayscale-3 dark:border-grayscale-3/60" />
+              <span className="absolute bg-white px-3 font-mono text-[11px] text-grayscale-8 dark:bg-grayscale-1">
+                o accede con perfil rápido
+              </span>
+            </div>
+
+            {/* Accesos rápidos de demostración (sin badges ni puntos genéricos) */}
+            <div className="space-y-2">
+              {USUARIOS_INICIALES.map((user) => {
+                const activo = perfilActivoId === user.id;
+
+                return (
+                  <button
+                    key={user.id}
+                    type="button"
+                    onClick={() => autenticarUsuario(user)}
+                    disabled={enviando}
+                    className={cn(
+                      "group flex w-full cursor-pointer items-center justify-between rounded-xl border border-grayscale-3/90 bg-grayscale-1/60 px-4 py-2.5 text-left transition-all duration-150 hover:border-grayscale-5 hover:bg-white dark:border-grayscale-4/40 dark:bg-grayscale-2/60 dark:hover:bg-grayscale-2",
+                      activo && "border-grayscale-12 bg-white ring-1 ring-grayscale-12 dark:border-white dark:ring-white",
+                    )}
+                  >
+                    <div className="flex min-w-0 items-center gap-3">
+                      <span className="flex size-8 shrink-0 items-center justify-center rounded-lg border border-grayscale-3 bg-white font-mono text-[11px] font-bold text-grayscale-11 shadow-2xs dark:border-grayscale-4 dark:bg-grayscale-3">
+                        {user.rol[0]}
+                      </span>
+                      <div className="min-w-0">
+                        <p className="truncate text-[13px] font-semibold text-grayscale-12">
+                          {nombreLimpio(user.nombre)}
+                        </p>
+                        <p className="truncate font-mono text-[11px] text-grayscale-8">
+                          {user.correo} · {user.rol}
+                        </p>
+                      </div>
+                    </div>
+
+                    <ArrowRightIcon
+                      size={13}
+                      className="shrink-0 text-grayscale-6 transition-transform duration-200 ease-out group-hover:translate-x-0.5 group-hover:text-grayscale-12"
+                    />
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        </main>
+
+        {/* Footer legal */}
+        <footer className="flex flex-wrap items-center justify-between gap-3 pt-6 text-[11.5px] text-grayscale-8">
+          <span>Mantenimiento Interno v2.4</span>
+          <div className="flex items-center gap-4">
+            <span className="hover:text-grayscale-11 transition-colors cursor-pointer">
+              Términos de servicio
+            </span>
+            <span>·</span>
+            <span className="hover:text-grayscale-11 transition-colors cursor-pointer">
+              Política de privacidad
+            </span>
+          </div>
+        </footer>
       </div>
 
-      <BottomBar
-        statusInfo={{
-          title: "Acceso rápido multi-rol",
-          subtitle:
-            "Pulsa teclas 1 al 4 para entrar directamente sin hacer clic.",
-        }}
-        shortcuts={[
-          { key: "1–4", label: "Elegir perfil" },
-          { key: "Esc", label: "Volver al panel" },
-        ]}
-      />
+      {/* ── PANEL DERECHO: Showcase Oscuro estilo Koyeb / Cloudflare ── */}
+      <div className="relative hidden lg:flex flex-1 flex-col justify-between bg-black p-12 xl:p-16 text-white overflow-hidden">
+        {/* Fondo con grilla vectorial tenue */}
+        <div
+          aria-hidden
+          className="absolute inset-0 opacity-[0.07] bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:24px_24px]"
+        />
+
+        {/* Esfera abstracta de infraestructura (como el wireframe esférico de Koyeb) */}
+        <div className="relative z-10 flex items-center justify-center py-12">
+          <div className="relative size-72 xl:size-80 flex items-center justify-center">
+            {/* Anillos concéntricos giratorios */}
+            <div className="absolute inset-0 rounded-full border border-white/10 animate-[spin_60s_linear_infinite]" />
+            <div className="absolute inset-4 rounded-full border border-dashed border-white/15 animate-[spin_40s_linear_infinite_reverse]" />
+            <div className="absolute inset-10 rounded-full border border-white/10" />
+            <div className="absolute inset-16 rounded-full border border-dashed border-white/10" />
+
+            {/* Isotipo central iluminado */}
+            <div className="flex flex-col items-center justify-center text-center p-6 backdrop-blur-xs">
+              <span className="flex size-14 items-center justify-center rounded-2xl bg-white/10 border border-white/20 text-white shadow-[0_0_30px_rgba(255,255,255,0.15)]">
+                <WrenchIcon size={28} weight="duotone" />
+              </span>
+              <p className="mt-4 font-mono text-[13px] font-bold tracking-widest uppercase text-white">
+                SISTEMA OPERATIVO
+              </p>
+              <p className="text-[11px] font-mono text-white/50 tracking-wider">
+                INFRAESTRUCTURA & SERVICIOS
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Mensaje de impacto (como "DEPLOY INTENSIVE APPLICATIONS...") */}
+        <div className="relative z-10 space-y-5">
+          <div className="space-y-2">
+            <p className="font-mono text-[12px] font-semibold tracking-wider uppercase text-emerald-400">
+              OPERACIÓN CONTINUA EN TIEMPO REAL
+            </p>
+            <h2 className="text-[28px] xl:text-[32px] font-bold tracking-[-0.03em] leading-tight text-white max-w-lg">
+              Resolución trazable de averías y mantenimiento de planta sin fricción.
+            </h2>
+          </div>
+
+          {/* Chips técnicos limpios en cápsula cuadrada suave */}
+          <div className="flex flex-wrap items-center gap-2 pt-2">
+            {[
+              "TIEMPO MEDIO < 48H",
+              "TRAZABILIDAD ATÓMICA RN03",
+              "REGLAS MULTI-ROL",
+              "TELEMETRÍA EN VIVO",
+            ].map((tag) => (
+              <span
+                key={tag}
+                className="rounded-lg border border-white/10 bg-white/5 px-2.5 py-1 font-mono text-[10.5px] text-white/70"
+              >
+                {tag}
+              </span>
+            ))}
+          </div>
+        </div>
+
+        {/* Footer de confianza del panel derecho */}
+        <div className="relative z-10 pt-8 border-t border-white/10 flex items-center justify-between text-[11px] text-white/50 font-mono">
+          <span>CONTROL DE CALIDAD · OPERACIONES · IT</span>
+          <span className="flex items-center gap-1.5 text-white/70">
+            <GlobeIcon size={12} />
+            <span>DISPONIBILIDAD 99.98%</span>
+          </span>
+        </div>
+      </div>
     </div>
   );
 }

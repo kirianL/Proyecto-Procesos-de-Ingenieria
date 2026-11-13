@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { setUsuarioActual } from "@/lib/mantenimiento/store";
+import { getUsuarioActual, setUsuarioActual } from "@/lib/mantenimiento/store";
 
 export const CLAVE_SESION = "mantenimiento:usuario";
 
@@ -10,7 +10,7 @@ let sesionRestaurada = false;
 /**
  * Sincroniza el perfil guardado en `localStorage` sin desmontar ni reemplazar
  * el árbol de la aplicación, permitiendo que Skullet mida el DOM real desde el
- * primer pintado y ejecute su transición nativa `sweep`.
+ * primer pintado sin reiniciar el ciclo de carga si el perfil ya coincide.
  */
 export function SesionSync({ children }: { children: React.ReactNode }) {
   useEffect(() => {
@@ -19,7 +19,8 @@ export function SesionSync({ children }: { children: React.ReactNode }) {
 
     try {
       const guardado = window.localStorage.getItem(CLAVE_SESION);
-      if (guardado) {
+      const actual = getUsuarioActual();
+      if (guardado && guardado !== actual.id) {
         const usuario = setUsuarioActual(guardado);
         window.dispatchEvent(
           new CustomEvent("usuario-cambiado", { detail: usuario }),

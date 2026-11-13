@@ -562,7 +562,11 @@ export default function IndicadoresPage() {
                         >
                           <div className="flex min-w-0 items-center gap-2.5">
                             {/* Rank / nivel glifo */}
-                            <span className="flex shrink-0 items-end gap-[2px] h-3.5">
+                            <span
+                              aria-hidden
+                              skullet-block=""
+                              className="flex shrink-0 items-end gap-[2px] h-3.5"
+                            >
                               {[1,2,3,4].map((n) => (
                                 <span
                                   key={n}
@@ -594,7 +598,11 @@ export default function IndicadoresPage() {
                           {/* Barra waffle + número */}
                           <div className="flex shrink-0 items-center gap-2.5">
                             {/* Mini barra segmentada en 10 slots */}
-                            <span className="hidden sm:flex items-center gap-[2px]" aria-hidden>
+                            <span
+                              skullet-block=""
+                              className="hidden sm:flex items-center gap-[2px]"
+                              aria-hidden
+                            >
                               {Array.from({ length: 10 }).map((_, i) => {
                                 const llena = i < Math.round(fila.pct / 10);
                                 return (

@@ -144,11 +144,18 @@ body {
   animation-delay: calc(var(--stagger, 0) * 45ms);
 }
 
-/* Dentro de un bloque controlado por Skullet, el reveal y el barrido diagonal
-   lo gobierna Skullet directamente para garantizar 0px de desplazamiento. */
+/* Dentro de un bloque controlado por Skullet, el reveal lo gobierna Skullet
+   directamente para garantizar 0px de desplazamiento. Además, anulamos la
+   inyección de `content: "000000"` de Skullet sobre `<span />` decorativos
+   vacíos (puntos de estado, barras segmentadas, sparklines) para evitar que
+   se estiren horizontalmente en viewports móviles durante la medición. */
 [skullet-reveal] .stagger > *,
 [skullet-loading] .stagger > * {
   animation: none !important;
+}
+
+[skullet-loading] span:empty::before {
+  content: none !important;
 }
 
 /* ── Superficies ────────────────────────────────────────────────────── */

@@ -2,8 +2,8 @@
 
 import type { Icon } from "@phosphor-icons/react";
 import type { CSSProperties } from "react";
-import { cn } from "@/helpers/classname-helper";
 import { SlotNumber } from "@/components/ui/SlotNumber";
+import { cn } from "@/helpers/classname-helper";
 
 type Tono = "neutral" | "amber" | "blue" | "emerald";
 
@@ -14,30 +14,41 @@ const TONOS: Record<Tono, { barra: string; spark: string }> = {
   emerald: { barra: "bg-emerald-600", spark: "bg-emerald-600" },
 };
 
-const TICKS = 10;
-const SPARK = [11, 20, 14, 28, 17, 23];
+const TICKS_IDS = ["t0", "t1", "t2", "t3", "t4", "t5", "t6", "t7", "t8", "t9"] as const;
+const SPARK_BARS = [
+  { id: "s0", alto: 11 },
+  { id: "s1", alto: 20 },
+  { id: "s2", alto: 14 },
+  { id: "s3", alto: 28 },
+  { id: "s4", alto: 17 },
+  { id: "s5", alto: 23 },
+] as const;
 
 function Spark({ tono, ratio }: { tono: Tono; ratio: number }) {
   const encendidas = Math.min(
-    SPARK.length,
-    Math.max(ratio > 0 ? 1 : 0, Math.round(ratio * SPARK.length)),
+    SPARK_BARS.length,
+    Math.max(ratio > 0 ? 1 : 0, Math.round(ratio * SPARK_BARS.length)),
   );
 
   return (
-    <span aria-hidden className="flex h-7 items-end gap-[3.5px]">
-      {SPARK.map((alto, i) => (
-        <span
-          key={i}
+    <div
+      aria-hidden
+      skullet-block=""
+      className="flex h-7 shrink-0 items-end gap-[3.5px]"
+    >
+      {SPARK_BARS.map((barra, i) => (
+        <div
+          key={barra.id}
           className={cn(
-            "w-[2px] rounded-full transition-colors duration-300",
+            "w-[2px] rounded-full transition-colors duration-200",
             i < encendidas
               ? TONOS[tono].spark
               : "bg-grayscale-3 dark:bg-grayscale-4/60",
           )}
-          style={{ height: alto }}
+          style={{ height: barra.alto }}
         />
       ))}
-    </span>
+    </div>
   );
 }
 
@@ -71,25 +82,29 @@ export function MetricCard({
   const activos =
     typeof total === "number" && total > 0
       ? Math.min(
-          TICKS,
-          Math.max(valor > 0 ? 1 : 0, Math.round(ratio * TICKS)),
+          TICKS_IDS.length,
+          Math.max(valor > 0 ? 1 : 0, Math.round(ratio * TICKS_IDS.length)),
         )
       : null;
 
   return (
     <div
       className={cn(
-        "card flex flex-col rounded-[1.25rem] border border-grayscale-3/85 bg-grayscale-2 p-1 shadow-2xs transition-all duration-200 hover:border-grayscale-4 hover:shadow-xs dark:border-grayscale-4/40 dark:bg-grayscale-3/50",
+        "card flex min-w-0 flex-col rounded-[1.25rem] border border-grayscale-3/85 bg-grayscale-2 p-1 shadow-2xs transition-[border-color,box-shadow,background-color] duration-200 hover:border-grayscale-4 hover:shadow-xs dark:border-grayscale-4/40 dark:bg-grayscale-3/50",
         className,
       )}
       style={{ "--stagger": delay } as CSSProperties}
     >
       {/* CUERPO SUPERIOR: isla blanca enmarcada dentro del chasis gris */}
-      <div className="flex flex-1 flex-col justify-between rounded-[1rem] border border-grayscale-3/60 bg-white px-4 py-3.5 shadow-[0_1px_2px_rgba(28,22,16,0.03)] dark:border-grayscale-4/30 dark:bg-grayscale-2">
+      <div className="flex min-w-0 flex-1 flex-col justify-between rounded-[1rem] border border-grayscale-3/60 bg-white px-4 py-3.5 shadow-[0_1px_2px_rgba(28,22,16,0.03)] dark:border-grayscale-4/30 dark:bg-grayscale-2">
         {/* Fila superior: label + icono */}
         <div className="flex items-center justify-between gap-2.5">
           <div className="flex min-w-0 items-center gap-1.5">
-            <span className={cn("size-1.5 shrink-0 rounded-full", dot)} />
+            <div
+              aria-hidden
+              skullet-ignore=""
+              className={cn("size-1.5 shrink-0 rounded-full", dot)}
+            />
             <span className="truncate font-mono text-[11px] font-medium uppercase tracking-[0.06em] text-grayscale-9">
               {label}
             </span>
@@ -106,8 +121,8 @@ export function MetricCard({
         </div>
 
         {/* Bloque inferior del cuerpo: valor + spark + ticks */}
-        <div className="mt-2.5 flex flex-col gap-2.5">
-          <div className="flex items-end justify-between gap-3">
+        <div className="mt-2.5 flex min-w-0 flex-col gap-2.5">
+          <div className="flex min-w-0 items-end justify-between gap-2">
             <p className="flex min-w-0 items-baseline gap-1.5">
               <SlotNumber
                 value={valor}
@@ -123,17 +138,18 @@ export function MetricCard({
             <Spark tono={tono} ratio={ratio} />
           </div>
 
-          {/* Barra de progreso segmentada — siempre presente para mantener altura */}
+          {/* Barra de progreso segmentada — medida como bloque único en Skullet sin estiramiento */}
           <div
             aria-hidden
-            className="flex items-center gap-[4px]"
+            skullet-block=""
+            className="flex w-full min-w-0 items-center gap-[4px]"
             title={activos !== null ? `${Math.round(ratio * 100)}%` : undefined}
           >
-            {Array.from({ length: TICKS }).map((_, i) => (
-              <span
-                key={i}
+            {TICKS_IDS.map((tickId, i) => (
+              <div
+                key={tickId}
                 className={cn(
-                  "h-[3.5px] flex-1 rounded-full transition-all duration-300",
+                  "h-[3.5px] min-w-0 flex-1 rounded-full transition-colors duration-200",
                   activos !== null && i < activos
                     ? TONOS[tono].barra
                     : "bg-grayscale-3/60 dark:bg-grayscale-4/30",
@@ -145,7 +161,7 @@ export function MetricCard({
       </div>
 
       {/* PIE INFERIOR: Franja gris suave — siempre al fondo */}
-      <div className="flex items-center justify-between gap-2 px-3.5 py-2 text-[11px] text-grayscale-10">
+      <div className="flex min-w-0 items-center justify-between gap-2 px-3.5 py-2 text-[11px] text-grayscale-10">
         <p className="truncate font-medium">{detalle}</p>
         <span className="shrink-0 font-mono text-[10px] text-grayscale-8 dark:text-grayscale-9">
           Período

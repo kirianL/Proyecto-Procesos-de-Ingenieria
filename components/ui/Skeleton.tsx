@@ -1,6 +1,12 @@
 "use client";
 
-import { type CSSProperties, type ReactNode, useEffect, useState } from "react";
+import {
+  type CSSProperties,
+  type ReactNode,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { SkeletonBox, Skeleton as SkulletSkeleton } from "skullet/react";
 import { cn } from "@/helpers/classname-helper";
 
@@ -61,18 +67,15 @@ export function SkeletonPanel(_props: { lines?: number }) {
 /**
  * Contenedor inteligente de Skullet:
  * - Renderiza siempre `children` dentro del motor de medición (`[skullet-ghost]`)
- *   sin sobrescribirlo con placeholders manuales, conservando las superficies
- *   reales (tarjetas dual-tone, bordes, cabeceras) y trazando huesos exactos
- *   para cada línea de texto, número, chip, botón e icono.
- * - Mantiene una ventana táctil (`minLoadMs`) al montar o cambiar de perfil/vista
- *   para que el shimmer sincronizado y el barrido diagonal (`sweep`) se aprecien
- *   con suavidad nativa y 0px de salto de layout.
+ *   conservando las superficies reales y midiendo huesos exactos sin saltos de layout.
+ * - Ventana de carga ágil (140ms máx.) para que tanto en móviles como en escritorio
+ *   la respuesta sea inmediata y fluida sin sentirse retenida.
  */
 export function SkeletonContent({
   loading = false,
   id,
   label = "Cargando contenido",
-  minLoadMs = 340,
+  minLoadMs = 140,
   className,
   style,
   children,
@@ -87,29 +90,37 @@ export function SkeletonContent({
   children: ReactNode;
 }) {
   const [hidratado, setHidratado] = useState(false);
+  const timerRef = useRef<number | null>(null);
+  const duracionEfectiva = Math.min(minLoadMs, 160);
 
   useEffect(() => {
     setHidratado(false);
-    const timer = window.setTimeout(() => {
+    timerRef.current = window.setTimeout(() => {
       setHidratado(true);
-    }, minLoadMs);
+    }, duracionEfectiva);
 
-    return () => window.clearTimeout(timer);
-    // Solo se ejecuta al montar la vista inicialmente (no al cambiar filtros locales).
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    return () => {
+      if (timerRef.current !== null) {
+        window.clearTimeout(timerRef.current);
+      }
+    };
+  }, [duracionEfectiva]);
 
   useEffect(() => {
     const alCambiarUsuario = () => {
+      if (timerRef.current !== null) {
+        window.clearTimeout(timerRef.current);
+      }
       setHidratado(false);
-      window.setTimeout(() => {
+      timerRef.current = window.setTimeout(() => {
         setHidratado(true);
-      }, 280);
+      }, 130);
     };
 
     window.addEventListener("usuario-cambiado", alCambiarUsuario);
-    return () =>
+    return () => {
       window.removeEventListener("usuario-cambiado", alCambiarUsuario);
+    };
   }, []);
 
   const mostrarEsqueleto = loading || !hidratado;

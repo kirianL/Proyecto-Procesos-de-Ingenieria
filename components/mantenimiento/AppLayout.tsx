@@ -1,3 +1,6 @@
+"use client";
+
+import { usePathname } from "next/navigation";
 import type { ReactNode } from "react";
 import MobileHeader from "@/components/MobileHeader";
 import { SesionSync } from "@/components/mantenimiento/SesionSync";
@@ -8,6 +11,17 @@ interface AppLayoutProps {
 }
 
 export function AppLayout({ children }: AppLayoutProps) {
+  const pathname = usePathname();
+  const esLogin = pathname === "/login";
+
+  if (esLogin) {
+    return (
+      <div className="app-canvas min-h-screen w-full text-grayscale-12">
+        <SesionSync>{children}</SesionSync>
+      </div>
+    );
+  }
+
   return (
     <div className="app-canvas flex min-h-screen w-full text-grayscale-12">
       <SesionSync>
