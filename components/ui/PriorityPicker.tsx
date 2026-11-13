@@ -1,6 +1,5 @@
 "use client";
 
-import { useLayoutEffect, useRef, useState } from "react";
 import { SlotText } from "@/components/ui/SlotText";
 import { cn } from "@/helpers/classname-helper";
 
@@ -14,10 +13,12 @@ export const OPCIONES_PRIORIDAD: {
   nivel: number;
   /** Punto de color para barras y listas de resumen. */
   dot: string;
-  /** Tinte de la pastilla deslizante. */
+  /** Superficie y borde neutros cuando la tarjeta está activa (sin efecto neón). */
   pastilla: string;
-  /** Color del glifo y del texto cuando la opción está activa. */
+  /** Color de acento semántico en glifos. */
   acento: string;
+  /** Color de relleno de las mini-barras y segmentos. */
+  barra: string;
 }[] = [
   {
     id: "BAJA",
@@ -25,8 +26,10 @@ export const OPCIONES_PRIORIDAD: {
     hint: "Preventivo. No afecta la operación.",
     nivel: 1,
     dot: "bg-grayscale-7",
-    pastilla: "border-grayscale-4/70 bg-grayscale-1",
+    pastilla:
+      "border-grayscale-4/90 bg-grayscale-1/75 dark:border-grayscale-4/70 dark:bg-grayscale-3/45",
     acento: "text-grayscale-11",
+    barra: "bg-stone-500/80",
   },
   {
     id: "MEDIA",
@@ -34,8 +37,10 @@ export const OPCIONES_PRIORIDAD: {
     hint: "Falla menor, conviene atenderla pronto.",
     nivel: 2,
     dot: "bg-amber-8",
-    pastilla: "border-amber-5/70 bg-amber-2",
-    acento: "text-amber-11",
+    pastilla:
+      "border-grayscale-4/90 bg-grayscale-1/75 dark:border-grayscale-4/70 dark:bg-grayscale-3/45",
+    acento: "text-amber-600 dark:text-amber-400",
+    barra: "bg-amber-500/85",
   },
   {
     id: "ALTA",
@@ -43,8 +48,10 @@ export const OPCIONES_PRIORIDAD: {
     hint: "Afecta el trabajo diario o a varias personas.",
     nivel: 3,
     dot: "bg-orange-8",
-    pastilla: "border-orange-5/70 bg-orange-2",
-    acento: "text-orange-11",
+    pastilla:
+      "border-grayscale-4/90 bg-grayscale-1/75 dark:border-grayscale-4/70 dark:bg-grayscale-3/45",
+    acento: "text-orange-600 dark:text-orange-400",
+    barra: "bg-orange-500/85",
   },
   {
     id: "URGENTE",
@@ -52,14 +59,18 @@ export const OPCIONES_PRIORIDAD: {
     hint: "Riesgo para la seguridad o la operación.",
     nivel: 4,
     dot: "bg-red-8",
-    pastilla: "border-red-5/70 bg-red-2",
-    acento: "text-red-11",
+    pastilla:
+      "border-grayscale-4/90 bg-grayscale-1/75 dark:border-grayscale-4/70 dark:bg-grayscale-3/45",
+    acento: "text-red-600 dark:text-red-400",
+    barra: "bg-red-500/85",
   },
 ];
 
+const TOTAL_SEGMENTOS = 12;
+
 /**
  * Glifo de nivel: barras que crecen con la urgencia. El color lo hereda del
- * segmento para que la escala se lea sin relying en el color por sí solo.
+ * contenedor para que la escala se lea por proporción y altura.
  */
 function Barras({
   nivel,
@@ -89,11 +100,8 @@ function Barras({
 }
 
 /**
- * Selector de prioridad.
- *
- * Escala horizontal de cuatro peldaños con indicador deslizante: el nivel se
- * elige de un vistazo y la descripción del peldaño activo aparece debajo,
- * sin ocupar el alto de cuatro tarjetas con radio y checkbox propio.
+ * Selector de prioridad con tarjetas táctiles independientes y llenado
+ * progresivo uniforme por segmentos, alineado a la paleta neutra cálida.
  */
 export function PriorityPicker({
   value,
@@ -104,117 +112,165 @@ export function PriorityPicker({
   onChange: (prioridad: Prioridad) => void;
   className?: string;
 }) {
-  const contenedor = useRef<HTMLDivElement>(null);
-  const botones = useRef(new Map<string, HTMLElement>());
-  const [pill, setPill] = useState<{
-    left: number;
-    top: number;
-    width: number;
-    height: number;
-  } | null>(null);
-
   const seleccionada =
     OPCIONES_PRIORIDAD.find((opcion) => opcion.id === value) ??
     OPCIONES_PRIORIDAD[1];
+  const segmentosActivos = seleccionada.nivel * 3;
 
-  useLayoutEffect(() => {
-    const medir = () => {
-      const el = botones.current.get(value);
-      if (!el) return;
-      setPill({
-        left: el.offsetLeft,
-        top: el.offsetTop,
-        width: el.offsetWidth,
-        height: el.offsetHeight,
-      });
-    };
-
-    medir();
-
-    const observador = new ResizeObserver(medir);
-    if (contenedor.current) observador.observe(contenedor.current);
-
-    return () => observador.disconnect();
-  }, [value]);
+  const mover = (direccion: 1 | -1) => {
+    const idx = OPCIONES_PRIORIDAD.findIndex((o) => o.id === value);
+    const siguiente =
+      (idx + direccion + OPCIONES_PRIORIDAD.length) % OPCIONES_PRIORIDAD.length;
+    onChange(OPCIONES_PRIORIDAD[siguiente].id);
+  };
 
   return (
-    <div className={cn("space-y-2.5", className)}>
-      {/*
-        El grupo de radios nativos cubre la navegación con flechas, Home y
-        End sin JavaScript adicional: la semántica y el teclado los resuelve
-        el navegador.
-      */}
+    <div className={cn("space-y-3", className)}>
       <div
-        ref={contenedor}
         role="radiogroup"
         aria-label="Prioridad estimada"
-        className="relative grid grid-cols-2 gap-1 rounded-xl border border-grayscale-3/70 bg-grayscale-2/60 p-1 sm:grid-cols-4 dark:border-grayscale-3/50 dark:bg-grayscale-2/40"
+        onKeyDown={(e) => {
+          if (e.key === "ArrowRight" || e.key === "ArrowDown") {
+            e.preventDefault();
+            mover(1);
+          } else if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
+            e.preventDefault();
+            mover(-1);
+          }
+        }}
+        className="grid grid-cols-2 gap-2.5 sm:grid-cols-4"
       >
-        {pill && (
-          <span
-            aria-hidden
-            className={cn(
-              "pointer-events-none absolute rounded-lg border shadow-[0_1px_2px_rgba(28,22,16,0.08)] transition-[left,top,width,height,background-color,border-color] duration-[280ms] ease-[cubic-bezier(0.22,1,0.36,1)]",
-              seleccionada.pastilla,
-            )}
-            style={{
-              left: pill.left,
-              top: pill.top,
-              width: pill.width,
-              height: pill.height,
-            }}
-          />
-        )}
-
         {OPCIONES_PRIORIDAD.map((opcion) => {
           const activo = opcion.id === value;
+          const miniBarras = opcion.nivel * 2;
 
           return (
-            <label
+            <button
               key={opcion.id}
-              ref={(el) => {
-                if (el) botones.current.set(opcion.id, el);
-                else botones.current.delete(opcion.id);
-              }}
+              type="button"
+              role="radio"
+              aria-checked={activo}
+              onClick={() => onChange(opcion.id)}
               className={cn(
-                "relative z-10 flex cursor-pointer flex-col items-center justify-center gap-1.5 rounded-lg px-2 py-2.5 sm:px-1 sm:py-2 transition-colors duration-150 focus-within:ring-2 focus-within:ring-grayscale-6 focus-within:ring-offset-1 focus-within:ring-offset-transparent",
+                "group relative flex cursor-pointer flex-col justify-between rounded-xl border p-3 text-left transition-[border-color,background-color,box-shadow,transform] duration-200 ease-out active:scale-[0.985]",
                 activo
-                  ? cn("font-semibold", opcion.acento)
-                  : "font-medium text-grayscale-9 hover:text-grayscale-11",
+                  ? cn(opcion.pastilla, "shadow-[0_1px_2px_rgba(28,22,16,0.06)]")
+                  : "border-grayscale-3/85 bg-white hover:border-grayscale-4 hover:bg-grayscale-1/70 dark:border-grayscale-4/50 dark:bg-grayscale-2 dark:hover:bg-grayscale-3/45",
               )}
             >
-              <input
-                type="radio"
-                name="prioridad"
-                value={opcion.id}
-                checked={activo}
-                onChange={() => onChange(opcion.id)}
-                className="sr-only"
-              />
-              <Barras nivel={opcion.nivel} />
-              <span className="text-[12px] leading-none">
-                {opcion.label}
-              </span>
-            </label>
+              <div>
+                {/* Fila 1: Nivel | Estado */}
+                <div className="flex items-center justify-between gap-1 font-mono text-[10px] text-grayscale-9">
+                  <span>NIVEL 0{opcion.nivel}</span>
+                  <span
+                    className={cn(
+                      "transition-colors duration-150",
+                      activo
+                        ? "font-semibold text-grayscale-12"
+                        : "text-grayscale-7",
+                    )}
+                  >
+                    {activo ? "Activa" : "Elegir"}
+                  </span>
+                </div>
+
+                {/* Fila 2: Título + glifo en recuadro */}
+                <div className="mt-2 flex items-center justify-between gap-2">
+                  <span
+                    className={cn(
+                      "text-[13.5px] font-semibold tracking-[-0.01em] transition-colors duration-150",
+                      activo ? "text-grayscale-12" : "text-grayscale-11",
+                    )}
+                  >
+                    {opcion.label}
+                  </span>
+
+                  <span
+                    skullet-block=""
+                    className={cn(
+                      "flex size-7 shrink-0 items-center justify-center rounded-lg border border-grayscale-3/90 bg-grayscale-1 transition-colors duration-200 dark:border-grayscale-4/60 dark:bg-grayscale-3",
+                      activo
+                        ? opcion.acento
+                        : "text-grayscale-8 group-hover:text-grayscale-11",
+                    )}
+                  >
+                    <Barras nivel={opcion.nivel} />
+                  </span>
+                </div>
+
+                {/* Fila 3: Descripción integrada */}
+                <p className="mt-1.5 text-[11px] leading-snug text-grayscale-9">
+                  {opcion.hint}
+                </p>
+              </div>
+
+              {/* Fila 4: Pie con 8 mini-barras progresivas */}
+              <div className="mt-3 flex items-center justify-between gap-2 border-t border-grayscale-3/60 pt-2 dark:border-grayscale-4/30">
+                <div
+                  aria-hidden
+                  skullet-block=""
+                  className="flex items-center gap-[2px]"
+                >
+                  {Array.from({ length: 8 }).map((_, t) => (
+                    <div
+                      key={t}
+                      className={cn(
+                        "h-2 w-[2.5px] rounded-full transition-colors duration-200 ease-out",
+                        t < miniBarras
+                          ? activo
+                            ? opcion.barra
+                            : "bg-grayscale-6/70"
+                          : "bg-grayscale-3 dark:bg-grayscale-4/50",
+                      )}
+                    />
+                  ))}
+                </div>
+
+                <span className="font-mono text-[9.5px] text-grayscale-8">
+                  {opcion.nivel}/4
+                </span>
+              </div>
+            </button>
           );
         })}
       </div>
 
-      {/* Descripción del peldaño activo */}
-      <p
-        aria-live="polite"
-        className="flex items-start gap-2 text-[11.5px] leading-snug text-grayscale-9">
-        <span
+      {/* Barra inferior de llenado acumulativo uniforme en 12 segmentos */}
+      <div className="rounded-xl border border-grayscale-3/75 bg-grayscale-1/60 px-3 py-2.5 dark:border-grayscale-4/40 dark:bg-grayscale-3/30">
+        <div
           aria-hidden
-          className={cn("mt-[3px] size-1.5 shrink-0 rounded-full", seleccionada.dot)}
-        />
-        <span>
-          <SlotText
-            text={seleccionada.hint}
-            options={{ duration: 240, stagger: 10, bounce: 0.2 }}
-          />
-        </span>
-      </p>
+          skullet-block=""
+          className="grid grid-cols-12 gap-1"
+        >
+          {Array.from({ length: TOTAL_SEGMENTOS }).map((_, idx) => {
+            const encendido = idx < segmentosActivos;
+
+            return (
+              <div
+                key={idx}
+                className={cn(
+                  "h-1.5 w-full rounded-[2px] transition-colors duration-200 ease-out",
+                  encendido
+                    ? seleccionada.barra
+                    : "bg-grayscale-3/80 dark:bg-grayscale-4/35",
+                )}
+              />
+            );
+          })}
+        </div>
+
+        <div className="mt-2 flex flex-wrap items-center justify-between gap-2 text-[11px] text-grayscale-9">
+          <span aria-live="polite" className="min-w-0 truncate">
+            <SlotText
+              text={seleccionada.hint}
+              options={{ duration: 220, stagger: 10, bounce: 0.18 }}
+            />
+          </span>
+          <span className="shrink-0 font-mono text-[10.5px] font-semibold text-grayscale-12">
+            Nivel {seleccionada.nivel}/4 · {seleccionada.label}
+          </span>
+        </div>
+      </div>
     </div>
   );
 }

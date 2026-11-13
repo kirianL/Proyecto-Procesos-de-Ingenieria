@@ -1,19 +1,15 @@
 "use client";
 
 import {
-  BuildingsIcon,
   CheckIcon,
   ClipboardTextIcon,
-  FactoryIcon,
-  FlaskIcon,
   MapPinIcon,
   TagIcon,
   UserIcon,
   WarningCircleIcon,
-  WrenchIcon,
 } from "@phosphor-icons/react/dist/ssr";
 import { useRouter } from "next/navigation";
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { AccesoRestringido } from "@/components/mantenimiento/AccesoRestringido";
 import { BottomBar } from "@/components/mantenimiento/BottomBar";
 import Button from "@/components/public/Button";
@@ -36,137 +32,13 @@ import type { Usuario } from "@/lib/mantenimiento/types";
 const ETIQUETA = "block text-[12.5px] font-medium text-grayscale-11";
 const TOTAL_SEGMENTOS = 12;
 
-type AreaId = "PLANTA" | "OFICINAS" | "LABORATORIO" | "SERVICIOS";
-
-const AREAS_RAPIDAS: {
-  id: AreaId;
-  label: string;
-  placeholder: string;
-  sugerencias: string[];
-  icon: typeof FactoryIcon;
-}[] = [
-  {
-    id: "PLANTA",
-    label: "Planta",
-    placeholder: "Ej. Nave 2 · Línea de empaque B",
-    sugerencias: ["Nave 1 · Acceso carga", "Nave 2 · Línea B", "Cuarto de máquinas"],
-    icon: FactoryIcon,
-  },
-  {
-    id: "OFICINAS",
-    label: "Oficinas",
-    placeholder: "Ej. Edificio B · Piso 2, Oficina 204",
-    sugerencias: ["Edificio A · Recepción", "Edificio B · Piso 2", "Sala de juntas Norte"],
-    icon: BuildingsIcon,
-  },
-  {
-    id: "LABORATORIO",
-    label: "Laboratorio",
-    placeholder: "Ej. Edificio C · Laboratorio de calidad 2",
-    sugerencias: ["Laboratorio calidad 1", "Laboratorio calidad 2", "Área de calibración"],
-    icon: FlaskIcon,
-  },
-  {
-    id: "SERVICIOS",
-    label: "Servicios",
-    placeholder: "Ej. Subestación eléctrica · Patio trasero",
-    sugerencias: ["Climatización azotea", "Tablero eléctrico principal", "Estacionamiento sur"],
-    icon: WrenchIcon,
-  },
+const UBICACIONES_SUGERIDAS = [
+  "Nave 1 · Planta",
+  "Edificio B · Piso 2",
+  "Laboratorio de calidad 2",
+  "Cuarto de máquinas",
+  "Sala de servidores",
 ];
-
-function AreaPicker({
-  value,
-  onChange,
-}: {
-  value: AreaId;
-  onChange: (area: AreaId) => void;
-}) {
-  const contenedor = useRef<HTMLDivElement>(null);
-  const botones = useRef(new Map<string, HTMLButtonElement>());
-  const [pill, setPill] = useState<{
-    left: number;
-    top: number;
-    width: number;
-    height: number;
-  } | null>(null);
-
-  useLayoutEffect(() => {
-    const medir = () => {
-      const el = botones.current.get(value);
-      if (!el) return;
-      setPill({
-        left: el.offsetLeft,
-        top: el.offsetTop,
-        width: el.offsetWidth,
-        height: el.offsetHeight,
-      });
-    };
-
-    medir();
-
-    const observador = new ResizeObserver(medir);
-    if (contenedor.current) observador.observe(contenedor.current);
-    return () => observador.disconnect();
-  }, [value]);
-
-  return (
-    <div
-      ref={contenedor}
-      role="radiogroup"
-      aria-label="Zona de incidencia"
-      className="relative grid grid-cols-2 gap-1 rounded-xl border border-grayscale-3/70 bg-grayscale-2/60 p-1 sm:grid-cols-4 dark:border-grayscale-3/50 dark:bg-grayscale-2/40"
-    >
-      {pill && (
-        <div
-          aria-hidden
-          className="pointer-events-none absolute rounded-lg border border-black/[0.04] bg-white shadow-[0_1px_2px_rgba(28,22,16,0.08)] transition-[left,top,width,height] duration-[280ms] ease-[cubic-bezier(0.22,1,0.36,1)] dark:border-white/[0.06] dark:bg-grayscale-3"
-          style={{
-            left: pill.left,
-            top: pill.top,
-            width: pill.width,
-            height: pill.height,
-          }}
-        />
-      )}
-
-      {AREAS_RAPIDAS.map((area) => {
-        const activo = area.id === value;
-        const Icon = area.icon;
-
-        return (
-          <button
-            key={area.id}
-            ref={(el) => {
-              if (el) botones.current.set(area.id, el);
-              else botones.current.delete(area.id);
-            }}
-            type="button"
-            role="radio"
-            aria-checked={activo}
-            onClick={() => onChange(area.id)}
-            className={cn(
-              "relative z-10 flex cursor-pointer items-center justify-center gap-1.5 rounded-lg px-2 py-2 text-[12px] transition-colors duration-150 sm:py-1.5",
-              activo
-                ? "font-semibold text-grayscale-12"
-                : "font-medium text-grayscale-9 hover:text-grayscale-11",
-            )}
-          >
-            <Icon
-              size={13.5}
-              weight={activo ? "fill" : "regular"}
-              className={cn(
-                "shrink-0 transition-colors duration-150",
-                activo ? "text-grayscale-12" : "text-grayscale-8",
-              )}
-            />
-            <span>{area.label}</span>
-          </button>
-        );
-      })}
-    </div>
-  );
-}
 
 export default function NuevaSolicitudPage() {
   const router = useRouter();
@@ -181,7 +53,6 @@ export default function NuevaSolicitudPage() {
   }, []);
 
   const [titulo, setTitulo] = useState("");
-  const [areaId, setAreaId] = useState<AreaId>("LABORATORIO");
   const [ubicacion, setUbicacion] = useState("");
   const [descripcion, setDescripcion] = useState("");
   const [prioridad, setPrioridad] = useState<Prioridad>("MEDIA");
@@ -211,8 +82,6 @@ export default function NuevaSolicitudPage() {
     );
   }
 
-  const areaActiva =
-    AREAS_RAPIDAS.find((area) => area.id === areaId) ?? AREAS_RAPIDAS[0];
   const prioridadActiva =
     OPCIONES_PRIORIDAD.find((opcion) => opcion.id === prioridad) ??
     OPCIONES_PRIORIDAD[1];
@@ -374,7 +243,7 @@ export default function NuevaSolicitudPage() {
                         <div
                           key={pos}
                           className={cn(
-                            "h-2 w-full rounded-[3px] transition-colors duration-300",
+                            "h-2 w-full rounded-[3px] transition-colors duration-300 ease-out",
                             activo
                               ? tonoBarra
                               : "bg-grayscale-3/75 dark:bg-grayscale-4/40",
@@ -471,28 +340,23 @@ export default function NuevaSolicitudPage() {
                   />
                 </div>
 
-                {/* Bloque D: Zona rápida deslizante + Ubicación física */}
-                <div className="space-y-2.5">
+                {/* Bloque D: Ubicación física con sugerencias táctiles */}
+                <div className="space-y-2">
                   <div className="flex flex-wrap items-baseline justify-between gap-x-2 gap-y-0.5">
                     <label htmlFor="ubicacion" className={ETIQUETA}>
                       Ubicación física{" "}
                       <span className="text-grayscale-9">*</span>
                     </label>
                     <span className="text-[11px] text-grayscale-9">
-                      <SlotText
-                        text={`Zona: ${areaActiva.label}`}
-                        options={{ duration: 220, stagger: 10, bounce: 0.2 }}
-                      />
+                      Edificio, piso, nave o área exacta
                     </span>
                   </div>
-
-                  <AreaPicker value={areaId} onChange={setAreaId} />
 
                   <div className="relative">
                     <input
                       id="ubicacion"
                       type="text"
-                      placeholder={areaActiva.placeholder}
+                      placeholder="Ej. Edificio B · Piso 2, Oficina 204"
                       value={ubicacion}
                       onChange={(event) => setUbicacion(event.target.value)}
                       className="campo w-full py-2.5 pl-9 pr-3.5 text-[16px] sm:text-[13.5px]"
@@ -503,9 +367,8 @@ export default function NuevaSolicitudPage() {
                     />
                   </div>
 
-                  {/* Sugerencias táctiles rápidas por zona */}
                   <div className="flex flex-wrap items-center gap-1.5">
-                    {areaActiva.sugerencias.map((sugerencia) => {
+                    {UBICACIONES_SUGERIDAS.map((sugerencia) => {
                       const seleccionada = ubicacion === sugerencia;
 
                       return (
@@ -527,7 +390,7 @@ export default function NuevaSolicitudPage() {
                   </div>
                 </div>
 
-                {/* Bloque E: Prioridad estimada (pastilla deslizante existente) */}
+                {/* Bloque E: Prioridad estimada */}
                 <div className="space-y-2">
                   <div className="flex flex-wrap items-baseline justify-between gap-x-2 gap-y-0.5">
                     <span className={ETIQUETA}>Prioridad estimada</span>
@@ -590,7 +453,7 @@ export default function NuevaSolicitudPage() {
                                 ? descripcionLista
                                   ? "bg-emerald-600/80"
                                   : "bg-amber-500/80"
-                                : "bg-grayscale-3 dark:bg-grayscale-4/50",
+                                : "bg-grayscale-3/75 dark:bg-grayscale-4/40",
                             )}
                           />
                         );

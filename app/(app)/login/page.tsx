@@ -9,10 +9,9 @@ import {
 } from "@phosphor-icons/react/dist/ssr";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { recordarUsuario } from "@/components/mantenimiento/SesionSync";
 import { ThemeToggle } from "@/components/ThemeToggle";
-import { SlotText } from "@/components/ui/SlotText";
 import { cn } from "@/helpers/classname-helper";
 import { nombreLimpio } from "@/helpers/iniciales";
 import {
@@ -33,12 +32,6 @@ const ETIQUETA_ROL: Record<Usuario["rol"], string> = {
   JEFATURA: "Jefatura",
 };
 
-const PORTAL_ROL: Record<Usuario["rol"], string> = {
-  EMPLEADO: "Mis solicitudes",
-  TECNICO: "Bandeja técnica",
-  JEFATURA: "Indicadores",
-};
-
 function QuickProfilePicker({
   usuarios,
   activoId,
@@ -50,145 +43,59 @@ function QuickProfilePicker({
   enviando: boolean;
   onSelect: (user: Usuario) => void;
 }) {
-  const contenedor = useRef<HTMLDivElement>(null);
-  const botones = useRef(new Map<string, HTMLButtonElement>());
-  const [focoId, setFocoId] = useState<string>(usuarios[0]?.id ?? "");
-  const [pill, setPill] = useState<{
-    left: number;
-    top: number;
-    width: number;
-    height: number;
-  } | null>(null);
-
-  const resaltadoId = activoId ?? focoId;
-  const usuarioEnfocado =
-    usuarios.find((u) => u.id === resaltadoId) ?? usuarios[0];
-
-  useLayoutEffect(() => {
-    const medir = () => {
-      const el = botones.current.get(resaltadoId);
-      if (!el) return;
-      setPill({
-        left: el.offsetLeft,
-        top: el.offsetTop,
-        width: el.offsetWidth,
-        height: el.offsetHeight,
-      });
-    };
-
-    medir();
-
-    const observador = new ResizeObserver(medir);
-    if (contenedor.current) observador.observe(contenedor.current);
-    return () => observador.disconnect();
-  }, [resaltadoId, usuarios.length]);
-
   return (
-    <div className="space-y-2.5">
-      <div
-        ref={contenedor}
-        role="group"
-        aria-label="Cuentas de acceso rápido"
-        className="relative grid grid-cols-2 gap-1.5 rounded-2xl border border-grayscale-3/80 bg-grayscale-2/70 p-1.5 backdrop-blur-sm dark:border-grayscale-4/50 dark:bg-grayscale-2/55"
-      >
-        {pill && (
-          <div
-            aria-hidden
-            className="pointer-events-none absolute rounded-xl border border-grayscale-3/80 bg-white shadow-[0_2px_8px_rgba(28,22,16,0.06)] transition-[left,top,width,height] duration-[260ms] ease-[cubic-bezier(0.22,1,0.36,1)] dark:border-grayscale-4/60 dark:bg-grayscale-3"
-            style={{
-              left: pill.left,
-              top: pill.top,
-              width: pill.width,
-              height: pill.height,
-            }}
-          />
-        )}
+    <div
+      role="group"
+      aria-label="Cuentas de acceso rápido"
+      className="divide-y divide-grayscale-3/65 dark:divide-grayscale-4/35"
+    >
+      {usuarios.map((user) => {
+        const seleccionConfirmada = activoId === user.id;
 
-        {usuarios.map((user) => {
-          const enfocado = resaltadoId === user.id;
-          const seleccionConfirmada = activoId === user.id;
+        return (
+          <button
+            key={user.id}
+            type="button"
+            disabled={enviando}
+            onClick={() => onSelect(user)}
+            className={cn(
+              "group flex w-full cursor-pointer items-center justify-between gap-3 px-1 py-2.5 text-left transition-[opacity,transform] duration-150 ease-out active:scale-[0.995] disabled:cursor-default",
+              enviando && !seleccionConfirmada && "opacity-45",
+            )}
+          >
+            <div className="flex min-w-0 items-baseline gap-1.5 truncate">
+              <span className="truncate text-[13px] font-medium text-grayscale-11 transition-colors duration-150 group-hover:text-grayscale-12">
+                {nombreLimpio(user.nombre)}
+              </span>
+              <span aria-hidden className="text-grayscale-6">
+                ·
+              </span>
+              <span className="truncate text-[12px] text-grayscale-8 transition-colors duration-150 group-hover:text-grayscale-10">
+                {user.departamento}
+              </span>
+            </div>
 
-          return (
-            <button
-              key={user.id}
-              ref={(el) => {
-                if (el) botones.current.set(user.id, el);
-                else botones.current.delete(user.id);
-              }}
-              type="button"
-              disabled={enviando}
-              onMouseEnter={() => {
-                if (!enviando) setFocoId(user.id);
-              }}
-              onFocus={() => {
-                if (!enviando) setFocoId(user.id);
-              }}
-              onClick={() => onSelect(user)}
-              className={cn(
-                "group relative z-10 flex min-w-0 cursor-pointer flex-col justify-between gap-2 rounded-xl px-3 py-2.5 text-left transition-[opacity,transform] duration-150 ease-out active:scale-[0.985] disabled:cursor-default",
-                enviando && !seleccionConfirmada && "opacity-45",
+            <div className="flex shrink-0 items-center gap-2">
+              <span className="font-mono text-[10.5px] text-grayscale-8 transition-colors duration-150 group-hover:text-grayscale-11">
+                {ETIQUETA_ROL[user.rol]}
+              </span>
+
+              {seleccionConfirmada ? (
+                <CheckIcon
+                  size={12}
+                  weight="bold"
+                  className="shrink-0 text-grayscale-12 animate-[fade-in-soft_120ms_ease-out]"
+                />
+              ) : (
+                <ArrowRightIcon
+                  size={11.5}
+                  className="shrink-0 text-grayscale-7 transition-[transform,color] duration-150 ease-out group-hover:translate-x-0.5 group-hover:text-grayscale-12"
+                />
               )}
-            >
-              <div className="flex items-center justify-between gap-2">
-                <span
-                  className={cn(
-                    "font-mono text-[10px] font-medium transition-colors duration-150",
-                    enfocado ? "text-grayscale-11" : "text-grayscale-8",
-                  )}
-                >
-                  {ETIQUETA_ROL[user.rol]}
-                </span>
-
-                {seleccionConfirmada ? (
-                  <CheckIcon
-                    size={12}
-                    weight="bold"
-                    className="shrink-0 text-grayscale-12 animate-[fade-in-soft_120ms_ease-out]"
-                  />
-                ) : (
-                  <ArrowRightIcon
-                    size={11.5}
-                    className={cn(
-                      "shrink-0 transition-[transform,color] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)]",
-                      enfocado
-                        ? "translate-x-0.5 text-grayscale-12"
-                        : "text-grayscale-7",
-                    )}
-                  />
-                )}
-              </div>
-
-              <div className="min-w-0">
-                <p
-                  className={cn(
-                    "truncate text-[13px] transition-colors duration-150",
-                    enfocado
-                      ? "font-semibold text-grayscale-12"
-                      : "font-medium text-grayscale-11",
-                  )}
-                >
-                  {nombreLimpio(user.nombre)}
-                </p>
-                <p className="truncate text-[11px] text-grayscale-9">
-                  {user.departamento}
-                </p>
-              </div>
-            </button>
-          );
-        })}
-      </div>
-
-      {usuarioEnfocado && (
-        <p
-          aria-live="polite"
-          className="text-center text-[11.5px] text-grayscale-9"
-        >
-          <SlotText
-            text={`${usuarioEnfocado.cargo} — ${PORTAL_ROL[usuarioEnfocado.rol]}`}
-            options={{ duration: 220, stagger: 8, bounce: 0.18 }}
-          />
-        </p>
-      )}
+            </div>
+          </button>
+        );
+      })}
     </div>
   );
 }
@@ -398,10 +305,8 @@ export default function LoginPage() {
         </div>
       </main>
 
-      {/* Pie discreto */}
-      <footer className="relative z-10 mx-auto flex w-full max-w-5xl items-center justify-center text-[11px] text-grayscale-8">
-        <span>Servicios Internos · Sistema de Mantenimiento</span>
-      </footer>
+      {/* Espaciador simétrico inferior */}
+      <div aria-hidden className="h-4" />
     </div>
   );
 }
