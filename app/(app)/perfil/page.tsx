@@ -25,7 +25,14 @@ import {
 } from "@phosphor-icons/react/dist/ssr";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { type CSSProperties, useEffect, useMemo, useState } from "react";
+import {
+  type CSSProperties,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { BottomBar } from "@/components/mantenimiento/BottomBar";
 import { EstadoBadge } from "@/components/mantenimiento/EstadoBadge";
 import { PageHeader } from "@/components/ui/PageHeader";
@@ -261,6 +268,15 @@ export default function PerfilPage() {
 
   const [filtroEstado, setFiltroEstado] = useState<FiltroEstadoActividad>("TODAS");
   const [busqueda, setBusqueda] = useState("");
+  const filtrosContenedorRef = useRef<HTMLDivElement | null>(null);
+  const filtroBtnRefs = useRef<
+    Partial<Record<FiltroEstadoActividad, HTMLButtonElement | null>>
+  >({});
+  const [indicadorFiltro, setIndicadorFiltro] = useState({
+    left: 0,
+    width: 0,
+    ready: false,
+  });
 
   const [perfil, setPerfil] = useState<PerfilExtendido>(
     PERFILES_POR_ROL[usuario.rol],
@@ -336,6 +352,37 @@ export default function PerfilPage() {
       );
     });
   }, [solicitudesRelacionadas, filtroEstado, busqueda]);
+
+  const actualizarIndicadorFiltro = useCallback(() => {
+    const contenedor = filtrosContenedorRef.current;
+    const boton = filtroBtnRefs.current[filtroEstado];
+    if (!contenedor || !boton) return;
+
+    const left = boton.offsetLeft;
+    const width = boton.offsetWidth;
+    setIndicadorFiltro((prev) =>
+      prev.left === left && prev.width === width && prev.ready
+        ? prev
+        : { left, width, ready: true },
+    );
+  }, [filtroEstado]);
+
+  useEffect(() => {
+    if (tab !== "actividad") return;
+    const frame = window.requestAnimationFrame(actualizarIndicadorFiltro);
+    const contenedor = filtrosContenedorRef.current;
+    const observer =
+      contenedor && typeof ResizeObserver !== "undefined"
+        ? new ResizeObserver(actualizarIndicadorFiltro)
+        : null;
+    if (contenedor && observer) {
+      observer.observe(contenedor);
+    }
+    return () => {
+      window.cancelAnimationFrame(frame);
+      observer?.disconnect();
+    };
+  }, [tab, actualizarIndicadorFiltro]);
 
   const jerarquia = useMemo(() => {
     const orden: Record<Rol, number> = {
@@ -638,8 +685,11 @@ export default function PerfilPage() {
                     </div>
                   </div>
 
-                  {/* Filtros minimalistas sin contenedor */}
-                  <div className="flex flex-wrap items-center gap-x-5 gap-y-2 border-b border-grayscale-3/60 pb-3 dark:border-white/[0.08]">
+                  {/* Filtros minimalistas sin contenedor con indicador deslizante */}
+                  <div
+                    ref={filtrosContenedorRef}
+                    className="relative flex flex-wrap items-center gap-x-5 gap-y-2 border-b border-grayscale-3/60 pb-3 dark:border-white/[0.08]"
+                  >
                     {(
                       [
                         { id: "TODAS", label: "Todas", icon: SquaresFourIcon },
@@ -654,13 +704,16 @@ export default function PerfilPage() {
                       return (
                         <button
                           key={f.id}
+                          ref={(el) => {
+                            filtroBtnRefs.current[f.id] = el;
+                          }}
                           type="button"
                           onClick={() => setFiltroEstado(f.id)}
                           className={cn(
-                            "group relative inline-flex cursor-pointer items-center gap-1.5 bg-transparent py-0.5 text-[11.5px] transition-[color,opacity,transform] duration-150 ease-[cubic-bezier(0.23,1,0.32,1)] active:scale-[0.96]",
+                            "group relative inline-flex cursor-pointer items-center gap-1.5 bg-transparent py-0.5 text-[11.5px] font-medium transition-[color,opacity,transform] duration-150 ease-[cubic-bezier(0.23,1,0.32,1)] active:scale-[0.96]",
                             activo
-                              ? "font-semibold text-grayscale-12 dark:text-white"
-                              : "font-medium text-grayscale-8 hover:text-grayscale-11 dark:text-grayscale-8 dark:hover:text-grayscale-11",
+                              ? "text-grayscale-12 dark:text-white"
+                              : "text-grayscale-8 hover:text-grayscale-11 dark:text-grayscale-8 dark:hover:text-grayscale-11",
                           )}
                         >
                           <Icono
@@ -682,13 +735,6 @@ export default function PerfilPage() {
                           >
                             {count}
                           </span>
-                          {activo ? (
-                            <span
-                              aria-hidden="true"
-                              skullet-ignore=""
-                              className="absolute inset-x-0 -bottom-[13px] h-[1.5px] rounded-full bg-grayscale-12 dark:bg-white"
-                            />
-                          ) : null}
                         </button>
                       );
                     })}
@@ -696,50 +742,66 @@ export default function PerfilPage() {
                     <span className="ml-auto font-mono text-[10px] tabular-nums text-grayscale-8 whitespace-nowrap">
                       {solicitudesFiltradas.length} de {solicitudesRelacionadas.length}
                     </span>
+
+                    <span
+                      aria-hidden="true"
+                      skullet-ignore=""
+                      className="pointer-events-none absolute -bottom-px left-0 h-[1.5px] rounded-full bg-grayscale-12 transition-[transform,width,opacity] duration-250 ease-[cubic-bezier(0.22,1,0.36,1)] dark:bg-white"
+                      style={{
+                        transform: `translate3d(${indicadorFiltro.left}px, 0, 0)`,
+                        width: `${indicadorFiltro.width}px`,
+                        opacity: indicadorFiltro.ready ? 1 : 0,
+                      }}
+                    />
                   </div>
 
-                  {/* Tabla interactiva sin saltos de línea */}
-                  {solicitudesFiltradas.length === 0 ? (
-                    <div className="py-8 text-center">
-                      <p className="text-[12.5px] text-grayscale-9">
-                        {solicitudesRelacionadas.length === 0
-                          ? "No hay solicitudes vinculadas a esta cuenta."
-                          : "No se encontraron solicitudes con los filtros aplicados."}
-                      </p>
-                    </div>
-                  ) : (
-                    <div className="-mx-1 overflow-x-auto sm:mx-0">
-                      <table className="w-full border-collapse text-left text-[12px]">
-                        <thead>
-                          <tr className="border-b border-grayscale-3/70 font-mono text-[10px] uppercase tracking-wider text-grayscale-8 dark:border-white/[0.08]">
-                            <th className="whitespace-nowrap pb-2.5 pl-2 pr-3 font-medium">
-                              Folio / Asunto
-                            </th>
-                            <th className="hidden whitespace-nowrap pb-2.5 pr-3 font-medium sm:table-cell">
-                              Ubicación
-                            </th>
-                            <th className="whitespace-nowrap pb-2.5 pr-3 font-medium">
-                              Prioridad
-                            </th>
-                            <th className="whitespace-nowrap pb-2.5 pr-3 font-medium">
-                              Estado
-                            </th>
-                            <th className="hidden whitespace-nowrap pb-2.5 pr-3 font-medium md:table-cell">
-                              Fecha
-                            </th>
-                            <th className="whitespace-nowrap pb-2.5 pr-2 text-right font-medium">
-                              Detalle
-                            </th>
+                  {/* Tabla interactiva con altura fija y columnas estables sin barras de scroll */}
+                  <div className="-mx-1 h-[268px] overflow-y-auto overflow-x-auto [scrollbar-width:none] sm:mx-0 sm:overflow-x-visible [&::-webkit-scrollbar]:hidden">
+                    <table className="w-full border-collapse text-left text-[12px] sm:table-fixed">
+                      <thead>
+                        <tr className="border-b border-grayscale-3/70 font-mono text-[10px] uppercase tracking-wider text-grayscale-8 dark:border-white/[0.08]">
+                          <th className="whitespace-nowrap pb-2.5 pl-2 pr-3 font-medium sm:w-[29%]">
+                            Folio / Asunto
+                          </th>
+                          <th className="hidden whitespace-nowrap pb-2.5 pr-3 font-medium sm:table-cell sm:w-[20%]">
+                            Ubicación
+                          </th>
+                          <th className="whitespace-nowrap pb-2.5 pr-3 font-medium sm:w-[12%]">
+                            Prioridad
+                          </th>
+                          <th className="whitespace-nowrap pb-2.5 pr-3 font-medium sm:w-[18%]">
+                            Estado
+                          </th>
+                          <th className="hidden whitespace-nowrap pb-2.5 pr-3 font-medium md:table-cell md:w-[14%]">
+                            Fecha
+                          </th>
+                          <th className="whitespace-nowrap pb-2.5 pr-2 text-right font-medium sm:w-[7%]">
+                            Detalle
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody
+                        key={filtroEstado}
+                        className="tab-panel-enter divide-y divide-grayscale-3/60 dark:divide-white/[0.06]"
+                      >
+                        {solicitudesFiltradas.length === 0 ? (
+                          <tr>
+                            <td colSpan={6} className="h-[216px] text-center align-middle">
+                              <p className="text-[12.5px] text-grayscale-9">
+                                {solicitudesRelacionadas.length === 0
+                                  ? "No hay solicitudes vinculadas a esta cuenta."
+                                  : "No se encontraron solicitudes con los filtros aplicados."}
+                              </p>
+                            </td>
                           </tr>
-                        </thead>
-                        <tbody className="divide-y divide-grayscale-3/60 dark:divide-white/[0.06]">
-                          {solicitudesFiltradas.map((sol) => (
+                        ) : (
+                          solicitudesFiltradas.map((sol) => (
                             <tr
                               key={sol.id}
                               className="group transition-[background-color] duration-150 hover:bg-grayscale-2/60 dark:hover:bg-white/[0.03]"
                             >
                               {/* Folio y título en una sola línea limpia */}
-                              <td className="max-w-[200px] py-2.5 pl-2 pr-3 align-middle sm:max-w-[230px]">
+                              <td className="max-w-[200px] py-2.5 pl-2 pr-3 align-middle sm:max-w-none">
                                 <Link
                                   href={`/solicitudes/${sol.id}`}
                                   className="flex min-w-0 flex-col focus:outline-none"
@@ -754,7 +816,7 @@ export default function PerfilPage() {
                               </td>
 
                               {/* Ubicación */}
-                              <td className="hidden max-w-[140px] py-2.5 pr-3 align-middle text-grayscale-10 dark:text-grayscale-8 sm:table-cell">
+                              <td className="hidden py-2.5 pr-3 align-middle text-grayscale-10 dark:text-grayscale-8 sm:table-cell">
                                 <span className="block truncate font-mono text-[11px]">
                                   {sol.ubicacion}
                                 </span>
@@ -789,11 +851,11 @@ export default function PerfilPage() {
                                 </Link>
                               </td>
                             </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-                  )}
+                          ))
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
                 <div className="flex items-center justify-between gap-2 px-3.5 py-2 text-[11px] text-grayscale-10">
                   <span className="truncate font-medium">
