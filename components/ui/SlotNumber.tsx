@@ -76,7 +76,7 @@ export function SlotNumber({
 
     const placeholder =
       typeof value === "number"
-        ? `${prefix}${"0".repeat(Math.max(1, formattedBase.length))}${suffix}`
+        ? `${prefix}${formattedBase}${suffix}`
         : `${prefix}${"-".repeat(Math.max(1, formattedBase.length))}${suffix}`;
 
     control.current = slotText(el, placeholder, {

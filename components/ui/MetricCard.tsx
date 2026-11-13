@@ -123,18 +123,18 @@ export function MetricCard({
         {/* Bloque inferior del cuerpo: valor + spark + ticks */}
         <div className="mt-2.5 flex min-w-0 flex-col gap-2.5">
           <div className="flex min-w-0 items-end justify-between gap-2">
-            <p className="flex min-w-0 items-baseline gap-1.5">
+            <div className="flex min-w-0 items-baseline gap-1.5 h-7">
               <SlotNumber
                 value={valor}
                 decimals={decimals}
                 className="text-[28px] font-bold leading-none tracking-tight text-grayscale-12 font-mono"
               />
               {unidad && (
-                <span className="truncate text-[11.5px] font-medium text-grayscale-9">
+                <span className="truncate text-[11.5px] font-medium text-grayscale-9 self-end mb-0.5">
                   {unidad}
                 </span>
               )}
-            </p>
+            </div>
             <Spark tono={tono} ratio={ratio} />
           </div>
 

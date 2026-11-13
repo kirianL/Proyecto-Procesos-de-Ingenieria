@@ -6,6 +6,7 @@ import {
   LockSimpleIcon,
   PlusCircleIcon,
   SignOutIcon,
+  SquaresFourIcon,
   WrenchIcon,
 } from "@phosphor-icons/react/dist/ssr";
 import Link from "next/link";
@@ -28,6 +29,12 @@ const NAV_LINKS: {
   icon: typeof ClipboardTextIcon;
   roles: Usuario["rol"][];
 }[] = [
+  {
+    href: "/",
+    label: "Dashboard",
+    icon: SquaresFourIcon,
+    roles: ["EMPLEADO", "TECNICO", "JEFATURA"],
+  },
   {
     href: "/mis-solicitudes",
     label: "Mis solicitudes",

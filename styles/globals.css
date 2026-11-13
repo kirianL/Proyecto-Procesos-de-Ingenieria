@@ -404,10 +404,21 @@ button,
   animation: fade-in-soft var(--dur-base) var(--ease-out-soft) both;
 }
 
-/* ── Detalles tipográficos ──────────────────────────────────────────── */
+/* ── Slot text y números mecánicos: reserva de altura y baseline estable ── */
 .num {
   font-variant-numeric: tabular-nums;
   font-feature-settings: "tnum";
+}
+
+.slot-text {
+  display: inline-flex;
+  white-space: pre;
+  align-items: baseline;
+  line-height: 1;
+}
+
+.slot-text .char-slot {
+  line-height: 1;
 }
 
 .titulo-pagina {
