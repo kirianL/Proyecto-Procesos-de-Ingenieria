@@ -69,11 +69,13 @@ function Barras({
   className?: string;
 }) {
   return (
-    <span
+    <div
       aria-hidden
-      className={cn("flex items-end gap-[1.5px]", className)}>
+      skullet-block=""
+      className={cn("flex items-end gap-[1.5px]", className)}
+    >
       {[1, 2, 3, 4].map((i) => (
-        <span
+        <div
           key={i}
           className={cn(
             "w-[2px] rounded-full transition-colors duration-200",
@@ -82,7 +84,7 @@ function Barras({
           style={{ height: `${4 + i * 2.5}px` }}
         />
       ))}
-    </span>
+    </div>
   );
 }
 
@@ -146,7 +148,8 @@ export function PriorityPicker({
         ref={contenedor}
         role="radiogroup"
         aria-label="Prioridad estimada"
-        className="relative grid grid-cols-4 gap-1 rounded-xl border border-grayscale-3/70 bg-grayscale-2/60 p-1 dark:border-grayscale-3/50 dark:bg-grayscale-2/40">
+        className="relative grid grid-cols-2 gap-1 rounded-xl border border-grayscale-3/70 bg-grayscale-2/60 p-1 sm:grid-cols-4 dark:border-grayscale-3/50 dark:bg-grayscale-2/40"
+      >
         {pill && (
           <span
             aria-hidden
@@ -174,7 +177,7 @@ export function PriorityPicker({
                 else botones.current.delete(opcion.id);
               }}
               className={cn(
-                "relative z-10 flex cursor-pointer flex-col items-center justify-center gap-1.5 rounded-lg px-1 py-2 transition-colors duration-150 focus-within:ring-2 focus-within:ring-grayscale-6 focus-within:ring-offset-1 focus-within:ring-offset-transparent",
+                "relative z-10 flex cursor-pointer flex-col items-center justify-center gap-1.5 rounded-lg px-2 py-2.5 sm:px-1 sm:py-2 transition-colors duration-150 focus-within:ring-2 focus-within:ring-grayscale-6 focus-within:ring-offset-1 focus-within:ring-offset-transparent",
                 activo
                   ? cn("font-semibold", opcion.acento)
                   : "font-medium text-grayscale-9 hover:text-grayscale-11",

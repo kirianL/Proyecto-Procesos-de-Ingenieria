@@ -111,6 +111,15 @@ body {
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--sand-7) 18%, transparent);
 }
 
+.campo:-webkit-autofill,
+.campo:-webkit-autofill:hover,
+.campo:-webkit-autofill:focus {
+  -webkit-box-shadow: 0 0 0 1000px var(--surface) inset;
+  -webkit-text-fill-color: var(--sand-12);
+  caret-color: var(--sand-11);
+  transition: background-color 5000s ease-in-out 0s;
+}
+
 /* ── Entrada de página rápida y sin parpadeo (sin opacity: 0 agresivo) ── */
 @keyframes page-enter {
   from {
@@ -335,82 +344,118 @@ body {
   0%,
   100% {
     transform: translate3d(-50%, 0, 0) scale(1);
-    opacity: 0.72;
+    opacity: 0.88;
   }
   50% {
-    transform: translate3d(-48%, 10px, 0) scale(1.06);
-    opacity: 0.92;
+    transform: translate3d(-48%, 12px, 0) scale(1.05);
+    opacity: 1;
   }
 }
 
 @keyframes aurora-float-alt {
   0%,
   100% {
-    transform: translate3d(-50%, 0, 0) scale(1.03);
-    opacity: 0.68;
+    transform: translate3d(-50%, 0, 0) scale(1.02);
+    opacity: 0.84;
   }
   50% {
-    transform: translate3d(-52%, -10px, 0) scale(0.97);
-    opacity: 0.88;
+    transform: translate3d(-52%, -10px, 0) scale(0.98);
+    opacity: 0.98;
   }
 }
 
 .aurora-top {
   position: absolute;
-  top: -185px;
+  top: -85px;
   left: 50%;
-  width: min(880px, 135vw);
-  height: 290px;
+  width: min(980px, 145vw);
+  height: 260px;
   border-radius: 9999px;
-  background: radial-gradient(
-    ellipse 60% 54% at 50% 45%,
-    rgba(56, 189, 248, 0.14) 0%,
-    rgba(120, 113, 108, 0.12) 42%,
-    rgba(16, 185, 129, 0.06) 72%,
-    transparent 100%
-  );
-  filter: blur(72px);
+  background:
+    radial-gradient(
+      ellipse 42% 65% at 32% 45%,
+      rgba(56, 189, 248, 0.38) 0%,
+      transparent 75%
+    ),
+    radial-gradient(
+      ellipse 44% 68% at 52% 40%,
+      rgba(99, 102, 241, 0.28) 0%,
+      transparent 76%
+    ),
+    radial-gradient(
+      ellipse 40% 62% at 70% 48%,
+      rgba(16, 185, 129, 0.24) 0%,
+      transparent 75%
+    );
+  filter: blur(54px);
   will-change: transform, opacity;
-  animation: aurora-float 12s ease-in-out infinite;
+  animation: aurora-float 11s ease-in-out infinite;
 }
 
 .aurora-bottom {
   position: absolute;
-  bottom: -195px;
+  bottom: -95px;
   left: 50%;
-  width: min(880px, 135vw);
-  height: 300px;
+  width: min(980px, 145vw);
+  height: 265px;
   border-radius: 9999px;
-  background: radial-gradient(
-    ellipse 60% 54% at 50% 55%,
-    rgba(168, 85, 247, 0.1) 0%,
-    rgba(120, 113, 108, 0.11) 46%,
-    rgba(59, 130, 246, 0.07) 72%,
-    transparent 100%
-  );
-  filter: blur(76px);
+  background:
+    radial-gradient(
+      ellipse 42% 65% at 30% 55%,
+      rgba(168, 85, 247, 0.28) 0%,
+      transparent 75%
+    ),
+    radial-gradient(
+      ellipse 44% 68% at 52% 60%,
+      rgba(59, 130, 246, 0.26) 0%,
+      transparent 76%
+    ),
+    radial-gradient(
+      ellipse 40% 62% at 72% 52%,
+      rgba(244, 114, 182, 0.22) 0%,
+      transparent 75%
+    );
+  filter: blur(56px);
   will-change: transform, opacity;
-  animation: aurora-float-alt 14s ease-in-out infinite;
+  animation: aurora-float-alt 13s ease-in-out infinite;
 }
 
 .dark .aurora-top {
-  background: radial-gradient(
-    ellipse 60% 54% at 50% 45%,
-    rgba(56, 189, 248, 0.15) 0%,
-    rgba(129, 140, 248, 0.11) 44%,
-    rgba(16, 185, 129, 0.06) 72%,
-    transparent 100%
-  );
+  background:
+    radial-gradient(
+      ellipse 42% 65% at 32% 45%,
+      rgba(56, 189, 248, 0.26) 0%,
+      transparent 75%
+    ),
+    radial-gradient(
+      ellipse 44% 68% at 52% 40%,
+      rgba(129, 140, 248, 0.22) 0%,
+      transparent 76%
+    ),
+    radial-gradient(
+      ellipse 40% 62% at 70% 48%,
+      rgba(16, 185, 129, 0.16) 0%,
+      transparent 75%
+    );
 }
 
 .dark .aurora-bottom {
-  background: radial-gradient(
-    ellipse 60% 54% at 50% 55%,
-    rgba(168, 85, 247, 0.13) 0%,
-    rgba(59, 130, 246, 0.1) 46%,
-    rgba(245, 158, 11, 0.05) 72%,
-    transparent 100%
-  );
+  background:
+    radial-gradient(
+      ellipse 42% 65% at 30% 55%,
+      rgba(168, 85, 247, 0.22) 0%,
+      transparent 75%
+    ),
+    radial-gradient(
+      ellipse 44% 68% at 52% 60%,
+      rgba(59, 130, 246, 0.2) 0%,
+      transparent 76%
+    ),
+    radial-gradient(
+      ellipse 40% 62% at 72% 52%,
+      rgba(236, 72, 153, 0.15) 0%,
+      transparent 75%
+    );
 }
 
 @keyframes login-enter {
