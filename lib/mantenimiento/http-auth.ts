@@ -47,3 +47,4 @@ export function manejarErrorApi(error: unknown): NextResponse {
     { status: 500 },
   );
 }
+

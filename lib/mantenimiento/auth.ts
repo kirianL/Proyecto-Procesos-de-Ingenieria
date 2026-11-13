@@ -94,3 +94,4 @@ export function puedeCrearSolicitud(
 ): boolean {
   return Boolean(usuario && usuario.rol === "EMPLEADO");
 }
+

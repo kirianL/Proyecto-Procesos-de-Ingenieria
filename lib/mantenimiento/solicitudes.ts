@@ -125,7 +125,7 @@ export function transicionarEstadoSolicitud(
   // RN-04: No se permite modificar una solicitud CERRADA en el MVP
   if (estadoPrevio === "CERRADA") {
     throw new DominioError(
-      "No se permite modificar una solicitud que ya se encuentra CERRADA (RN-04).",
+      "No se permite modificar una solicitud que ya se encuentra cerrada.",
       "TRANSICION_INVALIDA",
       422,
     );

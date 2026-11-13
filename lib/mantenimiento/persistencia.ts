@@ -8,7 +8,7 @@ import {
 export const USUARIOS_INICIALES: Usuario[] = [
   {
     id: "emp-a",
-    nombre: "Carlos Méndez (Empleado A)",
+    nombre: "Carlos Méndez",
     correo: "empleado.a@ejemplo.test",
     rol: "EMPLEADO",
     cargo: "Analista de Calidad",
@@ -16,7 +16,7 @@ export const USUARIOS_INICIALES: Usuario[] = [
   },
   {
     id: "emp-b",
-    nombre: "Lucía Morales (Empleado B)",
+    nombre: "Lucía Morales",
     correo: "empleado.b@ejemplo.test",
     rol: "EMPLEADO",
     cargo: "Investigadora Senior",

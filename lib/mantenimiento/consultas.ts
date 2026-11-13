@@ -189,3 +189,4 @@ export function consultarIndicadoresAutorizado(
   verificarRolPermitido(usuario, ["JEFATURA"]);
   return calcularResumenIndicadores();
 }
+
