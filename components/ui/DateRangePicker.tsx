@@ -345,7 +345,7 @@ export function DateRangePicker({
     <div ref={contenedorRef} className={cn("relative inline-flex", className)}>
       <div
         className={cn(
-          "inline-flex h-[38px] items-center rounded-xl border p-1 transition-[border-color,background-color,box-shadow] duration-150 ease-out",
+          "inline-flex h-[38px] items-center rounded-lg border p-1 transition-[border-color,background-color,box-shadow] duration-150 ease-out",
           activo || abierto
             ? "border-grayscale-4/80 bg-grayscale-2 shadow-2xs dark:border-white/[0.22] dark:bg-[#181816]"
             : "border-transparent bg-grayscale-2 hover:bg-grayscale-2/90 dark:border-white/[0.09] dark:bg-[#161614] dark:hover:border-white/[0.15]",

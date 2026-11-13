@@ -287,7 +287,7 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={enviando}
-              className="group mt-1 flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl border border-grayscale-4 bg-grayscale-1 px-4 py-2.5 text-[13.5px] font-medium text-grayscale-12 shadow-[0_1px_2px_rgba(28,22,16,0.05)] transition-[background-color,border-color,transform] duration-150 ease-out hover:border-grayscale-5 hover:bg-grayscale-2 active:scale-[0.985] disabled:pointer-events-none disabled:opacity-55 dark:border-grayscale-4 dark:bg-grayscale-2 dark:hover:bg-grayscale-3"
+              className="group mt-1 flex w-full cursor-pointer items-center justify-center gap-2 rounded-lg border border-grayscale-4 bg-grayscale-1 px-4 py-2.5 text-[13.5px] font-medium text-grayscale-12 shadow-[0_1px_2px_rgba(28,22,16,0.05)] transition-[background-color,border-color,transform] duration-150 ease-out hover:border-grayscale-5 hover:bg-grayscale-2 active:scale-[0.985] disabled:pointer-events-none disabled:opacity-55 dark:border-grayscale-4 dark:bg-grayscale-2 dark:hover:bg-grayscale-3"
             >
               <span>
                 {enviando ? "Ingresando..." : "Continuar con correo"}

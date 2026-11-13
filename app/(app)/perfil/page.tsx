@@ -332,7 +332,7 @@ export default function PerfilPage() {
                         editando ? guardarCambios() : setEditando(true)
                       }
                       className={cn(
-                        "inline-flex h-8 cursor-pointer items-center gap-1.5 rounded-lg border px-3 text-[12px] font-medium transition-colors duration-150",
+                        "inline-flex h-9 cursor-pointer items-center gap-1.5 rounded-md border px-3.5 text-[12.5px] font-medium transition-colors duration-150",
                         editando
                           ? "border-emerald-600/30 bg-emerald-500/10 text-emerald-700 hover:bg-emerald-500/15 dark:text-emerald-400"
                           : "border-grayscale-4 bg-grayscale-1 text-grayscale-11 hover:bg-grayscale-2 dark:border-white/[0.12] dark:bg-white/[0.04]",

@@ -235,7 +235,7 @@ export default function BandejaMantenimientoPage() {
               <button
                 type="button"
                 onClick={limpiarFiltros}
-                className="inline-flex h-[38px] shrink-0 cursor-pointer items-center gap-1 rounded-xl border border-grayscale-3 bg-grayscale-1 px-2.5 text-[12px] font-medium text-grayscale-10 transition-colors duration-150 hover:bg-grayscale-2 hover:text-grayscale-12 dark:bg-grayscale-2 dark:hover:bg-grayscale-3"
+                className="inline-flex h-[38px] shrink-0 cursor-pointer items-center gap-1 rounded-md border border-grayscale-3 bg-grayscale-1 px-2.5 text-[12px] font-medium text-grayscale-10 transition-colors duration-150 hover:bg-grayscale-2 hover:text-grayscale-12 dark:bg-grayscale-2 dark:hover:bg-grayscale-3"
               >
                 <XIcon size={12} weight="bold" />
                 Limpiar

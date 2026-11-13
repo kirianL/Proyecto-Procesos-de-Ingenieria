@@ -20,7 +20,6 @@ import {
   type Prioridad,
   PriorityPicker,
 } from "@/components/ui/PriorityPicker";
-import { SkeletonContent } from "@/components/ui/Skeleton";
 import { SlotNumber } from "@/components/ui/SlotNumber";
 import { SlotText } from "@/components/ui/SlotText";
 import { cn } from "@/helpers/classname-helper";
@@ -209,11 +208,7 @@ export default function NuevaSolicitudPage() {
           titulo="Nueva solicitud"
         />
 
-        <SkeletonContent
-          id="nueva-solicitud-form"
-          label="Preparando formulario de registro"
-        >
-          <form ref={formRef} onSubmit={handleSubmit} className="space-y-4">
+        <form ref={formRef} onSubmit={handleSubmit} className="space-y-4">
             {error && (
               <div
                 key={intento}
@@ -678,7 +673,6 @@ export default function NuevaSolicitudPage() {
               </div>
             </div>
           </form>
-        </SkeletonContent>
       </div>
 
       <BottomBar

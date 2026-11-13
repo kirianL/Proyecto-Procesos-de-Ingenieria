@@ -436,11 +436,13 @@ button,
   display: inline-flex;
   white-space: pre;
   align-items: baseline;
-  line-height: 1;
+  line-height: 1.45;
 }
 
 .slot-text .char-slot {
-  line-height: 1;
+  line-height: 1.45;
+  padding-bottom: 0.14em;
+  margin-bottom: -0.14em;
 }
 
 .titulo-pagina {

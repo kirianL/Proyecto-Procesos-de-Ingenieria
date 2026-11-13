@@ -17,7 +17,7 @@ export default function MobileHeader() {
           <Dialog.Trigger
             aria-label="Abrir navegación"
             title="Abrir navegación"
-            className="flex size-10 cursor-pointer items-center justify-center rounded-xl border border-grayscale-3/80 bg-grayscale-1 text-grayscale-11 transition-[background-color,transform] duration-150 ease-[var(--ease-out-soft)] hover:bg-grayscale-2 active:scale-[0.95] dark:border-white/[0.12] dark:bg-[#191917] dark:hover:bg-[#222220]"
+            className="flex size-10 cursor-pointer items-center justify-center rounded-lg border border-grayscale-3/80 bg-grayscale-1 text-grayscale-11 transition-[background-color,transform] duration-150 ease-[var(--ease-out-soft)] hover:bg-grayscale-2 active:scale-[0.95] dark:border-white/[0.12] dark:bg-[#191917] dark:hover:bg-[#222220]"
           >
             <ListIcon size={18} weight="bold" />
           </Dialog.Trigger>
@@ -51,7 +51,7 @@ export default function MobileHeader() {
             <Dialog.Close
               aria-label="Cerrar navegación"
               title="Cerrar navegación"
-              className="flex size-9 cursor-pointer items-center justify-center rounded-xl border border-grayscale-3 bg-grayscale-1 text-grayscale-11 transition-[background-color,transform] duration-150 ease-[var(--ease-out-soft)] hover:bg-grayscale-2 active:scale-[0.95] dark:bg-grayscale-3"
+              className="flex size-9 cursor-pointer items-center justify-center rounded-lg border border-grayscale-3 bg-grayscale-1 text-grayscale-11 transition-[background-color,transform] duration-150 ease-[var(--ease-out-soft)] hover:bg-grayscale-2 active:scale-[0.95] dark:bg-grayscale-3"
             >
               <XIcon size={15} weight="bold" />
             </Dialog.Close>

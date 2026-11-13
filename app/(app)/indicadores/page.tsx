@@ -589,7 +589,7 @@ export default function IndicadoresPage() {
               <button
                 type="button"
                 onClick={exportarCsv}
-                className="inline-flex h-8 cursor-pointer items-center gap-1.5 rounded-xl border border-grayscale-3 bg-white px-3 text-[12px] font-medium text-grayscale-11 shadow-2xs transition-[border-color,background-color,color,transform] duration-150 ease-[var(--ease-out-soft)] hover:border-grayscale-5 hover:text-grayscale-12 active:scale-[0.97] dark:border-white/[0.12] dark:bg-[#161614]"
+                className="inline-flex h-9 cursor-pointer items-center gap-1.5 rounded-md border border-grayscale-4 bg-grayscale-1 px-3.5 text-[12.5px] font-medium text-grayscale-11 shadow-[0_1px_2px_rgba(28,22,16,0.04)] transition-[border-color,background-color,color,transform] duration-150 ease-[var(--ease-out-soft)] hover:border-grayscale-5 hover:bg-grayscale-2 hover:text-grayscale-12 active:scale-[0.97] dark:border-grayscale-4 dark:bg-grayscale-2 dark:hover:bg-grayscale-3"
               >
                 <DownloadSimpleIcon size={13} weight="bold" />
                 <span>Exportar CSV</span>
@@ -598,13 +598,13 @@ export default function IndicadoresPage() {
               <button
                 type="button"
                 onClick={exportarPdf}
-                className="inline-flex h-8 cursor-pointer items-center gap-1.5 rounded-xl border border-grayscale-4 bg-grayscale-12 px-3 text-[12px] font-medium text-grayscale-1 shadow-2xs transition-[background-color,transform,opacity] duration-150 ease-[var(--ease-out-soft)] hover:opacity-90 active:scale-[0.97] dark:bg-grayscale-12 dark:text-grayscale-1"
+                className="inline-flex h-9 cursor-pointer items-center gap-1.5 rounded-md border border-transparent bg-grayscale-12 px-3.5 text-[12.5px] font-medium text-grayscale-1 shadow-[0_1px_2px_rgba(28,22,16,0.14)] transition-[background-color,transform] duration-150 ease-[var(--ease-out-soft)] hover:bg-grayscale-11 active:scale-[0.97]"
               >
                 <FileTextIcon size={13} weight="bold" />
                 <span>Reporte PDF</span>
               </button>
 
-              <span className="inline-flex h-8 items-center gap-1.5 rounded-xl bg-grayscale-2 px-2.5 text-[11px] text-grayscale-10 dark:bg-grayscale-2/70">
+              <span className="inline-flex h-9 items-center gap-1.5 rounded-md bg-grayscale-2 px-3 text-[11.5px] text-grayscale-10 dark:bg-grayscale-2/70">
                 <EyeIcon size={12} weight="bold" />
                 Solo lectura
               </span>

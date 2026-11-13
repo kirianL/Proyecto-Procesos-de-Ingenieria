@@ -203,7 +203,7 @@ export function EvidenceGallery({
                   type="button"
                   onClick={anterior}
                   aria-label="Imagen anterior"
-                  className="absolute left-2 z-10 inline-flex size-9 cursor-pointer items-center justify-center rounded-full border border-white/15 bg-black/65 text-white backdrop-blur-xs transition-colors hover:bg-black/85 sm:left-4"
+                  className="absolute left-2 z-10 inline-flex size-9 cursor-pointer items-center justify-center rounded-lg border border-white/15 bg-black/65 text-white backdrop-blur-xs transition-colors hover:bg-black/85 sm:left-4"
                 >
                   <ArrowLeftIcon size={16} weight="bold" />
                 </button>
@@ -221,7 +221,7 @@ export function EvidenceGallery({
                   type="button"
                   onClick={siguiente}
                   aria-label="Siguiente imagen"
-                  className="absolute right-2 z-10 inline-flex size-9 cursor-pointer items-center justify-center rounded-full border border-white/15 bg-black/65 text-white backdrop-blur-xs transition-colors hover:bg-black/85 sm:right-4"
+                  className="absolute right-2 z-10 inline-flex size-9 cursor-pointer items-center justify-center rounded-lg border border-white/15 bg-black/65 text-white backdrop-blur-xs transition-colors hover:bg-black/85 sm:right-4"
                 >
                   <ArrowRightIcon size={16} weight="bold" />
                 </button>

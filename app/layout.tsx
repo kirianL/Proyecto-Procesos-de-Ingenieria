@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Inter, JetBrains_Mono } from "next/font/google";
-import "../styles/globals.css";
 import "slot-text/style.css";
+import "../styles/globals.css";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { SkulletSetup } from "@/components/SkulletSetup";
 

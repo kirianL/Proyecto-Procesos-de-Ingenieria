@@ -28,7 +28,9 @@ function leerArchivoComoDataUrl(file: File): Promise<string> {
   });
 }
 
-async function comprimirImagen(file: File): Promise<{ url: string; bytes: number }> {
+async function comprimirImagen(
+  file: File,
+): Promise<{ url: string; bytes: number }> {
   const dataUrl = await leerArchivoComoDataUrl(file);
   if (file.type === "image/svg+xml" || typeof window === "undefined") {
     return { url: dataUrl, bytes: file.size };
@@ -164,7 +166,8 @@ export function EvidenceUploader({
                   : "Arrastra fotos aquí o selecciona desde tu dispositivo"}
               </p>
               <p className="font-mono text-[10.5px] text-grayscale-9">
-                Opcional | Máx. {maxArchivos} imágenes ({value.length}/{maxArchivos})
+                Opcional | Máx. {maxArchivos} imágenes ({value.length}/
+                {maxArchivos})
               </p>
             </div>
           </div>
@@ -174,7 +177,7 @@ export function EvidenceUploader({
               type="button"
               disabled={procesando || value.length >= maxArchivos}
               onClick={() => fileInputRef.current?.click()}
-              className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg border border-grayscale-4/80 bg-white px-2.5 py-1.5 text-[11.5px] font-medium text-grayscale-11 transition-colors hover:border-grayscale-5 hover:text-grayscale-12 disabled:cursor-not-allowed disabled:opacity-50 dark:border-white/[0.12] dark:bg-[#161614]"
+              className="inline-flex h-8 cursor-pointer items-center gap-1.5 rounded-md border border-grayscale-4/80 bg-white px-2.5 text-[12px] font-medium text-grayscale-11 transition-colors hover:border-grayscale-5 hover:text-grayscale-12 disabled:cursor-not-allowed disabled:opacity-50 dark:border-white/[0.12] dark:bg-[#161614]"
             >
               <UploadSimpleIcon size={13} weight="bold" />
               <span>Subir foto</span>
@@ -184,7 +187,7 @@ export function EvidenceUploader({
               type="button"
               disabled={procesando || value.length >= maxArchivos}
               onClick={() => cameraInputRef.current?.click()}
-              className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg border border-grayscale-4/80 bg-white px-2.5 py-1.5 text-[11.5px] font-medium text-grayscale-11 transition-colors hover:border-grayscale-5 hover:text-grayscale-12 disabled:cursor-not-allowed disabled:opacity-50 dark:border-white/[0.12] dark:bg-[#161614]"
+              className="inline-flex h-8 cursor-pointer items-center gap-1.5 rounded-md border border-grayscale-4/80 bg-white px-2.5 text-[12px] font-medium text-grayscale-11 transition-colors hover:border-grayscale-5 hover:text-grayscale-12 disabled:cursor-not-allowed disabled:opacity-50 dark:border-white/[0.12] dark:bg-[#161614]"
             >
               <CameraIcon size={13} weight="bold" />
               <span>Cámara</span>
@@ -253,4 +256,3 @@ export function EvidenceUploader({
     </div>
   );
 }
-
