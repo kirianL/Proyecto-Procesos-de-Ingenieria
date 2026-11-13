@@ -38,7 +38,7 @@ function applyThemeToDom(resolved: ResolvedTheme) {
   const root = document.documentElement;
   root.classList.toggle("dark", resolved === "dark");
 
-  const color = resolved === "dark" ? "#0b0b0a" : "#f9f9f8";
+  const color = resolved === "dark" ? "#131312" : "#ffffff";
   const metas = document.querySelectorAll('meta[name="theme-color"]');
 
   if (metas.length === 0) {

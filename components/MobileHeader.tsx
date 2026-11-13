@@ -12,14 +12,14 @@ export default function MobileHeader() {
 
   return (
     <Dialog.Root open={open} onOpenChange={(nextOpen) => setOpen(nextOpen)}>
-      <header className="pointer-events-none fixed inset-x-0 top-0 z-50 flex min-h-14 pt-[env(safe-area-inset-top)] xl:hidden">
-        <div className="app-canvas pointer-events-auto relative mx-auto flex h-14 w-full items-center justify-between border-b border-grayscale-3/70 p-2 px-4 dark:border-white/[0.09] dark:bg-[#0e0e0d]/95">
+      <header className="pointer-events-none fixed inset-x-0 top-0 z-50 border-b border-grayscale-3/70 bg-white/95 pt-[env(safe-area-inset-top)] backdrop-blur-md xl:hidden dark:border-white/[0.09] dark:bg-[#131312]/95">
+        <div className="pointer-events-auto relative mx-auto flex h-14 w-full items-center justify-between px-4">
           <Dialog.Trigger
             aria-label="Abrir navegación"
             title="Abrir navegación"
-            className="flex size-8 cursor-pointer items-center justify-center rounded-lg border border-grayscale-3/80 bg-grayscale-1 text-grayscale-11 transition-[background-color,transform] duration-150 ease-[var(--ease-out-soft)] hover:bg-grayscale-2 active:scale-[0.95] dark:border-white/[0.12] dark:bg-[#191917] dark:hover:bg-[#222220]"
+            className="flex size-10 cursor-pointer items-center justify-center rounded-xl border border-grayscale-3/80 bg-grayscale-1 text-grayscale-11 transition-[background-color,transform] duration-150 ease-[var(--ease-out-soft)] hover:bg-grayscale-2 active:scale-[0.95] dark:border-white/[0.12] dark:bg-[#191917] dark:hover:bg-[#222220]"
           >
-            <ListIcon size={17} weight="bold" />
+            <ListIcon size={18} weight="bold" />
           </Dialog.Trigger>
           <Link href="/" className="flex items-center gap-2">
             <span className="flex size-7 items-center justify-center rounded-lg bg-grayscale-12 text-grayscale-1">
