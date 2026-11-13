@@ -45,13 +45,13 @@ export function SolicitudCard({
   const contenido = (
     <article
       className={cn(
-        "card rounded-[1.25rem] border border-grayscale-3/85 bg-grayscale-2 p-1 shadow-2xs transition-all duration-200 hover:border-grayscale-4 hover:shadow-xs dark:border-grayscale-4/40 dark:bg-grayscale-3/50",
+        "card rounded-[1.25rem] border border-grayscale-4/90 bg-grayscale-2 p-1 shadow-2xs transition-all duration-200 hover:border-grayscale-5 hover:shadow-xs dark:border-white/[0.22] dark:bg-[#191917] dark:hover:border-white/[0.30]",
         href && "card-hover cursor-pointer",
         className,
       )}
     >
       {/* CUERPO SUPERIOR: isla blanca enmarcada dentro del chasis gris */}
-      <div className="rounded-[1rem] border border-grayscale-3/60 bg-white p-4 shadow-[0_1px_2px_rgba(28,22,16,0.03)] dark:border-grayscale-4/30 dark:bg-grayscale-2">
+      <div className="rounded-[1rem] border border-grayscale-3/60 bg-white p-4 shadow-[0_1px_2px_rgba(28,22,16,0.03)] dark:border-white/[0.08] dark:bg-[#121211]">
         <div className="flex items-start gap-3">
           <span
             skullet-block=""

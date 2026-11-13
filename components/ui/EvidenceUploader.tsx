@@ -154,7 +154,7 @@ export function EvidenceUploader({
       >
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-start gap-2.5">
-            <span className="flex size-8 shrink-0 items-center justify-center rounded-lg border border-grayscale-3/85 bg-white text-grayscale-10 dark:border-grayscale-4/50 dark:bg-grayscale-2">
+            <span className="flex size-8 shrink-0 items-center justify-center rounded-lg border border-grayscale-3/85 bg-white text-grayscale-10 dark:border-white/[0.12] dark:bg-[#161614]">
               <ImageIcon size={15} weight="duotone" />
             </span>
             <div className="min-w-0">
@@ -174,7 +174,7 @@ export function EvidenceUploader({
               type="button"
               disabled={procesando || value.length >= maxArchivos}
               onClick={() => fileInputRef.current?.click()}
-              className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg border border-grayscale-4/80 bg-white px-2.5 py-1.5 text-[11.5px] font-medium text-grayscale-11 transition-colors hover:border-grayscale-5 hover:text-grayscale-12 disabled:cursor-not-allowed disabled:opacity-50 dark:border-grayscale-4/50 dark:bg-grayscale-2"
+              className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg border border-grayscale-4/80 bg-white px-2.5 py-1.5 text-[11.5px] font-medium text-grayscale-11 transition-colors hover:border-grayscale-5 hover:text-grayscale-12 disabled:cursor-not-allowed disabled:opacity-50 dark:border-white/[0.12] dark:bg-[#161614]"
             >
               <UploadSimpleIcon size={13} weight="bold" />
               <span>Subir foto</span>
@@ -184,7 +184,7 @@ export function EvidenceUploader({
               type="button"
               disabled={procesando || value.length >= maxArchivos}
               onClick={() => cameraInputRef.current?.click()}
-              className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg border border-grayscale-4/80 bg-white px-2.5 py-1.5 text-[11.5px] font-medium text-grayscale-11 transition-colors hover:border-grayscale-5 hover:text-grayscale-12 disabled:cursor-not-allowed disabled:opacity-50 dark:border-grayscale-4/50 dark:bg-grayscale-2"
+              className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg border border-grayscale-4/80 bg-white px-2.5 py-1.5 text-[11.5px] font-medium text-grayscale-11 transition-colors hover:border-grayscale-5 hover:text-grayscale-12 disabled:cursor-not-allowed disabled:opacity-50 dark:border-white/[0.12] dark:bg-[#161614]"
             >
               <CameraIcon size={13} weight="bold" />
               <span>Cámara</span>

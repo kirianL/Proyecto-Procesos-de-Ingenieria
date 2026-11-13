@@ -150,8 +150,8 @@ export default function DetalleSolicitudPage({ params }: Props) {
           />
 
           {/* Ficha técnica con fusión moderna dual-tone */}
-          <section className="card rounded-[1.25rem] border border-grayscale-3/85 bg-grayscale-2 p-1 shadow-2xs dark:border-grayscale-4/40 dark:bg-grayscale-3/50">
-            <div className="rounded-[1rem] border border-grayscale-3/60 bg-white p-5 shadow-[0_1px_2px_rgba(28,22,16,0.03)] dark:border-grayscale-4/30 dark:bg-grayscale-2 space-y-4">
+          <section className="card rounded-[1.25rem] border border-grayscale-4/90 bg-grayscale-2 p-1 shadow-2xs dark:border-white/[0.22] dark:bg-[#191917]">
+            <div className="rounded-[1rem] border border-grayscale-3/60 bg-white p-5 shadow-[0_1px_2px_rgba(28,22,16,0.03)] dark:border-white/[0.08] dark:bg-[#121211] space-y-4">
               <div className="grid gap-3.5 sm:grid-cols-2">
                 <InfoPanel>
                   <InfoRow icon={UserIcon} label="Solicitante">
@@ -230,8 +230,8 @@ export default function DetalleSolicitudPage({ params }: Props) {
           </section>
 
           {/* Historial preview con fusión dual-tone */}
-          <section className="card rounded-[1.25rem] border border-grayscale-3/85 bg-grayscale-2 p-1 shadow-2xs dark:border-grayscale-4/40 dark:bg-grayscale-3/50">
-            <div className="rounded-[1rem] border border-grayscale-3/60 bg-white p-5 shadow-[0_1px_2px_rgba(28,22,16,0.03)] dark:border-grayscale-4/30 dark:bg-grayscale-2 space-y-4">
+          <section className="card rounded-[1.25rem] border border-grayscale-4/90 bg-grayscale-2 p-1 shadow-2xs dark:border-white/[0.22] dark:bg-[#191917]">
+            <div className="rounded-[1rem] border border-grayscale-3/60 bg-white p-5 shadow-[0_1px_2px_rgba(28,22,16,0.03)] dark:border-white/[0.08] dark:bg-[#121211] space-y-4">
               <div className="flex items-center justify-between gap-2 border-b border-grayscale-3/80 pb-3 dark:border-grayscale-3/50">
                 <h2 className="text-[13px] font-semibold text-grayscale-12">
                   Línea de tiempo reciente

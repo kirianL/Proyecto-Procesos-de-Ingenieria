@@ -54,6 +54,21 @@ const MESES_LARGOS = [
 
 const DIAS_SEMANA = ["LU", "MA", "MI", "JU", "VI", "SA", "DO"];
 
+// Curvas al estilo de popovers nativos (Radix / Linear / macOS):
+// entrada con ease-out pronunciado y salida más corta con ease-in suave.
+const CURVA_ENTRADA = "cubic-bezier(0.23, 1, 0.32, 1)";
+const CURVA_SALIDA = "cubic-bezier(0.4, 0, 0.7, 0.2)";
+const DURACION_ENTRADA = 280;
+const DURACION_SALIDA = 150;
+
+// Pre-cache de fechas parseadas a milisegundos para evitar recalcular
+// `parseFechaLocal` y `getTime()` en cada evento de hover o selección.
+const parseFechaLocalMs = (iso: string): number => {
+  const [y, m, d] = iso.slice(0, 10).split("-").map(Number);
+  if (!y || !m || !d) return 0;
+  return new Date(y, m - 1, d).getTime();
+};
+
 function pad2(n: number): string {
   return String(n).padStart(2, "0");
 }
@@ -139,6 +154,7 @@ export function DateRangePicker({
   const contenedorRef = useRef<HTMLDivElement>(null);
   const cierreTimeoutRef = useRef<number | null>(null);
   const rafRef = useRef<number | null>(null);
+  const reducirMovimiento = useRef(false);
 
   const [abierto, setAbierto] = useState(false);
   const [montado, setMontado] = useState(false);
@@ -153,16 +169,30 @@ export function DateRangePicker({
 
   const diasConActividad = useMemo(() => {
     const set = new Set<string>();
-    for (const f of fechasConActividad) {
+    for (let i = 0; i < fechasConActividad.length; i++) {
+      const f = fechasConActividad[i];
       if (!f) continue;
-      const d = new Date(f);
-      if (!Number.isNaN(d.getTime())) {
-        set.add(formatearIsoLocal(d));
-      } else if (/^\d{4}-\d{2}-\d{2}/.test(f)) {
+      if (f.length >= 10 && f[4] === "-" && f[7] === "-") {
         set.add(f.slice(0, 10));
+      } else {
+        const d = new Date(f);
+        if (!Number.isNaN(d.getTime())) {
+          set.add(formatearIsoLocal(d));
+        }
       }
     }
     return set;
+  }, [fechasConActividad]);
+
+  const timestampsActividad = useMemo(() => {
+    const arr: number[] = [];
+    for (let i = 0; i < fechasConActividad.length; i++) {
+      const f = fechasConActividad[i];
+      if (!f) continue;
+      const t = new Date(f).getTime();
+      if (!Number.isNaN(t)) arr.push(t);
+    }
+    return arr;
   }, [fechasConActividad]);
 
   const abrir = () => {
@@ -176,13 +206,23 @@ export function DateRangePicker({
     }
 
     const base = parseFechaLocal(hasta || desde || hoyIsoLocal());
+    reducirMovimiento.current = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
     setMesVista({ anio: base.getFullYear(), mes: base.getMonth() });
     setPaso("inicio");
     setHoverIso(null);
     setAbierto(true);
-    setMontado(true);
     onActivate();
 
+    // Si se reabre a mitad del cierre, la transición se invierte
+    // desde su posición actual sin saltos.
+    if (montado) {
+      setVisible(true);
+      return;
+    }
+
+    setMontado(true);
     rafRef.current = window.requestAnimationFrame(() => {
       rafRef.current = window.requestAnimationFrame(() => {
         setVisible(true);
@@ -201,10 +241,11 @@ export function DateRangePicker({
     if (cierreTimeoutRef.current !== null) {
       window.clearTimeout(cierreTimeoutRef.current);
     }
+    // Respaldo por si `transitionend` no se dispara (pestaña oculta, etc.).
     cierreTimeoutRef.current = window.setTimeout(() => {
       setMontado(false);
       cierreTimeoutRef.current = null;
-    }, 185);
+    }, DURACION_SALIDA + 80);
   };
 
   useEffect(() => {
@@ -269,14 +310,6 @@ export function DateRangePicker({
     setHoverIso(null);
   };
 
-  const aplicarPreset = (nuevoDesde: string, nuevoHasta: string) => {
-    onChange({ desde: nuevoDesde, hasta: nuevoHasta });
-    const ref = parseFechaLocal(nuevoHasta);
-    setMesVista({ anio: ref.getFullYear(), mes: ref.getMonth() });
-    setPaso("inicio");
-    setHoverIso(null);
-  };
-
   const rangoVisual = useMemo(() => {
     if (paso === "fin" && hoverIso) {
       return desde <= hoverIso
@@ -289,19 +322,17 @@ export function DateRangePicker({
   }, [paso, hoverIso, desde, hasta]);
 
   const conteoEnRango = useMemo(() => {
-    if (!fechasConActividad.length) return 0;
-    const inicioMs = parseFechaLocal(rangoVisual.inicio).getTime();
-    const finDate = parseFechaLocal(rangoVisual.fin);
-    finDate.setHours(23, 59, 59, 999);
-    const finMs = finDate.getTime();
+    if (!timestampsActividad.length) return 0;
+    const inicioMs = parseFechaLocalMs(rangoVisual.inicio);
+    const finMs = parseFechaLocalMs(rangoVisual.fin) + 86399999;
 
     let total = 0;
-    for (const f of fechasConActividad) {
-      const t = new Date(f).getTime();
-      if (!Number.isNaN(t) && t >= inicioMs && t <= finMs) total++;
+    for (let i = 0; i < timestampsActividad.length; i++) {
+      const t = timestampsActividad[i];
+      if (t >= inicioMs && t <= finMs) total++;
     }
     return total;
-  }, [fechasConActividad, rangoVisual]);
+  }, [timestampsActividad, rangoVisual.inicio, rangoVisual.fin]);
 
   const celdas = useMemo(
     () => construirGrillaMes(mesVista.anio, mesVista.mes),
@@ -310,33 +341,14 @@ export function DateRangePicker({
 
   const etiquetaMesActual = `${MESES_LARGOS[mesVista.mes] ?? ""} ${mesVista.anio}`;
 
-  const presets = useMemo(() => {
-    const hoy = new Date();
-    const inicioMesActual = formatearIsoLocal(
-      new Date(hoy.getFullYear(), hoy.getMonth(), 1),
-    );
-    const inicioMesPasado = formatearIsoLocal(
-      new Date(hoy.getFullYear(), hoy.getMonth() - 1, 1),
-    );
-    const finMesPasado = formatearIsoLocal(
-      new Date(hoy.getFullYear(), hoy.getMonth(), 0),
-    );
-    return [
-      { label: "7 días", desde: haceDiasIsoLocal(6), hasta: hoyIsoLocal() },
-      { label: "15 días", desde: haceDiasIsoLocal(14), hasta: hoyIsoLocal() },
-      { label: "Este mes", desde: inicioMesActual, hasta: hoyIsoLocal() },
-      { label: "Mes ant.", desde: inicioMesPasado, hasta: finMesPasado },
-    ];
-  }, []);
-
   return (
     <div ref={contenedorRef} className={cn("relative inline-flex", className)}>
       <div
         className={cn(
           "inline-flex h-[38px] items-center rounded-xl border p-1 transition-all duration-200 ease-out",
           activo || abierto
-            ? "border-grayscale-4/80 bg-grayscale-2 shadow-2xs dark:border-grayscale-5/50 dark:bg-grayscale-2/90"
-            : "border-transparent bg-grayscale-2 hover:bg-grayscale-2/90 dark:bg-grayscale-2/70",
+            ? "border-grayscale-4/80 bg-grayscale-2 shadow-2xs dark:border-white/[0.22] dark:bg-[#181816]"
+            : "border-transparent bg-grayscale-2 hover:bg-grayscale-2/90 dark:border-white/[0.09] dark:bg-[#161614] dark:hover:border-white/[0.15]",
         )}
       >
         <button
@@ -347,7 +359,7 @@ export function DateRangePicker({
           className={cn(
             "inline-flex h-full cursor-pointer items-center gap-1.5 rounded-lg px-2.5 text-[13px] font-medium transition-all duration-200",
             activo || abierto
-              ? "bg-grayscale-1 text-grayscale-12 shadow-[0_1px_2px_rgba(28,22,16,0.08)] dark:bg-grayscale-3"
+              ? "bg-grayscale-1 text-grayscale-12 shadow-[0_1px_2px_rgba(28,22,16,0.08)] dark:border dark:border-white/[0.1] dark:bg-[#252522]"
               : "text-grayscale-10 hover:text-grayscale-12",
           )}
         >
@@ -397,17 +409,50 @@ export function DateRangePicker({
         <div
           role="dialog"
           aria-label="Selector de rango de fechas"
+          onTransitionEnd={(e) => {
+            if (
+              e.target === e.currentTarget &&
+              e.propertyName === "opacity" &&
+              !visible
+            ) {
+              if (cierreTimeoutRef.current !== null) {
+                window.clearTimeout(cierreTimeoutRef.current);
+                cierreTimeoutRef.current = null;
+              }
+              setMontado(false);
+            }
+          }}
           className={cn(
-            "absolute top-[calc(100%+0.5rem)] left-0 z-40 w-[min(324px,calc(100vw-2rem))] origin-top-left will-change-[transform,opacity,filter]",
-            visible
-              ? "pointer-events-auto translate-y-0 scale-100 opacity-100 blur-0 transition-[transform,opacity,filter] duration-200 ease-[cubic-bezier(0.16,1,0.3,1)]"
-              : "pointer-events-none translate-y-1.5 scale-[0.96] opacity-0 blur-[2px] transition-[transform,opacity,filter] duration-[170ms] ease-[cubic-bezier(0.4,0,1,1)]",
+            "absolute top-[calc(100%+0.5rem)] left-0 z-40 w-[min(324px,calc(100vw-2rem))] origin-[18px_-6px]",
+            visible ? "pointer-events-auto" : "pointer-events-none",
           )}
+          style={{
+            opacity: visible ? 1 : 0,
+            transform: visible
+              ? "translate3d(0,0,0) scale(1)"
+              : `translate3d(0,${reducirMovimiento.current ? 0 : -6}px,0) scale(${reducirMovimiento.current ? 1 : 0.96})`,
+            transition: visible
+              ? `transform ${DURACION_ENTRADA}ms ${CURVA_ENTRADA}, opacity 180ms ${CURVA_ENTRADA}`
+              : `transform ${DURACION_SALIDA}ms ${CURVA_SALIDA}, opacity ${DURACION_SALIDA}ms ${CURVA_SALIDA}`,
+            willChange: "transform, opacity",
+            backfaceVisibility: "hidden",
+          }}
         >
-          <div className="rounded-[1.25rem] border border-grayscale-3/85 bg-grayscale-2 p-1 shadow-[0_18px_40px_-15px_rgba(24,24,22,0.18)] dark:border-grayscale-4/50 dark:bg-grayscale-3">
-            <div className="rounded-[1rem] border border-grayscale-3/70 bg-white p-3.5 dark:border-grayscale-4/35 dark:bg-grayscale-2">
-              {/* Indicador de extremos Desde / Hasta */}
-              <div className="mb-3 grid grid-cols-2 gap-1.5">
+          <div className="rounded-[1.25rem] border border-grayscale-3/85 bg-grayscale-2 p-1 shadow-[0_18px_40px_-15px_rgba(24,24,22,0.18)] dark:border-white/[0.15] dark:bg-[#1a1a18] dark:shadow-[0_24px_48px_-14px_rgba(0,0,0,0.82)]">
+            <div
+              className="rounded-[1rem] border border-grayscale-3/70 bg-white p-3.5 dark:border-white/[0.08] dark:bg-[#121211]"
+              style={{
+                opacity: visible ? 1 : 0,
+                transform: visible || reducirMovimiento.current
+                  ? "translate3d(0,0,0)"
+                  : "translate3d(0,-2px,0)",
+                transition: visible
+                  ? `opacity 220ms ${CURVA_ENTRADA} 50ms, transform ${DURACION_ENTRADA}ms ${CURVA_ENTRADA} 30ms`
+                  : `opacity 90ms ${CURVA_SALIDA}, transform 90ms ${CURVA_SALIDA}`,
+              }}
+            >
+              {/* Indicador de extremos Desde y Hasta minimalista y continuo */}
+              <div className="mb-3 flex items-center justify-between rounded-xl bg-grayscale-2/70 p-1 dark:border dark:border-white/[0.06] dark:bg-[#191917]">
                 <button
                   type="button"
                   onClick={() => {
@@ -416,19 +461,23 @@ export function DateRangePicker({
                     setMesVista({ anio: d.getFullYear(), mes: d.getMonth() });
                   }}
                   className={cn(
-                    "cursor-pointer rounded-xl border px-2.5 py-1.5 text-left transition-all duration-150",
+                    "flex-1 cursor-pointer rounded-lg px-2.5 py-1.5 text-left transition-all duration-150",
                     paso === "inicio"
-                      ? "border-grayscale-12/35 bg-grayscale-2/75 dark:border-grayscale-9/45 dark:bg-grayscale-3/75"
-                      : "border-grayscale-3/75 bg-transparent hover:border-grayscale-4 dark:border-grayscale-4/40",
+                      ? "bg-white text-grayscale-12 shadow-2xs dark:border dark:border-white/[0.1] dark:bg-[#252522]"
+                      : "text-grayscale-10 hover:text-grayscale-12",
                   )}
                 >
-                  <span className="block font-mono text-[9.5px] font-medium tracking-wider text-grayscale-8 uppercase">
+                  <span className="block font-mono text-[9px] font-medium tracking-wider text-grayscale-8 uppercase">
                     Desde
                   </span>
                   <span className="mt-0.5 block font-mono text-[11.5px] font-semibold text-grayscale-12 tabular-nums">
                     {formatearCorto(rangoVisual.inicio, true)}
                   </span>
                 </button>
+
+                <div className="px-1 text-grayscale-7">
+                  <span className="text-[11px]">→</span>
+                </div>
 
                 <button
                   type="button"
@@ -438,13 +487,13 @@ export function DateRangePicker({
                     setMesVista({ anio: h.getFullYear(), mes: h.getMonth() });
                   }}
                   className={cn(
-                    "cursor-pointer rounded-xl border px-2.5 py-1.5 text-left transition-all duration-150",
+                    "flex-1 cursor-pointer rounded-lg px-2.5 py-1.5 text-left transition-all duration-150",
                     paso === "fin"
-                      ? "border-grayscale-12/35 bg-grayscale-2/75 dark:border-grayscale-9/45 dark:bg-grayscale-3/75"
-                      : "border-grayscale-3/75 bg-transparent hover:border-grayscale-4 dark:border-grayscale-4/40",
+                      ? "bg-white text-grayscale-12 shadow-2xs dark:border dark:border-white/[0.1] dark:bg-[#252522]"
+                      : "text-grayscale-10 hover:text-grayscale-12",
                   )}
                 >
-                  <span className="block font-mono text-[9.5px] font-medium tracking-wider text-grayscale-8 uppercase">
+                  <span className="block font-mono text-[9px] font-medium tracking-wider text-grayscale-8 uppercase">
                     Hasta
                   </span>
                   <span className="mt-0.5 block font-mono text-[11.5px] font-semibold text-grayscale-12 tabular-nums">
@@ -459,25 +508,20 @@ export function DateRangePicker({
                   type="button"
                   onClick={() => navegarMes(-1)}
                   aria-label="Mes anterior"
-                  className="inline-flex h-7 w-7 cursor-pointer items-center justify-center rounded-lg border border-grayscale-3/75 text-grayscale-10 transition-colors hover:border-grayscale-5 hover:bg-grayscale-2 hover:text-grayscale-12"
+                  className="inline-flex h-7 w-7 cursor-pointer items-center justify-center rounded-lg border border-grayscale-3/75 text-grayscale-10 transition-colors hover:border-grayscale-5 hover:bg-grayscale-2 hover:text-grayscale-12 dark:border-white/[0.1] dark:hover:border-white/[0.2] dark:hover:bg-white/[0.06]"
                 >
                   <CaretLeftIcon size={12} weight="bold" />
                 </button>
 
-                <SlotNumber
-                  value={etiquetaMesActual}
-                  animateOnMount={false}
-                  duration={210}
-                  stagger={10}
-                  bounce={0.12}
-                  className="font-sans text-[12.5px] font-semibold capitalize text-grayscale-12"
-                />
+                <span className="font-sans text-[12.5px] font-semibold capitalize text-grayscale-12 select-none">
+                  {etiquetaMesActual}
+                </span>
 
                 <button
                   type="button"
                   onClick={() => navegarMes(1)}
                   aria-label="Mes siguiente"
-                  className="inline-flex h-7 w-7 cursor-pointer items-center justify-center rounded-lg border border-grayscale-3/75 text-grayscale-10 transition-colors hover:border-grayscale-5 hover:bg-grayscale-2 hover:text-grayscale-12"
+                  className="inline-flex h-7 w-7 cursor-pointer items-center justify-center rounded-lg border border-grayscale-3/75 text-grayscale-10 transition-colors hover:border-grayscale-5 hover:bg-grayscale-2 hover:text-grayscale-12 dark:border-white/[0.1] dark:hover:border-white/[0.2] dark:hover:bg-white/[0.06]"
                 >
                   <CaretRightIcon size={12} weight="bold" />
                 </button>
@@ -498,7 +542,9 @@ export function DateRangePicker({
               {/* Grilla de días */}
               <div
                 className="grid grid-cols-7 gap-y-0.5"
-                onMouseLeave={() => setHoverIso(null)}
+                onMouseLeave={() => {
+                  if (hoverIso) setHoverIso(null);
+                }}
               >
                 {celdas.map((celda, index) => {
                   const esInicio = celda.iso === rangoVisual.inicio;
@@ -514,29 +560,31 @@ export function DateRangePicker({
                     <div
                       key={celda.iso}
                       className={cn(
-                        "relative flex items-center justify-center transition-colors duration-150",
+                        "relative flex items-center justify-center",
                         enRango &&
-                          "bg-grayscale-2/90 dark:bg-grayscale-4/45",
+                          "bg-grayscale-2/90 dark:bg-white/[0.08]",
                         enRango && col === 0 && "rounded-l-lg",
                         enRango && col === 6 && "rounded-r-lg",
                         esInicio &&
                           rangoVisual.inicio !== rangoVisual.fin &&
-                          "rounded-l-lg bg-grayscale-2/90 dark:bg-grayscale-4/45",
+                          "rounded-l-lg bg-grayscale-2/90 dark:bg-white/[0.08]",
                         esFin &&
                           rangoVisual.inicio !== rangoVisual.fin &&
-                          "rounded-r-lg bg-grayscale-2/90 dark:bg-grayscale-4/45",
+                          "rounded-r-lg bg-grayscale-2/90 dark:bg-white/[0.08]",
                       )}
                     >
                       <button
                         type="button"
                         onClick={() => alSeleccionarDia(celda.iso)}
                         onMouseEnter={() => {
-                          if (paso === "fin") setHoverIso(celda.iso);
+                          if (paso === "fin" && hoverIso !== celda.iso) {
+                            setHoverIso(celda.iso);
+                          }
                         }}
                         aria-label={celda.iso}
                         aria-pressed={esExtremo}
                         className={cn(
-                          "relative flex h-8 w-full cursor-pointer flex-col items-center justify-center rounded-lg font-mono text-[11.5px] tabular-nums transition-all duration-150",
+                          "relative flex h-8 w-full cursor-pointer flex-col items-center justify-center rounded-lg font-mono text-[11.5px] tabular-nums",
                           esExtremo
                             ? "z-10 bg-grayscale-12 font-semibold text-grayscale-1 shadow-2xs"
                             : enRango
@@ -554,7 +602,7 @@ export function DateRangePicker({
                           <span
                             aria-hidden
                             className={cn(
-                              "absolute bottom-1 h-1 w-1 rounded-full transition-colors",
+                              "absolute bottom-1 h-1 w-1 rounded-full",
                               esExtremo
                                 ? "bg-grayscale-1/85"
                                 : "bg-grayscale-8/80",
@@ -563,29 +611,6 @@ export function DateRangePicker({
                         )}
                       </button>
                     </div>
-                  );
-                })}
-              </div>
-
-              {/* Atajos rápidos */}
-              <div className="mt-3 flex flex-wrap items-center gap-1 border-t border-grayscale-3/65 pt-2.5">
-                {presets.map((preset) => {
-                  const esActivo =
-                    desde === preset.desde && hasta === preset.hasta;
-                  return (
-                    <button
-                      key={preset.label}
-                      type="button"
-                      onClick={() => aplicarPreset(preset.desde, preset.hasta)}
-                      className={cn(
-                        "flex-1 cursor-pointer whitespace-nowrap rounded-lg px-2 py-1 text-center text-[11px] font-medium transition-all duration-150",
-                        esActivo
-                          ? "bg-grayscale-12 text-grayscale-1"
-                          : "bg-grayscale-2/75 text-grayscale-10 hover:bg-grayscale-3/70 hover:text-grayscale-12",
-                      )}
-                    >
-                      {preset.label}
-                    </button>
                   );
                 })}
               </div>

@@ -144,8 +144,8 @@ function SidebarNavContent({ onNavigate }: { onNavigate?: () => void }) {
                 className={cn(
                   "group flex items-center gap-2.5 rounded-lg px-2.5 py-[7px] text-[13px] transition-[background-color,color,box-shadow,border-color] duration-150",
                   activo
-                    ? "border border-grayscale-3/80 bg-grayscale-1 font-medium text-grayscale-12 shadow-[0_1px_2px_rgba(28,22,16,0.05)] dark:bg-grayscale-2"
-                    : "border border-transparent text-grayscale-10 hover:bg-grayscale-2/80 hover:text-grayscale-12 dark:hover:bg-grayscale-2/60",
+                    ? "border border-grayscale-3/80 bg-grayscale-1 font-medium text-grayscale-12 shadow-[0_1px_2px_rgba(28,22,16,0.05)] dark:border-white/[0.1] dark:bg-[#191917] dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]"
+                    : "border border-transparent text-grayscale-10 hover:bg-grayscale-2/80 hover:text-grayscale-12 dark:hover:bg-white/[0.04]",
                   !disponible && !activo && "text-grayscale-9",
                 )}
               >
@@ -204,7 +204,7 @@ function SidebarNavContent({ onNavigate }: { onNavigate?: () => void }) {
 
 export default function Sidebar() {
   return (
-    <aside className="app-canvas fixed left-0 top-0 z-40 hidden h-full w-64 shrink-0 flex-col overflow-y-auto border-r border-grayscale-3/70 p-4 xl:flex 2xl:w-72 dark:border-grayscale-3/50">
+    <aside className="app-canvas fixed left-0 top-0 z-40 hidden h-full w-64 shrink-0 flex-col overflow-y-auto border-r border-grayscale-3/70 p-4 xl:flex 2xl:w-72 dark:border-white/[0.09] dark:bg-[#0e0e0d]">
       <SidebarNavContent />
     </aside>
   );

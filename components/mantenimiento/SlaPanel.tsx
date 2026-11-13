@@ -90,7 +90,7 @@ export function SlaPanel({
   return (
     <div
       className={cn(
-        "rounded-xl border border-grayscale-3/75 bg-grayscale-1/60 p-3.5 dark:border-grayscale-4/40 dark:bg-grayscale-3/30",
+        "rounded-xl border border-grayscale-3/75 bg-grayscale-1/60 p-3.5 dark:border-white/[0.1] dark:bg-[#171715]",
         className,
       )}
     >

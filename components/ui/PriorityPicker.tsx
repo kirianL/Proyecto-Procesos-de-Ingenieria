@@ -155,7 +155,7 @@ export function PriorityPicker({
                 "group relative flex cursor-pointer flex-col justify-between rounded-xl border p-3 text-left transition-[border-color,background-color,box-shadow,transform] duration-200 ease-out active:scale-[0.985]",
                 activo
                   ? cn(opcion.pastilla, "shadow-[0_1px_2px_rgba(28,22,16,0.06)]")
-                  : "border-grayscale-3/85 bg-white hover:border-grayscale-4 hover:bg-grayscale-1/70 dark:border-grayscale-4/50 dark:bg-grayscale-2 dark:hover:bg-grayscale-3/45",
+                  : "border-grayscale-3/85 bg-white hover:border-grayscale-4 hover:bg-grayscale-1/70 dark:border-white/[0.11] dark:bg-[#171715] dark:hover:border-white/[0.2] dark:hover:bg-[#1e1e1c]",
               )}
             >
               <div>
@@ -205,7 +205,7 @@ export function PriorityPicker({
               </div>
 
               {/* Fila 4: Pie con 8 mini-barras progresivas */}
-              <div className="mt-3 flex items-center justify-between gap-2 border-t border-grayscale-3/60 pt-2 dark:border-grayscale-4/30">
+              <div className="mt-3 flex items-center justify-between gap-2 border-t border-grayscale-3/60 pt-2 dark:border-white/[0.08]">
                 <div
                   aria-hidden
                   skullet-block=""
@@ -236,7 +236,7 @@ export function PriorityPicker({
       </div>
 
       {/* Barra inferior de llenado acumulativo uniforme en 12 segmentos */}
-      <div className="rounded-xl border border-grayscale-3/75 bg-grayscale-1/60 px-3 py-2.5 dark:border-grayscale-4/40 dark:bg-grayscale-3/30">
+      <div className="rounded-xl border border-grayscale-3/75 bg-grayscale-1/60 px-3 py-2.5 dark:border-white/[0.1] dark:bg-[#171715]">
         <div
           aria-hidden
           skullet-block=""

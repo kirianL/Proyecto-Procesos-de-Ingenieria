@@ -8,7 +8,7 @@ function ThemeColorSync() {
 
   useEffect(() => {
     if (!resolvedTheme) return;
-    const color = resolvedTheme === "dark" ? "#111110" : "#f9f9f8";
+    const color = resolvedTheme === "dark" ? "#0b0b0a" : "#f9f9f8";
     const metas = document.querySelectorAll('meta[name="theme-color"]');
 
     if (metas.length === 0) {

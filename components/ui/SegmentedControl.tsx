@@ -78,7 +78,7 @@ export function SegmentedControl<T extends string>({
       role="group"
       aria-label={ariaLabel}
       className={cn(
-        "relative inline-flex flex-wrap items-center gap-0.5 rounded-xl bg-grayscale-2 p-1 dark:bg-grayscale-2/70",
+        "relative inline-flex flex-wrap items-center gap-0.5 rounded-xl bg-grayscale-2 p-1 dark:border dark:border-white/[0.09] dark:bg-[#161614]",
         className,
       )}
       onKeyDown={(e) => {
@@ -96,7 +96,7 @@ export function SegmentedControl<T extends string>({
         <span
           aria-hidden
           className={cn(
-            "pointer-events-none absolute rounded-lg border border-black/[0.04] bg-grayscale-1 shadow-[0_1px_2px_rgba(28,22,16,0.08)] transition-[left,top,width,height,opacity,transform] duration-[280ms] ease-[cubic-bezier(0.22,1,0.36,1)] dark:border-white/[0.04] dark:bg-grayscale-3",
+            "pointer-events-none absolute rounded-lg border border-black/[0.04] bg-grayscale-1 shadow-[0_1px_2px_rgba(28,22,16,0.08)] transition-[left,top,width,height,opacity,transform] duration-[280ms] ease-[cubic-bezier(0.22,1,0.36,1)] dark:border-white/[0.12] dark:bg-[#252522] dark:shadow-[0_1px_2px_rgba(0,0,0,0.45)]",
             hayActivo ? "scale-100 opacity-100" : "scale-95 opacity-0",
           )}
           style={{

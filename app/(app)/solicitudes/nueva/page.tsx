@@ -208,10 +208,10 @@ export default function NuevaSolicitudPage() {
             )}
 
             {/* Tarjeta principal con chasis dual-tone */}
-            <div className="card rounded-[1.25rem] border border-grayscale-3/85 bg-grayscale-2 p-1 shadow-2xs dark:border-grayscale-4/40 dark:bg-grayscale-3/50">
-              <div className="space-y-5 rounded-[1rem] border border-grayscale-3/60 bg-white p-4 shadow-[0_1px_2px_rgba(28,22,16,0.03)] dark:border-grayscale-4/30 dark:bg-grayscale-2 sm:p-5">
+            <div className="card rounded-[1.25rem] border border-grayscale-4/90 bg-grayscale-2 p-1 shadow-2xs dark:border-white/[0.22] dark:bg-[#191917]">
+              <div className="space-y-5 rounded-[1rem] border border-grayscale-3/60 bg-white p-4 shadow-[0_1px_2px_rgba(28,22,16,0.03)] dark:border-white/[0.08] dark:bg-[#121211] sm:p-5">
                 {/* Bloque A: Progreso del reporte en 12 segmentos */}
-                <div className="rounded-xl border border-grayscale-3/75 bg-grayscale-1/60 p-3.5 dark:border-grayscale-4/40 dark:bg-grayscale-3/30">
+                <div className="rounded-xl border border-grayscale-3/75 bg-grayscale-1/60 p-3.5 dark:border-white/[0.1] dark:bg-[#171715]">
                   <div className="flex flex-wrap items-center justify-between gap-2 text-[11.5px]">
                     <div className="flex items-center gap-2">
                       <span className="font-semibold text-grayscale-12">
@@ -309,7 +309,7 @@ export default function NuevaSolicitudPage() {
                 </div>
 
                 {/* Bloque B: Ficha compacta del solicitante */}
-                <div className="grid grid-cols-1 gap-2 rounded-xl border border-grayscale-3/70 bg-grayscale-1/80 px-3.5 py-2.5 text-[11.5px] sm:grid-cols-3 dark:border-grayscale-4/40 dark:bg-grayscale-3/40">
+                <div className="grid grid-cols-1 gap-2 rounded-xl border border-grayscale-3/70 bg-grayscale-1/80 px-3.5 py-2.5 text-[11.5px] sm:grid-cols-3 dark:border-white/[0.11] dark:bg-grayscale-3/40">
                   <div className="flex items-center justify-between gap-2 sm:justify-start">
                     <span className="flex items-center gap-1.5 text-grayscale-9">
                       <UserIcon size={12} className="text-grayscale-8" />
@@ -476,7 +476,7 @@ export default function NuevaSolicitudPage() {
                             "cursor-pointer rounded-lg border px-2.5 py-1 text-[11px] transition-[background-color,border-color,color,transform] duration-150 active:scale-[0.97]",
                             seleccionada
                               ? "border-grayscale-6 bg-grayscale-2 font-medium text-grayscale-12 dark:bg-grayscale-3"
-                              : "border-grayscale-3/80 bg-grayscale-1/60 text-grayscale-9 hover:border-grayscale-5 hover:text-grayscale-12 dark:border-grayscale-4/40 dark:bg-grayscale-3/25",
+                              : "border-grayscale-3/80 bg-grayscale-1/60 text-grayscale-9 hover:border-grayscale-5 hover:text-grayscale-12 dark:border-white/[0.11] dark:bg-grayscale-3/25",
                           )}
                         >
                           {sugerencia}

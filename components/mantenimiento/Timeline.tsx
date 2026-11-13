@@ -117,7 +117,7 @@ export function Timeline({ eventos, className }: TimelineProps) {
 
                 {/* Burbuja de nota técnica si existe */}
                 {evento.nota && (
-                  <div className="mt-2 rounded-xl border border-grayscale-3/85 bg-grayscale-1/70 px-3.5 py-2.5 dark:border-grayscale-4/40 dark:bg-grayscale-3/35">
+                  <div className="mt-2 rounded-xl border border-grayscale-3/85 bg-grayscale-1/70 px-3.5 py-2.5 dark:border-white/[0.11] dark:bg-grayscale-3/35">
                     <p className="text-[12.5px] leading-relaxed text-grayscale-11">
                       {evento.nota}
                     </p>

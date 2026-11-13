@@ -259,8 +259,8 @@ export default function AtencionYCierrePage({ params }: Props) {
           />
 
           {/* 1. Tarjeta de contexto del expediente */}
-          <section className="card rounded-[1.25rem] border border-grayscale-3/85 bg-grayscale-2 p-1 shadow-2xs dark:border-grayscale-4/40 dark:bg-grayscale-3/50">
-            <div className="rounded-[1rem] border border-grayscale-3/60 bg-white p-4 sm:p-5 shadow-[0_1px_2px_rgba(28,22,16,0.03)] dark:border-grayscale-4/30 dark:bg-grayscale-2 space-y-3.5">
+          <section className="card rounded-[1.25rem] border border-grayscale-4/90 bg-grayscale-2 p-1 shadow-2xs dark:border-white/[0.22] dark:bg-[#191917]">
+            <div className="rounded-[1rem] border border-grayscale-3/60 bg-white p-4 sm:p-5 shadow-[0_1px_2px_rgba(28,22,16,0.03)] dark:border-white/[0.08] dark:bg-[#121211] space-y-3.5">
               <div className="flex items-start justify-between gap-3">
                 <div className="flex min-w-0 items-start gap-3">
                   <span
@@ -285,7 +285,7 @@ export default function AtencionYCierrePage({ params }: Props) {
               </p>
 
               {/* Caja gris interna con pares clave/valor */}
-              <div className="grid grid-cols-1 gap-2 rounded-xl border border-grayscale-3/70 bg-grayscale-1/80 px-3.5 py-2.5 text-[11.5px] sm:grid-cols-3 dark:border-grayscale-4/40 dark:bg-grayscale-3/40">
+              <div className="grid grid-cols-1 gap-2 rounded-xl border border-grayscale-3/70 bg-grayscale-1/80 px-3.5 py-2.5 text-[11.5px] sm:grid-cols-3 dark:border-white/[0.11] dark:bg-grayscale-3/40">
                 <div className="flex items-center justify-between gap-2 sm:justify-start">
                   <span className="flex items-center gap-1.5 text-grayscale-9">
                     <MapPinIcon size={12} className="text-grayscale-8" />
@@ -358,11 +358,11 @@ export default function AtencionYCierrePage({ params }: Props) {
               </div>
             )}
 
-            <div className="card rounded-[1.25rem] border border-grayscale-3/85 bg-grayscale-2 p-1 shadow-2xs dark:border-grayscale-4/40 dark:bg-grayscale-3/50">
-              <div className="rounded-[1rem] border border-grayscale-3/60 bg-white p-5 shadow-[0_1px_2px_rgba(28,22,16,0.03)] dark:border-grayscale-4/30 dark:bg-grayscale-2 space-y-5">
+            <div className="card rounded-[1.25rem] border border-grayscale-4/90 bg-grayscale-2 p-1 shadow-2xs dark:border-white/[0.22] dark:bg-[#191917]">
+              <div className="rounded-[1rem] border border-grayscale-3/60 bg-white p-5 shadow-[0_1px_2px_rgba(28,22,16,0.03)] dark:border-white/[0.08] dark:bg-[#121211] space-y-5">
                 
                 {/* Bloque A: Escala de resolución limpia con separadores `|` */}
-                <div className="rounded-xl border border-grayscale-3/75 bg-grayscale-1/60 p-3.5 dark:border-grayscale-4/40 dark:bg-grayscale-3/30">
+                <div className="rounded-xl border border-grayscale-3/75 bg-grayscale-1/60 p-3.5 dark:border-white/[0.1] dark:bg-[#171715]">
                   <div className="flex flex-wrap items-center justify-between gap-2 text-[11.5px]">
                     <div className="flex items-center gap-2">
                       <span className="font-semibold text-grayscale-12">
@@ -464,7 +464,7 @@ export default function AtencionYCierrePage({ params }: Props) {
                   </div>
 
                   {sinTransiciones ? (
-                    <div className="rounded-xl border border-grayscale-3/80 bg-grayscale-1 px-4 py-4 text-center text-[12.5px] text-grayscale-10 dark:border-grayscale-4/40 dark:bg-grayscale-3/40">
+                    <div className="rounded-xl border border-grayscale-3/80 bg-grayscale-1 px-4 py-4 text-center text-[12.5px] text-grayscale-10 dark:border-white/[0.11] dark:bg-grayscale-3/40">
                       Esta solicitud ya fue cerrada y no admite más transiciones.
                     </div>
                   ) : (
@@ -501,8 +501,8 @@ export default function AtencionYCierrePage({ params }: Props) {
                               activo
                                 ? "border-grayscale-6 bg-grayscale-1/70 shadow-xs dark:border-grayscale-5 dark:bg-grayscale-3/40"
                                 : habilitada
-                                  ? "cursor-pointer border-grayscale-3/85 bg-white hover:border-grayscale-5 dark:border-grayscale-4/50 dark:bg-grayscale-2 dark:hover:bg-grayscale-3/60"
-                                  : "cursor-not-allowed border-dashed border-grayscale-3/80 bg-grayscale-1/35 opacity-60 dark:border-grayscale-4/30 dark:bg-grayscale-3/15",
+                                  ? "cursor-pointer border-grayscale-3/85 bg-white hover:border-grayscale-5 dark:border-white/[0.12] dark:bg-[#161614] dark:hover:bg-grayscale-3/60"
+                                  : "cursor-not-allowed border-dashed border-grayscale-3/80 bg-grayscale-1/35 opacity-60 dark:border-white/[0.08] dark:bg-grayscale-3/15",
                             )}
                           >
                             <div>
@@ -568,7 +568,7 @@ export default function AtencionYCierrePage({ params }: Props) {
                             </div>
 
                             {/* Fila 4: Pie con mini-barras (`||||||||....`) | regla */}
-                            <div className="mt-3.5 flex items-center justify-between gap-2 border-t border-grayscale-3/60 pt-2.5 text-[10.5px] text-grayscale-9 dark:border-grayscale-4/30">
+                            <div className="mt-3.5 flex items-center justify-between gap-2 border-t border-grayscale-3/60 pt-2.5 text-[10.5px] text-grayscale-9 dark:border-white/[0.08]">
                               <div
                                 aria-hidden
                                 skullet-block=""

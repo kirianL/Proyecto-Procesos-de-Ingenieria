@@ -589,7 +589,7 @@ export default function IndicadoresPage() {
               <button
                 type="button"
                 onClick={exportarCsv}
-                className="inline-flex h-8 cursor-pointer items-center gap-1.5 rounded-xl border border-grayscale-3 bg-white px-3 text-[12px] font-medium text-grayscale-11 shadow-2xs transition-colors hover:border-grayscale-5 hover:text-grayscale-12 dark:border-grayscale-4/50 dark:bg-grayscale-2"
+                className="inline-flex h-8 cursor-pointer items-center gap-1.5 rounded-xl border border-grayscale-3 bg-white px-3 text-[12px] font-medium text-grayscale-11 shadow-2xs transition-colors hover:border-grayscale-5 hover:text-grayscale-12 dark:border-white/[0.12] dark:bg-[#161614]"
               >
                 <DownloadSimpleIcon size={13} weight="bold" />
                 <span>Exportar CSV</span>
@@ -699,8 +699,8 @@ export default function IndicadoresPage() {
 
             <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 md:gap-4">
               {/* MTTR */}
-              <section className="card flex flex-col rounded-[1.25rem] border border-grayscale-3/85 bg-grayscale-2 p-1 shadow-2xs dark:border-grayscale-4/40 dark:bg-grayscale-3/50">
-                <div className="flex flex-1 flex-col justify-between gap-4 rounded-[1rem] border border-grayscale-3/60 bg-white px-5 py-4 shadow-[0_1px_2px_rgba(28,22,16,0.03)] dark:border-grayscale-4/30 dark:bg-grayscale-2">
+              <section className="card flex flex-col rounded-[1.25rem] border border-grayscale-4/90 bg-grayscale-2 p-1 shadow-2xs dark:border-white/[0.22] dark:bg-[#191917]">
+                <div className="flex flex-1 flex-col justify-between gap-4 rounded-[1rem] border border-grayscale-3/60 bg-white px-5 py-4 shadow-[0_1px_2px_rgba(28,22,16,0.03)] dark:border-white/[0.08] dark:bg-[#121211]">
                   <div className="space-y-3">
                     <div className="flex items-center gap-2">
                       <span
@@ -783,8 +783,8 @@ export default function IndicadoresPage() {
               </section>
 
               {/* Distribución por estado */}
-              <section className="card flex flex-col rounded-[1.25rem] border border-grayscale-3/85 bg-grayscale-2 p-1 shadow-2xs dark:border-grayscale-4/40 dark:bg-grayscale-3/50">
-                <div className="flex flex-1 flex-col justify-between gap-3.5 rounded-[1rem] border border-grayscale-3/60 bg-white px-5 py-4 shadow-[0_1px_2px_rgba(28,22,16,0.03)] dark:border-grayscale-4/30 dark:bg-grayscale-2">
+              <section className="card flex flex-col rounded-[1.25rem] border border-grayscale-4/90 bg-grayscale-2 p-1 shadow-2xs dark:border-white/[0.22] dark:bg-[#191917]">
+                <div className="flex flex-1 flex-col justify-between gap-3.5 rounded-[1rem] border border-grayscale-3/60 bg-white px-5 py-4 shadow-[0_1px_2px_rgba(28,22,16,0.03)] dark:border-white/[0.08] dark:bg-[#121211]">
                   <div className="space-y-3">
                     <div className="flex items-center justify-between gap-2">
                       <div className="flex items-center gap-2">
@@ -880,8 +880,8 @@ export default function IndicadoresPage() {
             </div>
 
             {/* ── Distribución por prioridad ── */}
-            <section className="card flex flex-col rounded-[1.25rem] border border-grayscale-3/85 bg-grayscale-2 p-1 shadow-2xs dark:border-grayscale-4/40 dark:bg-grayscale-3/50">
-              <div className="flex-1 rounded-[1rem] border border-grayscale-3/60 bg-white px-5 py-4 shadow-[0_1px_2px_rgba(28,22,16,0.03)] dark:border-grayscale-4/30 dark:bg-grayscale-2">
+            <section className="card flex flex-col rounded-[1.25rem] border border-grayscale-4/90 bg-grayscale-2 p-1 shadow-2xs dark:border-white/[0.22] dark:bg-[#191917]">
+              <div className="flex-1 rounded-[1rem] border border-grayscale-3/60 bg-white px-5 py-4 shadow-[0_1px_2px_rgba(28,22,16,0.03)] dark:border-white/[0.08] dark:bg-[#121211]">
 
                 {/* Cabecera */}
                 <div className="flex flex-wrap items-center justify-between gap-2 mb-4">
@@ -987,7 +987,7 @@ export default function IndicadoresPage() {
                         <Link
                           key={fila.id}
                           href={`/mantenimiento?prioridad=${fila.id}`}
-                          className="group flex items-center justify-between gap-2.5 rounded-xl border border-grayscale-3/70 bg-grayscale-1/60 px-3.5 py-2.5 transition-all duration-150 hover:border-grayscale-4 hover:bg-grayscale-2/70 dark:border-grayscale-4/40 dark:bg-grayscale-3/30 dark:hover:bg-grayscale-3/60"
+                          className="group flex items-center justify-between gap-2.5 rounded-xl border border-grayscale-3/70 bg-grayscale-1/60 px-3.5 py-2.5 transition-all duration-150 hover:border-grayscale-4 hover:bg-grayscale-2/70 dark:border-white/[0.1] dark:bg-[#171715] dark:hover:bg-grayscale-3/60"
                         >
                           <div className="flex min-w-0 items-center gap-2.5">
                             {/* Rank / nivel glifo */}
@@ -1076,8 +1076,8 @@ export default function IndicadoresPage() {
             </section>
 
             {/* Distribución y SLA por departamento */}
-            <section className="card flex flex-col rounded-[1.25rem] border border-grayscale-3/85 bg-grayscale-2 p-1 shadow-2xs dark:border-grayscale-4/40 dark:bg-grayscale-3/50">
-              <div className="rounded-[1rem] border border-grayscale-3/60 bg-white px-5 py-4 shadow-[0_1px_2px_rgba(28,22,16,0.03)] dark:border-grayscale-4/30 dark:bg-grayscale-2 space-y-4">
+            <section className="card flex flex-col rounded-[1.25rem] border border-grayscale-4/90 bg-grayscale-2 p-1 shadow-2xs dark:border-white/[0.22] dark:bg-[#191917]">
+              <div className="rounded-[1rem] border border-grayscale-3/60 bg-white px-5 py-4 shadow-[0_1px_2px_rgba(28,22,16,0.03)] dark:border-white/[0.08] dark:bg-[#121211] space-y-4">
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <div className="flex items-center gap-2">
                     <span
@@ -1110,7 +1110,7 @@ export default function IndicadoresPage() {
                     {porDepartamento.map((dep) => (
                       <div
                         key={dep.departamento}
-                        className="rounded-xl border border-grayscale-3/70 bg-grayscale-1/60 p-3.5 dark:border-grayscale-4/40 dark:bg-grayscale-3/30"
+                        className="rounded-xl border border-grayscale-3/70 bg-grayscale-1/60 p-3.5 dark:border-white/[0.1] dark:bg-[#171715]"
                       >
                         <div className="flex items-baseline justify-between gap-2">
                           <span className="truncate text-[12.5px] font-semibold text-grayscale-12">
@@ -1171,8 +1171,8 @@ export default function IndicadoresPage() {
             </section>
 
             {/* Metas operativas y de sostenibilidad */}
-            <section className="card rounded-[1.25rem] border border-grayscale-3/85 bg-grayscale-2 p-1 shadow-2xs dark:border-grayscale-4/40 dark:bg-grayscale-3/50">
-              <div className="rounded-[1rem] border border-grayscale-3/60 bg-white p-5 shadow-[0_1px_2px_rgba(28,22,16,0.03)] dark:border-grayscale-4/30 dark:bg-grayscale-2 space-y-3.5">
+            <section className="card rounded-[1.25rem] border border-grayscale-4/90 bg-grayscale-2 p-1 shadow-2xs dark:border-white/[0.22] dark:bg-[#191917]">
+              <div className="rounded-[1rem] border border-grayscale-3/60 bg-white p-5 shadow-[0_1px_2px_rgba(28,22,16,0.03)] dark:border-white/[0.08] dark:bg-[#121211] space-y-3.5">
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <div className="flex items-center gap-2">
                     <TargetIcon size={15} weight="duotone" className="text-sand-9/80" />

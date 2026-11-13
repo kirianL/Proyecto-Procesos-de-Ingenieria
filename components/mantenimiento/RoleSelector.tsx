@@ -76,12 +76,12 @@ export function RoleSelector({
         aria-haspopup="listbox"
         aria-expanded={open}
         className={cn(
-          "group flex w-full cursor-pointer items-center justify-between gap-2 rounded-xl border border-grayscale-3/80 bg-grayscale-1 text-left transition-[border-color,background-color,box-shadow] duration-150 hover:border-grayscale-4 hover:shadow-[0_1px_2px_rgba(28,22,16,0.04)] dark:bg-grayscale-2 dark:hover:border-grayscale-4",
+          "group flex w-full cursor-pointer items-center justify-between gap-2 rounded-xl border border-grayscale-3/80 bg-grayscale-1 text-left transition-[border-color,background-color,box-shadow] duration-150 hover:border-grayscale-4 hover:shadow-[0_1px_2px_rgba(28,22,16,0.04)] dark:border-white/[0.11] dark:bg-[#161614] dark:hover:border-white/[0.2] dark:hover:bg-[#1b1b19]",
           compact ? "p-1.5" : "p-2",
         )}
       >
         <div className="flex min-w-0 items-center gap-2.5">
-          <span className="flex size-8 shrink-0 items-center justify-center rounded-full border border-grayscale-3 bg-grayscale-2 font-mono text-[10px] font-semibold text-grayscale-11 dark:border-grayscale-4 dark:bg-grayscale-3">
+          <span className="flex size-8 shrink-0 items-center justify-center rounded-full border border-grayscale-3 bg-grayscale-2 font-mono text-[10px] font-semibold text-grayscale-11 dark:border-white/[0.14] dark:bg-[#232320]">
             {iniciales(usuarioActual.nombre)}
           </span>
           <div className="flex min-w-0 flex-col leading-none">
@@ -112,7 +112,7 @@ export function RoleSelector({
           <div
             role="listbox"
             aria-label="Cambiar perfil activo"
-            className="menu-pop absolute left-0 right-0 top-full z-50 mt-1.5 flex flex-col rounded-xl border border-grayscale-3 bg-grayscale-1 p-1.5 shadow-[0_18px_40px_-16px_rgba(28,22,16,0.35)] dark:border-grayscale-4 dark:bg-grayscale-2"
+            className="menu-pop absolute left-0 right-0 top-full z-50 mt-1.5 flex flex-col rounded-xl border border-grayscale-3 bg-grayscale-1 p-1.5 shadow-[0_18px_40px_-16px_rgba(28,22,16,0.35)] dark:border-white/[0.14] dark:bg-[#181816] dark:shadow-[0_20px_44px_-14px_rgba(0,0,0,0.85)]"
           >
             <div className="section-label px-2 py-1.5">Cuentas disponibles</div>
 
@@ -159,7 +159,7 @@ export function RoleSelector({
               })}
             </div>
 
-            <div className="mt-1 border-t border-grayscale-3/70 pt-1 dark:border-grayscale-4/40">
+            <div className="mt-1 border-t border-grayscale-3/70 pt-1 dark:border-white/[0.11]">
               <Link
                 href="/login"
                 onClick={() => setOpen(false)}
