@@ -97,7 +97,7 @@ export function EvidenceGallery({
               key={item.id}
               type="button"
               onClick={() => setIndiceActivo(idx)}
-              className="group relative flex flex-col overflow-hidden rounded-xl border border-grayscale-3/85 bg-grayscale-1/60 text-left transition-all duration-150 hover:border-grayscale-5 hover:bg-grayscale-2/70 active:scale-[0.99] dark:border-grayscale-4/45 dark:bg-grayscale-3/30"
+              className="group relative flex flex-col overflow-hidden rounded-xl border border-grayscale-3/85 bg-grayscale-1/60 text-left transition-[border-color,background-color,transform] duration-150 ease-[cubic-bezier(0.23,1,0.32,1)] hover:border-grayscale-5 hover:bg-grayscale-2/70 active:scale-[0.985] dark:border-grayscale-4/45 dark:bg-grayscale-3/30"
             >
               <div
                 className={cn(
@@ -111,7 +111,7 @@ export function EvidenceGallery({
                   aspect={compacto ? 1.6 : 4 / 3}
                   stagedReveal={esReciente}
                   estimatedDuration={esReciente ? 1100 : 650}
-                  className="h-full w-full rounded-none transition-transform duration-300 ease-out group-hover:scale-[1.03]"
+                  className="h-full w-full rounded-none transition-transform duration-200 ease-[cubic-bezier(0.23,1,0.32,1)] group-hover:scale-[1.03]"
                 />
 
                 <span className="absolute right-2 top-2 flex size-6 items-center justify-center rounded-lg border border-white/20 bg-black/55 text-white opacity-0 backdrop-blur-xs transition-opacity duration-150 group-hover:opacity-100">
@@ -143,7 +143,7 @@ export function EvidenceGallery({
           aria-modal="true"
           aria-label={`Vista ampliada: ${activo.nombre}`}
           onClick={cerrar}
-          className="fixed inset-0 z-50 flex flex-col justify-between bg-black/82 p-4 backdrop-blur-xs sm:p-6"
+          className="lightbox-enter fixed inset-0 z-50 flex flex-col justify-between overscroll-contain bg-black/82 p-4 pt-[calc(1rem+env(safe-area-inset-top))] pb-[calc(1rem+env(safe-area-inset-bottom))] backdrop-blur-xs sm:p-6"
         >
           {/* Barra superior */}
           <div
@@ -230,7 +230,7 @@ export function EvidenceGallery({
                   type="button"
                   onClick={() => setIndiceActivo(idx)}
                   className={cn(
-                    "relative h-11 w-16 shrink-0 cursor-pointer overflow-hidden rounded-lg border transition-all",
+                    "relative h-11 w-16 shrink-0 cursor-pointer overflow-hidden rounded-lg border transition-[border-color,opacity,transform] duration-150 ease-[cubic-bezier(0.23,1,0.32,1)] active:scale-[0.96]",
                     idx === indiceActivo
                       ? "border-white ring-1 ring-white/60"
                       : "border-white/15 opacity-55 hover:opacity-90",

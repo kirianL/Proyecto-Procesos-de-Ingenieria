@@ -345,7 +345,7 @@ export function DateRangePicker({
     <div ref={contenedorRef} className={cn("relative inline-flex", className)}>
       <div
         className={cn(
-          "inline-flex h-[38px] items-center rounded-xl border p-1 transition-all duration-200 ease-out",
+          "inline-flex h-[38px] items-center rounded-xl border p-1 transition-[border-color,background-color,box-shadow] duration-150 ease-out",
           activo || abierto
             ? "border-grayscale-4/80 bg-grayscale-2 shadow-2xs dark:border-white/[0.22] dark:bg-[#181816]"
             : "border-transparent bg-grayscale-2 hover:bg-grayscale-2/90 dark:border-white/[0.09] dark:bg-[#161614] dark:hover:border-white/[0.15]",
@@ -357,7 +357,7 @@ export function DateRangePicker({
           aria-expanded={abierto}
           aria-haspopup="dialog"
           className={cn(
-            "inline-flex h-full cursor-pointer items-center gap-1.5 rounded-lg px-2.5 text-[13px] font-medium transition-all duration-200",
+            "inline-flex h-full cursor-pointer items-center gap-1.5 rounded-lg px-2.5 text-[13px] font-medium transition-[background-color,color,box-shadow] duration-150 active:scale-[0.98]",
             activo || abierto
               ? "bg-grayscale-1 text-grayscale-12 shadow-[0_1px_2px_rgba(28,22,16,0.08)] dark:border dark:border-white/[0.1] dark:bg-[#252522]"
               : "text-grayscale-10 hover:text-grayscale-12",
@@ -382,7 +382,7 @@ export function DateRangePicker({
             size={11}
             weight="bold"
             className={cn(
-              "ml-0.5 shrink-0 text-grayscale-9 transition-transform duration-200 ease-[cubic-bezier(0.22,1,0.36,1)]",
+              "ml-0.5 shrink-0 text-grayscale-9 transition-transform duration-150 ease-[cubic-bezier(0.23,1,0.32,1)]",
               abierto && "rotate-180 text-grayscale-12",
             )}
           />
@@ -461,7 +461,7 @@ export function DateRangePicker({
                     setMesVista({ anio: d.getFullYear(), mes: d.getMonth() });
                   }}
                   className={cn(
-                    "flex-1 cursor-pointer rounded-lg px-2.5 py-1.5 text-left transition-all duration-150",
+                    "flex-1 cursor-pointer rounded-lg px-2.5 py-1.5 text-left transition-[background-color,color,box-shadow,transform] duration-150 ease-[cubic-bezier(0.23,1,0.32,1)] active:scale-[0.98]",
                     paso === "inicio"
                       ? "bg-white text-grayscale-12 shadow-2xs dark:border dark:border-white/[0.1] dark:bg-[#252522]"
                       : "text-grayscale-10 hover:text-grayscale-12",
@@ -487,7 +487,7 @@ export function DateRangePicker({
                     setMesVista({ anio: h.getFullYear(), mes: h.getMonth() });
                   }}
                   className={cn(
-                    "flex-1 cursor-pointer rounded-lg px-2.5 py-1.5 text-left transition-all duration-150",
+                    "flex-1 cursor-pointer rounded-lg px-2.5 py-1.5 text-left transition-[background-color,color,box-shadow,transform] duration-150 ease-[cubic-bezier(0.23,1,0.32,1)] active:scale-[0.98]",
                     paso === "fin"
                       ? "bg-white text-grayscale-12 shadow-2xs dark:border dark:border-white/[0.1] dark:bg-[#252522]"
                       : "text-grayscale-10 hover:text-grayscale-12",

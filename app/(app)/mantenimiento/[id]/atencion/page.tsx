@@ -408,7 +408,7 @@ export default function AtencionYCierrePage({ params }: Props) {
                         <div
                           key={pos}
                           className={cn(
-                            "h-2.5 w-full rounded-[3px] transition-colors duration-300",
+                            "h-2.5 w-full rounded-[3px] transition-colors duration-200 ease-[cubic-bezier(0.23,1,0.32,1)]",
                             activo
                               ? colorBarra
                               : "bg-grayscale-3/75 dark:bg-grayscale-4/40",
@@ -497,7 +497,7 @@ export default function AtencionYCierrePage({ params }: Props) {
                               }
                             }}
                             className={cn(
-                              "group relative flex flex-col justify-between rounded-xl border p-4 text-left transition-all duration-200",
+                              "group relative flex flex-col justify-between rounded-xl border p-4 text-left transition-[border-color,background-color,box-shadow,transform] duration-150 ease-[cubic-bezier(0.23,1,0.32,1)] active:scale-[0.985]",
                               activo
                                 ? "border-grayscale-6 bg-grayscale-1/70 shadow-xs dark:border-grayscale-5 dark:bg-grayscale-3/40"
                                 : habilitada
@@ -578,7 +578,7 @@ export default function AtencionYCierrePage({ params }: Props) {
                                   <div
                                     key={t}
                                     className={cn(
-                                      "h-2.5 w-[2.5px] rounded-full transition-colors duration-300",
+                                      "h-2.5 w-[2.5px] rounded-full transition-colors duration-200",
                                       t < accion.ticksActivos
                                         ? activo
                                           ? accion.barFill

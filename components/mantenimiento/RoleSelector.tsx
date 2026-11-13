@@ -76,7 +76,7 @@ export function RoleSelector({
         aria-haspopup="listbox"
         aria-expanded={open}
         className={cn(
-          "group flex w-full cursor-pointer items-center justify-between gap-2 rounded-xl border border-grayscale-3/80 bg-grayscale-1 text-left transition-[border-color,background-color,box-shadow] duration-150 hover:border-grayscale-4 hover:shadow-[0_1px_2px_rgba(28,22,16,0.04)] dark:border-white/[0.11] dark:bg-[#161614] dark:hover:border-white/[0.2] dark:hover:bg-[#1b1b19]",
+          "group flex w-full cursor-pointer items-center justify-between gap-2 rounded-xl border border-grayscale-3/80 bg-grayscale-1 text-left transition-[border-color,background-color,box-shadow,transform] duration-150 ease-[cubic-bezier(0.23,1,0.32,1)] hover:border-grayscale-4 hover:shadow-[0_1px_2px_rgba(28,22,16,0.04)] active:scale-[0.985] dark:border-white/[0.11] dark:bg-[#161614] dark:hover:border-white/[0.2] dark:hover:bg-[#1b1b19]",
           compact ? "p-1.5" : "p-2",
         )}
       >
@@ -96,7 +96,7 @@ export function RoleSelector({
         <CaretRightIcon
           size={13}
           className={cn(
-            "shrink-0 text-grayscale-8 transition-transform duration-200 ease-out",
+            "shrink-0 text-grayscale-8 transition-transform duration-150 ease-[cubic-bezier(0.23,1,0.32,1)]",
             open && "rotate-90",
           )}
         />

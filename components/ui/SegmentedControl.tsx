@@ -96,7 +96,7 @@ export function SegmentedControl<T extends string>({
         <span
           aria-hidden
           className={cn(
-            "pointer-events-none absolute rounded-lg border border-black/[0.04] bg-grayscale-1 shadow-[0_1px_2px_rgba(28,22,16,0.08)] transition-[left,top,width,height,opacity,transform] duration-[280ms] ease-[cubic-bezier(0.22,1,0.36,1)] dark:border-white/[0.12] dark:bg-[#252522] dark:shadow-[0_1px_2px_rgba(0,0,0,0.45)]",
+            "pointer-events-none absolute rounded-lg border border-black/[0.04] bg-grayscale-1 shadow-[0_1px_2px_rgba(28,22,16,0.08)] transition-[left,top,width,height,opacity,transform] duration-[220ms] ease-[cubic-bezier(0.23,1,0.32,1)] dark:border-white/[0.12] dark:bg-[#252522] dark:shadow-[0_1px_2px_rgba(0,0,0,0.45)]",
             hayActivo ? "scale-100 opacity-100" : "scale-95 opacity-0",
           )}
           style={{
@@ -123,7 +123,7 @@ export function SegmentedControl<T extends string>({
             aria-pressed={activo}
             onClick={() => onChange(item.id)}
             className={cn(
-              "relative z-10 flex cursor-pointer items-center gap-1.5 rounded-lg px-3 py-1.5 text-[13px] font-medium transition-colors duration-150",
+              "relative z-10 flex cursor-pointer items-center gap-1.5 rounded-lg px-3 py-1.5 text-[13px] font-medium transition-[color,transform] duration-150 ease-[cubic-bezier(0.23,1,0.32,1)] active:scale-[0.98]",
               activo
                 ? "text-grayscale-12"
                 : "text-grayscale-10 hover:text-grayscale-12",

@@ -45,7 +45,7 @@ export function SolicitudCard({
   const contenido = (
     <article
       className={cn(
-        "card rounded-[1.25rem] border border-grayscale-4/90 bg-grayscale-2 p-1 shadow-2xs transition-all duration-200 hover:border-grayscale-5 hover:shadow-xs dark:border-white/[0.22] dark:bg-[#191917] dark:hover:border-white/[0.30]",
+        "card rounded-[1.25rem] border border-grayscale-4/90 bg-grayscale-2 p-1 shadow-2xs hover:border-grayscale-5 hover:shadow-xs dark:border-white/[0.22] dark:bg-[#191917] dark:hover:border-white/[0.30]",
         href && "card-hover cursor-pointer",
         className,
       )}
@@ -114,7 +114,7 @@ export function SolicitudCard({
                 Ver ficha
                 <ArrowRightIcon
                   size={11}
-                  className="transition-transform duration-200 ease-out group-hover:translate-x-0.5"
+                  className="transition-transform duration-150 ease-[cubic-bezier(0.23,1,0.32,1)] group-hover:translate-x-0.5"
                 />
               </span>
             ))}

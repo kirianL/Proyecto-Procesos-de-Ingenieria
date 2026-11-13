@@ -760,10 +760,12 @@ export default function IndicadoresPage() {
                     <div className="h-1.5 w-full overflow-hidden rounded-full bg-grayscale-3">
                       <div
                         className={cn(
-                          "h-full rounded-full transition-[width] duration-700 ease-out",
+                          "h-full w-full origin-left rounded-full transition-transform duration-[280ms] ease-[cubic-bezier(0.23,1,0.32,1)]",
                           dentroDeMeta ? "bg-emerald-500" : "bg-amber-500",
                         )}
-                        style={{ width: montado ? `${avanceMeta}%` : "0%" }}
+                        style={{
+                          transform: `scaleX(${montado ? avanceMeta / 100 : 0})`,
+                        }}
                       />
                     </div>
                   </div>
@@ -805,28 +807,28 @@ export default function IndicadoresPage() {
                         Bandeja
                         <ArrowRightIcon
                           size={11}
-                          className="transition-transform duration-200 ease-out group-hover:translate-x-0.5"
+                          className="transition-transform duration-150 ease-[cubic-bezier(0.23,1,0.32,1)] group-hover:translate-x-0.5"
                         />
                       </Link>
                     </div>
 
                     <div className="flex h-3.5 w-full gap-1 overflow-hidden">
                       <div
-                        className="rounded-l-md bg-amber-500/70 transition-[width] duration-700 ease-out"
+                        className="rounded-l-md bg-amber-500/70 transition-[width] duration-[280ms] ease-[cubic-bezier(0.23,1,0.32,1)]"
                         style={{
                           width: montado ? `${pctPorEstado("REGISTRADA")}%` : "0%",
                         }}
                         title={`Pendientes: ${pctPorEstado("REGISTRADA")}%`}
                       />
                       <div
-                        className="bg-blue-500/70 transition-[width] duration-700 ease-out"
+                        className="bg-blue-500/70 transition-[width] duration-[280ms] ease-[cubic-bezier(0.23,1,0.32,1)]"
                         style={{
                           width: montado ? `${pctPorEstado("EN_PROCESO")}%` : "0%",
                         }}
                         title={`En proceso: ${pctPorEstado("EN_PROCESO")}%`}
                       />
                       <div
-                        className="rounded-r-md bg-grayscale-8 transition-[width] duration-700 ease-out"
+                        className="rounded-r-md bg-grayscale-8 transition-[width] duration-[280ms] ease-[cubic-bezier(0.23,1,0.32,1)]"
                         style={{
                           width: montado ? `${pctPorEstado("CERRADA")}%` : "0%",
                         }}
@@ -950,7 +952,7 @@ export default function IndicadoresPage() {
                               strokeDasharray={`${dash} ${spacer}`}
                               strokeDashoffset={-offset}
                               fill="none"
-                              className="transition-[stroke-dasharray,stroke-dashoffset] duration-700 ease-out"
+                              className="transition-[stroke-dasharray,stroke-dashoffset] duration-[280ms] ease-[cubic-bezier(0.23,1,0.32,1)]"
                             />
                           );
                           offset += (arc.pct / 100) * circ;
@@ -987,7 +989,7 @@ export default function IndicadoresPage() {
                         <Link
                           key={fila.id}
                           href={`/mantenimiento?prioridad=${fila.id}`}
-                          className="group flex items-center justify-between gap-2.5 rounded-xl border border-grayscale-3/70 bg-grayscale-1/60 px-3.5 py-2.5 transition-all duration-150 hover:border-grayscale-4 hover:bg-grayscale-2/70 dark:border-white/[0.1] dark:bg-[#171715] dark:hover:bg-grayscale-3/60"
+                          className="group flex items-center justify-between gap-2.5 rounded-xl border border-grayscale-3/70 bg-grayscale-1/60 px-3.5 py-2.5 transition-[border-color,background-color,transform] duration-150 ease-[cubic-bezier(0.23,1,0.32,1)] hover:border-grayscale-4 hover:bg-grayscale-2/70 active:scale-[0.985] dark:border-white/[0.1] dark:bg-[#171715] dark:hover:bg-grayscale-3/60"
                         >
                           <div className="flex min-w-0 items-center gap-2.5">
                             {/* Rank / nivel glifo */}
@@ -1000,7 +1002,7 @@ export default function IndicadoresPage() {
                                 <span
                                   key={n}
                                   className={cn(
-                                    "w-[2.5px] rounded-sm transition-colors duration-300",
+                                    "w-[2.5px] rounded-sm transition-colors duration-200",
                                     n <= fila.nivel
                                       ? fila.dot
                                       : "bg-grayscale-3/80 dark:bg-grayscale-4/50"
@@ -1038,7 +1040,7 @@ export default function IndicadoresPage() {
                                   <span
                                     key={i}
                                     className={cn(
-                                      "h-[5px] w-[4px] rounded-[1.5px] transition-colors duration-500",
+                                      "h-[5px] w-[4px] rounded-[1.5px] transition-colors duration-200",
                                       llena ? fila.dot : "bg-grayscale-3/70 dark:bg-grayscale-4/40"
                                     )}
                                   />
@@ -1060,7 +1062,7 @@ export default function IndicadoresPage() {
 
                             <ArrowRightIcon
                               size={10}
-                              className="text-grayscale-6 transition-transform duration-200 ease-out group-hover:translate-x-0.5 group-hover:text-grayscale-10"
+                              className="text-grayscale-6 transition-transform duration-150 ease-[cubic-bezier(0.23,1,0.32,1)] group-hover:translate-x-0.5 group-hover:text-grayscale-10"
                             />
                           </div>
                         </Link>

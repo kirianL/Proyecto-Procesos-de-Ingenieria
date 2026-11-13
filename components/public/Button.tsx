@@ -18,7 +18,7 @@ type ButtonProps =
 export default function Button(props: ButtonProps) {
   const { variant = "primary", className } = props;
   const baseClasses =
-    "inline-flex cursor-pointer select-none items-center justify-center gap-1.5 rounded-lg px-3 py-1.5 text-[13px] font-medium outline-grayscale-9 transition-[background-color,border-color,color,box-shadow,transform] duration-150 ease-out active:scale-[0.985] disabled:pointer-events-none disabled:opacity-50";
+    "inline-flex cursor-pointer select-none items-center justify-center gap-1.5 rounded-lg px-3 py-1.5 text-[13px] font-medium outline-grayscale-9 transition-[background-color,border-color,color,box-shadow,transform] duration-150 ease-[cubic-bezier(0.23,1,0.32,1)] active:scale-[0.97] disabled:pointer-events-none disabled:opacity-50";
 
   const variantClasses = {
     primary:

@@ -258,7 +258,7 @@ export default function NuevaSolicitudPage() {
                         <div
                           key={pos}
                           className={cn(
-                            "h-2 w-full rounded-[3px] transition-colors duration-300 ease-out",
+                            "h-2 w-full rounded-[3px] transition-colors duration-200 ease-[cubic-bezier(0.23,1,0.32,1)]",
                             activo
                               ? tonoBarra
                               : "bg-grayscale-3/75 dark:bg-grayscale-4/40",
