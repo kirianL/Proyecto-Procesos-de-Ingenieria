@@ -589,7 +589,7 @@ export default function IndicadoresPage() {
               <button
                 type="button"
                 onClick={exportarCsv}
-                className="inline-flex h-8 cursor-pointer items-center gap-1.5 rounded-xl border border-grayscale-3 bg-white px-3 text-[12px] font-medium text-grayscale-11 shadow-2xs transition-colors hover:border-grayscale-5 hover:text-grayscale-12 dark:border-white/[0.12] dark:bg-[#161614]"
+                className="inline-flex h-8 cursor-pointer items-center gap-1.5 rounded-xl border border-grayscale-3 bg-white px-3 text-[12px] font-medium text-grayscale-11 shadow-2xs transition-[border-color,background-color,color,transform] duration-150 ease-[var(--ease-out-soft)] hover:border-grayscale-5 hover:text-grayscale-12 active:scale-[0.97] dark:border-white/[0.12] dark:bg-[#161614]"
               >
                 <DownloadSimpleIcon size={13} weight="bold" />
                 <span>Exportar CSV</span>
@@ -598,7 +598,7 @@ export default function IndicadoresPage() {
               <button
                 type="button"
                 onClick={exportarPdf}
-                className="inline-flex h-8 cursor-pointer items-center gap-1.5 rounded-xl border border-grayscale-4 bg-grayscale-12 px-3 text-[12px] font-medium text-grayscale-1 shadow-2xs transition-opacity hover:opacity-90 dark:bg-grayscale-12 dark:text-grayscale-1"
+                className="inline-flex h-8 cursor-pointer items-center gap-1.5 rounded-xl border border-grayscale-4 bg-grayscale-12 px-3 text-[12px] font-medium text-grayscale-1 shadow-2xs transition-[background-color,transform,opacity] duration-150 ease-[var(--ease-out-soft)] hover:opacity-90 active:scale-[0.97] dark:bg-grayscale-12 dark:text-grayscale-1"
               >
                 <FileTextIcon size={13} weight="bold" />
                 <span>Reporte PDF</span>
@@ -863,7 +863,7 @@ export default function IndicadoresPage() {
                           />
                           <ArrowRightIcon
                             size={10}
-                            className="text-grayscale-7 transition-transform duration-200 ease-out group-hover:translate-x-0.5 group-hover:text-grayscale-10"
+                            className="text-grayscale-7 transition-transform duration-150 ease-[var(--ease-out-soft)] group-hover:translate-x-0.5 group-hover:text-grayscale-10"
                           />
                         </span>
                       </Link>

@@ -106,7 +106,7 @@ function SidebarNavContent({ onNavigate }: { onNavigate?: () => void }) {
           onClick={onNavigate}
           className="group flex items-center gap-2.5 px-1"
         >
-          <span className="flex size-8 items-center justify-center rounded-[10px] bg-grayscale-12 text-grayscale-1 shadow-sm transition-transform duration-200 ease-out group-hover:-rotate-3">
+          <span className="flex size-8 items-center justify-center rounded-[10px] bg-grayscale-12 text-grayscale-1 shadow-sm transition-transform duration-150 ease-[var(--ease-out-soft)] group-hover:-rotate-3">
             <WrenchIcon size={16} weight="fill" />
           </span>
           <span className="flex flex-col leading-none">

@@ -210,7 +210,7 @@ export default function Home() {
               Ver todas
               <ArrowRightIcon
                 size={11}
-                className="transition-transform duration-200 ease-out group-hover:translate-x-0.5"
+                className="transition-transform duration-150 ease-[var(--ease-out-soft)] group-hover:translate-x-0.5"
               />
             </Link>
           </div>
@@ -310,7 +310,7 @@ export default function Home() {
                         </span>
                         <ArrowRightIcon
                           size={11}
-                          className="shrink-0 text-grayscale-7 transition-transform duration-200 ease-out group-hover:translate-x-0.5 group-hover:text-grayscale-10"
+                          className="shrink-0 text-grayscale-7 transition-transform duration-150 ease-[var(--ease-out-soft)] group-hover:translate-x-0.5 group-hover:text-grayscale-10"
                         />
                       </Link>
                     );

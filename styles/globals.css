@@ -495,7 +495,7 @@ button,
       rgba(16, 185, 129, 0.24) 0%,
       transparent 75%
     );
-  filter: blur(54px);
+  filter: blur(20px);
   will-change: transform, opacity;
   animation: aurora-float 11s ease-in-out infinite;
 }
@@ -523,7 +523,7 @@ button,
       rgba(244, 114, 182, 0.22) 0%,
       transparent 75%
     );
-  filter: blur(56px);
+  filter: blur(20px);
   will-change: transform, opacity;
   animation: aurora-float-alt 13s ease-in-out infinite;
 }

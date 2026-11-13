@@ -45,7 +45,7 @@ export function PageHeader({
               <ArrowLeftIcon
                 size={11}
                 weight="bold"
-                className="transition-transform duration-200 ease-out group-hover:-translate-x-0.5"
+                className="transition-transform duration-150 ease-[var(--ease-out-soft)] group-hover:-translate-x-0.5"
               />
               <span>{volver.label}</span>
             </Link>

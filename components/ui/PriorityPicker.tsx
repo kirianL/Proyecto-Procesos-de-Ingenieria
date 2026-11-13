@@ -152,7 +152,7 @@ export function PriorityPicker({
               aria-checked={activo}
               onClick={() => onChange(opcion.id)}
               className={cn(
-                "group relative flex cursor-pointer flex-col justify-between rounded-xl border p-3 text-left transition-[border-color,background-color,box-shadow,transform] duration-200 ease-out active:scale-[0.985]",
+                "group relative flex cursor-pointer flex-col justify-between rounded-xl border p-3 text-left transition-[border-color,background-color,box-shadow,transform] duration-150 ease-[var(--ease-out-soft)] active:scale-[0.985]",
                 activo
                   ? cn(opcion.pastilla, "shadow-[0_1px_2px_rgba(28,22,16,0.06)]")
                   : "border-grayscale-3/85 bg-white hover:border-grayscale-4 hover:bg-grayscale-1/70 dark:border-white/[0.11] dark:bg-[#171715] dark:hover:border-white/[0.2] dark:hover:bg-[#1e1e1c]",
