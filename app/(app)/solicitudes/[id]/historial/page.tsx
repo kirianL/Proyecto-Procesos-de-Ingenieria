@@ -1,5 +1,10 @@
 "use client";
 
+import {
+  CalendarBlankIcon,
+  ClockCounterClockwiseIcon,
+  FlagCheckeredIcon,
+} from "@phosphor-icons/react/dist/ssr";
 import { notFound, useRouter } from "next/navigation";
 import { use, useEffect, useState } from "react";
 import { AccesoRestringido } from "@/components/mantenimiento/AccesoRestringido";
@@ -69,21 +74,6 @@ export default function HistorialSolicitudPage({ params }: Props) {
   const primero = ficha.historial[0];
   const ultimo = ficha.historial[ficha.historial.length - 1];
 
-  const resumen = [
-    {
-      label: "Apertura",
-      valor: primero ? <TiempoRelativo fecha={primero.fecha} completo /> : "—",
-    },
-    {
-      label: "Último cambio",
-      valor: ultimo ? <TiempoRelativo fecha={ultimo.fecha} completo /> : "—",
-    },
-    {
-      label: "Estado actual",
-      valor: <EstadoBadge estado={ficha.estado} size="sm" />,
-    },
-  ];
-
   return (
     <div className="mx-auto w-full max-w-4xl 2xl:max-w-5xl flex flex-1 flex-col justify-between gap-6">
       <SkeletonContent
@@ -121,20 +111,143 @@ export default function HistorialSolicitudPage({ params }: Props) {
             }
           />
 
-          <section className="card rounded-[1.25rem] border border-grayscale-4/90 bg-grayscale-2 p-1 shadow-2xs dark:border-white/[0.22] dark:bg-[#191917]">
-            <div className="rounded-[1rem] border border-grayscale-3/60 bg-white p-5 shadow-[0_1px_2px_rgba(28,22,16,0.03)] dark:border-white/[0.08] dark:bg-[#121211] space-y-5">
-              <div className="grid gap-2.5 sm:grid-cols-3">
-                {resumen.map((item) => (
-                  <div key={item.label} className="surface-soft px-3.5 py-2.5">
-                    <span className="section-label">{item.label}</span>
-                    <div className="mt-1 text-[12px] font-medium text-grayscale-12">
-                      {item.valor}
-                    </div>
+          <div className="grid gap-3.5 sm:grid-cols-3">
+            {/* Apertura */}
+            <div className="card flex min-w-0 flex-col rounded-[1.25rem] border border-grayscale-4/90 bg-grayscale-2 p-1 shadow-2xs dark:border-white/[0.22] dark:bg-[#191917]">
+              <div className="flex min-w-0 flex-1 flex-col justify-between rounded-[1rem] border border-grayscale-3/60 bg-white px-4 py-3.5 shadow-[0_1px_2px_rgba(28,22,16,0.03)] dark:border-white/[0.08] dark:bg-[#121211]">
+                <div className="flex items-center justify-between gap-2.5">
+                  <div className="flex min-w-0 items-center gap-1.5">
+                    <span
+                      aria-hidden
+                      className="size-1.5 shrink-0 rounded-full bg-grayscale-8"
+                    />
+                    <span className="truncate font-mono text-[11px] font-medium uppercase tracking-[0.06em] text-grayscale-9">
+                      Apertura
+                    </span>
                   </div>
-                ))}
-              </div>
+                  <span className="flex size-6.5 shrink-0 items-center justify-center rounded-full border border-grayscale-3/90 bg-grayscale-1 text-grayscale-10 shadow-2xs dark:border-grayscale-4/70 dark:bg-grayscale-3">
+                    <CalendarBlankIcon size={12} weight="bold" />
+                  </span>
+                </div>
 
-              <div className="border-t border-grayscale-3/80 pt-4 dark:border-grayscale-3/50">
+                <div className="mt-3 text-[16px] font-bold tracking-tight text-grayscale-12">
+                  {primero ? <TiempoRelativo fecha={primero.fecha} completo /> : "—"}
+                </div>
+              </div>
+              <div className="flex min-w-0 items-center justify-between gap-2 px-3.5 py-2 text-[11px] text-grayscale-10">
+                <span className="truncate font-medium">
+                  {primero ? primero.autor.nombre : "Sin registro"}
+                </span>
+                <span className="shrink-0 font-mono text-[10px] text-grayscale-8 dark:text-grayscale-9">
+                  Inicio
+                </span>
+              </div>
+            </div>
+
+            {/* Último cambio */}
+            <div className="card flex min-w-0 flex-col rounded-[1.25rem] border border-grayscale-4/90 bg-grayscale-2 p-1 shadow-2xs dark:border-white/[0.22] dark:bg-[#191917]">
+              <div className="flex min-w-0 flex-1 flex-col justify-between rounded-[1rem] border border-grayscale-3/60 bg-white px-4 py-3.5 shadow-[0_1px_2px_rgba(28,22,16,0.03)] dark:border-white/[0.08] dark:bg-[#121211]">
+                <div className="flex items-center justify-between gap-2.5">
+                  <div className="flex min-w-0 items-center gap-1.5">
+                    <span
+                      aria-hidden
+                      className="size-1.5 shrink-0 rounded-full bg-blue-500"
+                    />
+                    <span className="truncate font-mono text-[11px] font-medium uppercase tracking-[0.06em] text-grayscale-9">
+                      Último cambio
+                    </span>
+                  </div>
+                  <span className="flex size-6.5 shrink-0 items-center justify-center rounded-full border border-grayscale-3/90 bg-grayscale-1 text-grayscale-10 shadow-2xs dark:border-grayscale-4/70 dark:bg-grayscale-3">
+                    <ClockCounterClockwiseIcon size={12} weight="bold" />
+                  </span>
+                </div>
+
+                <div className="mt-3 text-[16px] font-bold tracking-tight text-grayscale-12">
+                  {ultimo ? <TiempoRelativo fecha={ultimo.fecha} completo /> : "—"}
+                </div>
+              </div>
+              <div className="flex min-w-0 items-center justify-between gap-2 px-3.5 py-2 text-[11px] text-grayscale-10">
+                <span className="truncate font-medium">
+                  {ultimo ? ultimo.autor.nombre : "Sin movimientos"}
+                </span>
+                <span className="shrink-0 font-mono text-[10px] text-grayscale-8 dark:text-grayscale-9">
+                  <SlotNumber value={ficha.historial.length} className="font-semibold" />{" "}
+                  eventos
+                </span>
+              </div>
+            </div>
+
+            {/* Estado actual */}
+            <div className="card flex min-w-0 flex-col rounded-[1.25rem] border border-grayscale-4/90 bg-grayscale-2 p-1 shadow-2xs dark:border-white/[0.22] dark:bg-[#191917]">
+              <div className="flex min-w-0 flex-1 flex-col justify-between rounded-[1rem] border border-grayscale-3/60 bg-white px-4 py-3.5 shadow-[0_1px_2px_rgba(28,22,16,0.03)] dark:border-white/[0.08] dark:bg-[#121211]">
+                <div className="flex items-center justify-between gap-2.5">
+                  <div className="flex min-w-0 items-center gap-1.5">
+                    <span
+                      aria-hidden
+                      className={
+                        ficha.estado === "CERRADA"
+                          ? "size-1.5 shrink-0 rounded-full bg-emerald-600"
+                          : ficha.estado === "EN_PROCESO"
+                            ? "size-1.5 shrink-0 rounded-full bg-amber-500"
+                            : "size-1.5 shrink-0 rounded-full bg-grayscale-9"
+                      }
+                    />
+                    <span className="truncate font-mono text-[11px] font-medium uppercase tracking-[0.06em] text-grayscale-9">
+                      Estado actual
+                    </span>
+                  </div>
+                  <span className="flex size-6.5 shrink-0 items-center justify-center rounded-full border border-grayscale-3/90 bg-grayscale-1 text-grayscale-10 shadow-2xs dark:border-grayscale-4/70 dark:bg-grayscale-3">
+                    <FlagCheckeredIcon size={12} weight="bold" />
+                  </span>
+                </div>
+
+                <div className="mt-2.5 flex flex-col gap-2">
+                  <div>
+                    <EstadoBadge estado={ficha.estado} size="sm" />
+                  </div>
+                  <div className="grid grid-cols-3 gap-1" aria-hidden>
+                    {(["REGISTRADA", "EN_PROCESO", "CERRADA"] as const).map(
+                      (etapa, idx) => {
+                        const pasoActual =
+                          ficha.estado === "CERRADA"
+                            ? 2
+                            : ficha.estado === "EN_PROCESO"
+                              ? 1
+                              : 0;
+                        const activo = idx <= pasoActual;
+                        return (
+                          <span
+                            key={etapa}
+                            className={
+                              activo
+                                ? ficha.estado === "CERRADA"
+                                  ? "h-[3.5px] rounded-full bg-emerald-600"
+                                  : "h-[3.5px] rounded-full bg-amber-500"
+                                : "h-[3.5px] rounded-full bg-grayscale-3/60 dark:bg-grayscale-4/30"
+                            }
+                          />
+                        );
+                      },
+                    )}
+                  </div>
+                </div>
+              </div>
+              <div className="flex min-w-0 items-center justify-between gap-2 px-3.5 py-2 text-[11px] text-grayscale-10">
+                <span className="truncate font-medium">Ciclo de atención</span>
+                <span className="shrink-0 font-mono text-[10px] text-grayscale-8 dark:text-grayscale-9">
+                  {ficha.estado === "CERRADA"
+                    ? "3/3 completado"
+                    : ficha.estado === "EN_PROCESO"
+                      ? "2/3 en atención"
+                      : "1/3 registrada"}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <section className="card rounded-[1.25rem] border border-grayscale-4/90 bg-grayscale-2 p-1 shadow-2xs dark:border-white/[0.22] dark:bg-[#191917]">
+            <div className="rounded-[1rem] border border-grayscale-3/60 bg-white p-5 shadow-[0_1px_2px_rgba(28,22,16,0.03)] dark:border-white/[0.08] dark:bg-[#121211]">
+              <div>
                 <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
                   <h2 className="text-[14px] font-semibold tracking-[-0.01em] text-grayscale-12">
                     Línea de tiempo

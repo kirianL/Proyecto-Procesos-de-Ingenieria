@@ -1347,7 +1347,7 @@ export default function IndicadoresPage() {
                     );
                   })()}
 
-                  {/* 3. Cero papel (ODS 12.5): comparativa vertical Antes → Meta → Hoy */}
+                  {/* 3. Cero papel (ODS 12.5): comparativa vertical Antes → Meta → Papel → Digital */}
                   {(() => {
                     const digitales = (solicitudes ?? []).length;
                     const basePapel =
@@ -1355,8 +1355,12 @@ export default function IndicadoresPage() {
                     const metaPapel =
                       METAS_ACADEMICAS_ODS12.formulariosFisicosMes.meta;
                     const pctMetaAltura = Math.max(
-                      18,
+                      20,
                       Math.round((metaPapel / basePapel) * 100),
+                    );
+                    const pctDigitalAltura = Math.min(
+                      100,
+                      Math.max(18, Math.round((digitales / basePapel) * 100)),
                     );
 
                     return (
@@ -1382,7 +1386,7 @@ export default function IndicadoresPage() {
                         </div>
 
                         <div className="mt-4 space-y-2">
-                          <div className="grid grid-cols-3 items-end gap-3 border-b border-grayscale-4/70 pb-1.5 dark:border-white/[0.08]">
+                          <div className="grid grid-cols-4 items-end gap-2.5 border-b border-grayscale-4/70 pb-1.5 dark:border-white/[0.08]">
                             {/* Columna 1: Antes */}
                             <div className="flex flex-col items-center gap-1">
                               <span className="font-mono text-[9.5px] text-grayscale-9 tabular-nums">
@@ -1406,7 +1410,7 @@ export default function IndicadoresPage() {
                               </div>
                             </div>
 
-                            {/* Columna 3: Hoy */}
+                            {/* Columna 3: Papel hoy */}
                             <div className="flex flex-col items-center gap-1">
                               <span className="font-mono text-[9.5px] font-semibold text-emerald-700 dark:text-emerald-400 tabular-nums">
                                 0
@@ -1415,19 +1419,35 @@ export default function IndicadoresPage() {
                                 <div className="h-[3px] w-full rounded-full bg-emerald-500" />
                               </div>
                             </div>
+
+                            {/* Columna 4: Folios digitales */}
+                            <div className="flex flex-col items-center gap-1">
+                              <span className="font-mono text-[9.5px] font-semibold text-blue-700 dark:text-blue-400 tabular-nums">
+                                {digitales}
+                              </span>
+                              <div className="flex h-10 w-full items-end">
+                                <div
+                                  className="w-full rounded-t-[4px] bg-blue-500/80 dark:bg-blue-400/75"
+                                  style={{ height: `${pctDigitalAltura}%` }}
+                                />
+                              </div>
+                            </div>
                           </div>
 
-                          <div className="grid grid-cols-3 text-center font-mono text-[9.5px] text-grayscale-9">
+                          <div className="grid grid-cols-4 text-center font-mono text-[9.5px] text-grayscale-9">
                             <span>Antes</span>
                             <span>Meta</span>
                             <span className="font-medium text-emerald-700 dark:text-emerald-400">
-                              Hoy
+                              Papel
+                            </span>
+                            <span className="font-medium text-blue-700 dark:text-blue-400">
+                              Digital
                             </span>
                           </div>
 
                           <div className="flex items-center justify-between pt-0.5 font-mono text-[10px] text-grayscale-9">
-                            <span>{digitales} folios digitales</span>
-                            <span>100% sin papel</span>
+                            <span>Ahorro: {basePapel} hojas/mes</span>
+                            <span>100% digital</span>
                           </div>
                         </div>
                       </div>

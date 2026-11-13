@@ -373,8 +373,13 @@ export default function DetalleSolicitudPage({ params }: Props) {
                     </p>
                   </div>
                   {valoracion ? (
-                    <span className="inline-flex items-center gap-1 rounded-full border border-emerald-500/25 bg-emerald-500/10 px-2.5 py-0.5 font-mono text-[11px] font-semibold text-emerald-700 dark:text-emerald-400">
-                      {valoracion.calificacion}/5 estrellas
+                    <span className="inline-flex items-center gap-1.5 rounded-lg bg-grayscale-2 px-2.5 py-1 font-mono text-[11px] font-semibold text-grayscale-12 dark:bg-white/[0.06]">
+                      <StarIcon
+                        size={12}
+                        weight="fill"
+                        className="text-amber-500"
+                      />
+                      <span>{valoracion.calificacion}/5</span>
                     </span>
                   ) : null}
                 </div>
