@@ -153,12 +153,10 @@ export default function BandejaMantenimientoPage() {
   if (!autorizado) {
     return (
       <AccesoRestringido
-        codigoPantalla="I05"
         tituloPantalla="Bandeja de mantenimiento"
         usuario={usuario}
         rolesPermitidos={["TECNICO", "JEFATURA"]}
-        motivo="La bandeja consolidada de mantenimiento contiene solicitudes de toda la organización y su consulta está restringida al personal técnico y jefatura autorizada (RF03, Tabla 13 y Tabla 20)."
-        reglaReferencia="RF03 · RNF02 · Tabla 20"
+        motivo="La bandeja consolidada de incidencias contiene reportes de toda la organización y está reservada para el equipo técnico y la jefatura de operaciones."
       />
     );
   }

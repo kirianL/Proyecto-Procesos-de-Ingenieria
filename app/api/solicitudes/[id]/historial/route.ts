@@ -25,3 +25,4 @@ export async function GET(request: NextRequest, context: Context) {
     return manejarErrorApi(error);
   }
 }
+

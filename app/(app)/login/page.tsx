@@ -155,10 +155,9 @@ export default function LoginPage() {
     <div className="flex flex-1 flex-col justify-between gap-6">
       <div className="space-y-6">
         <PageHeader
-          codigo="I01"
-          eyebrow="Acceso"
-          titulo="Elige tu perfil"
-          descripcion="Selecciona una cuenta de demostración. El sistema adapta vistas, permisos y panel de trabajo al instante."
+          eyebrow="Control de acceso"
+          titulo="Selecciona tu cuenta"
+          descripcion="Inicia sesión con tu perfil corporativo para acceder al portal de mantenimiento e infraestructura."
         />
 
         <SkeletonContent

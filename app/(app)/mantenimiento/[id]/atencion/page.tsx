@@ -97,7 +97,7 @@ const ACCIONES: {
     categoria: "Etapa 03",
     titulo: "Finalizar y cerrar solicitud",
     detalle: "Concluir el servicio técnico, validar operación y archivar expediente.",
-    regla: "Informe requerido (RN03)",
+    regla: "Informe técnico requerido",
     icon: CheckCircleIcon,
     dot: "bg-emerald-600",
     iconColor: "text-emerald-600 dark:text-emerald-400",
@@ -156,12 +156,10 @@ export default function AtencionYCierrePage({ params }: Props) {
   if (!autorizado) {
     return (
       <AccesoRestringido
-        codigoPantalla="I06"
         tituloPantalla="Atención y cierre técnico"
         usuario={usuario}
         rolesPermitidos={["TECNICO"]}
-        motivo="La gestión de transiciones de estado y el cierre documentado de solicitudes están reservados exclusivamente al personal técnico autorizado (RF04, RN-02, RN-03 y CS02)."
-        reglaReferencia="RF04 · RN-02 · RN-03 · CS02"
+        motivo="La gestión de estados de atención y el cierre técnico de incidencias están reservados para el personal de mantenimiento."
       />
     );
   }
@@ -596,7 +594,7 @@ export default function AtencionYCierrePage({ params }: Props) {
                             <span className="font-medium text-grayscale-11">
                               Obligatoria al cerrar
                             </span>{" "}
-                            <span className="text-grayscale-5">|</span> RN03
+                            <span className="text-grayscale-5">|</span> Informe de cierre
                           </>
                         ) : (
                           <>

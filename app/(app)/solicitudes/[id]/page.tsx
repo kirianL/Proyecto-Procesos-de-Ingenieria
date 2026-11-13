@@ -87,12 +87,10 @@ export default function DetalleSolicitudPage({ params }: Props) {
   if (solicitud !== undefined && !autorizado) {
     return (
       <AccesoRestringido
-        codigoPantalla="I04"
         tituloPantalla="Detalle de solicitud"
         usuario={usuario}
         rolesPermitidos={["TECNICO", "JEFATURA"]}
-        motivo="Por política de privacidad y aislamiento (RF02, RN-05 y CP04), un empleado únicamente puede consultar las solicitudes registradas por su propia cuenta."
-        reglaReferencia="RF02 · RN-05 · RNF02 · CP04"
+        motivo="Por privacidad, solo puedes consultar el detalle de las solicitudes registradas con tu propia cuenta."
       />
     );
   }

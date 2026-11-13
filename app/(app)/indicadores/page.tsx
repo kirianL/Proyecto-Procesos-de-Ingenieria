@@ -83,12 +83,10 @@ export default function IndicadoresPage() {
   if (!autorizado) {
     return (
       <AccesoRestringido
-        codigoPantalla="I08"
         tituloPantalla="Resumen e indicadores"
         usuario={usuario}
         rolesPermitidos={["JEFATURA"]}
-        motivo="La consulta agregada de indicadores operativos, tiempos de resolución y metas de sostenibilidad es exclusiva para el perfil de Jefatura en modo de solo lectura (RF05, RN-07, Tabla 13 y CP10)."
-        reglaReferencia="RF05 · RN-07 · RNF02 · CP10"
+        motivo="El tablero de métricas operativas y tiempos de resolución está reservado para la jefatura de operaciones."
       />
     );
   }
@@ -640,60 +638,60 @@ export default function IndicadoresPage() {
               </div>
             </section>
 
-            {/* Línea base académica y metas ODS 12 (Tablas 4, 20 y 31) */}
+            {/* Metas operativas y de sostenibilidad */}
             <section className="card rounded-[1.25rem] border border-grayscale-3/85 bg-grayscale-2 p-1 shadow-2xs dark:border-grayscale-4/40 dark:bg-grayscale-3/50">
               <div className="rounded-[1rem] border border-grayscale-3/60 bg-white p-5 shadow-[0_1px_2px_rgba(28,22,16,0.03)] dark:border-grayscale-4/30 dark:bg-grayscale-2 space-y-3.5">
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <div className="flex items-center gap-2">
                     <TargetIcon size={15} weight="duotone" className="text-sand-9/80" />
                     <h2 className="text-[13px] font-semibold text-grayscale-12">
-                      Línea base simulada y metas académicas (ODS 12)
+                      Metas operativas y de eficiencia del servicio
                     </h2>
                   </div>
                   <span className="rounded-md bg-grayscale-2 px-2 py-0.5 font-mono text-[10px] font-medium text-grayscale-10">
-                    Escenario de demostración · Tabla 31
+                    Objetivos del área
                   </span>
                 </div>
 
                 <div className="grid gap-3 sm:grid-cols-3 text-[12px]">
                   <div className="surface-soft rounded-xl p-3.5 space-y-1">
                     <span className="text-[11px] text-grayscale-9 block">
-                      Operativo · Tiempo medio de atención
+                      Tiempo medio de atención
                     </span>
                     <div className="flex items-baseline gap-2 font-mono">
                       <span className="text-[13.5px] font-bold text-grayscale-12">
-                        Meta: {METAS_ACADEMICAS_ODS12.tiempoMedio.metaHoras} h
+                        Meta: ≤ {METAS_ACADEMICAS_ODS12.tiempoMedio.metaHoras} h
                       </span>
                       <span className="text-[11px] text-grayscale-9">
-                        (Base: {METAS_ACADEMICAS_ODS12.tiempoMedio.baseHoras} h)
+                        (Anterior: {METAS_ACADEMICAS_ODS12.tiempoMedio.baseHoras} h)
                       </span>
                     </div>
                   </div>
 
                   <div className="surface-soft rounded-xl p-3.5 space-y-1">
                     <span className="text-[11px] text-grayscale-9 block">
-                      Calidad · Satisfacción favorable
+                      Satisfacción de usuarios internos
                     </span>
                     <div className="flex items-baseline gap-2 font-mono">
                       <span className="text-[13.5px] font-bold text-grayscale-12">
-                        Meta: {METAS_ACADEMICAS_ODS12.satisfaccion.metaPorcentaje}%
+                        Meta: ≥ {METAS_ACADEMICAS_ODS12.satisfaccion.metaPorcentaje}%
                       </span>
                       <span className="text-[11px] text-grayscale-9">
-                        (Base: {METAS_ACADEMICAS_ODS12.satisfaccion.basePorcentaje}%)
+                        (Anterior: {METAS_ACADEMICAS_ODS12.satisfaccion.basePorcentaje}%)
                       </span>
                     </div>
                   </div>
 
                   <div className="surface-soft rounded-xl p-3.5 space-y-1">
                     <span className="text-[11px] text-grayscale-9 block">
-                      Sostenibilidad ({METAS_ACADEMICAS_ODS12.formulariosFisicosMes.ods}) · Papel
+                      Formularios físicos en papel
                     </span>
                     <div className="flex items-baseline gap-2 font-mono">
                       <span className="text-[13.5px] font-bold text-grayscale-12">
-                        Meta: {METAS_ACADEMICAS_ODS12.formulariosFisicosMes.meta}/mes
+                        Meta: ≤ {METAS_ACADEMICAS_ODS12.formulariosFisicosMes.meta}/mes
                       </span>
                       <span className="text-[11px] text-grayscale-9">
-                        (Base: {METAS_ACADEMICAS_ODS12.formulariosFisicosMes.base}/mes)
+                        (Anterior: {METAS_ACADEMICAS_ODS12.formulariosFisicosMes.base}/mes)
                       </span>
                     </div>
                   </div>

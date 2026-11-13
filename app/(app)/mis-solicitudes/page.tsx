@@ -54,12 +54,10 @@ export default function MisSolicitudesPage() {
   if (!autorizado) {
     return (
       <AccesoRestringido
-        codigoPantalla="I03"
         tituloPantalla="Mis solicitudes"
         usuario={usuario}
         rolesPermitidos={["EMPLEADO"]}
-        motivo="La vista personal 'Mis solicitudes' corresponde al recorrido del empleado solicitante (RF02 y Tabla 19). El personal técnico y la jefatura disponen de la Bandeja técnica (I05) y del panel de Indicadores (I08)."
-        reglaReferencia="RF02 · RN-05 · Tabla 19"
+        motivo="Esta sección muestra los reportes registrados desde una cuenta de solicitante. Puedes gestionar la cola de trabajo desde la Bandeja técnica o consultar el panel de Indicadores."
       />
     );
   }
@@ -70,8 +68,7 @@ export default function MisSolicitudesPage() {
     <div className="flex flex-1 flex-col justify-between gap-6">
       <div className="space-y-5">
         <PageHeader
-          codigo="I03"
-          eyebrow="Empleado"
+          eyebrow="Portal del solicitante"
           titulo="Mis solicitudes"
           descripcion={`Todo lo que has reportado como ${nombreLimpio(usuario.nombre)}, con su estado y fecha de registro.`}
           meta={

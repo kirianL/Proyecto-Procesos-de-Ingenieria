@@ -56,12 +56,10 @@ export default function HistorialSolicitudPage({ params }: Props) {
   if (solicitud !== undefined && !autorizado) {
     return (
       <AccesoRestringido
-        codigoPantalla="I07"
         tituloPantalla="Historial de cambios"
         usuario={usuario}
         rolesPermitidos={["TECNICO", "JEFATURA"]}
-        motivo="El historial de eventos únicamente está disponible para el empleado propietario del reporte o para el personal técnico y jefatura autorizada (RF05, Tabla 20 y CS03)."
-        reglaReferencia="RF05 · RNF02 · CS03"
+        motivo="El registro de actividad de esta solicitud solo está disponible para la persona que la reportó y para el equipo de mantenimiento."
       />
     );
   }

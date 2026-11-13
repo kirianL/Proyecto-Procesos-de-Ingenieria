@@ -57,12 +57,10 @@ export default function NuevaSolicitudPage() {
   if (!autorizado) {
     return (
       <AccesoRestringido
-        codigoPantalla="I02"
         tituloPantalla="Nueva solicitud"
         usuario={usuario}
         rolesPermitidos={["EMPLEADO"]}
-        motivo="El registro de nuevas solicitudes de mantenimiento corresponde al perfil de Empleado solicitante (RF01, Tabla 13 y Tabla 19)."
-        reglaReferencia="RF01 · RNF02 · Tabla 19"
+        motivo="La creación de nuevos reportes de mantenimiento está habilitada para las cuentas del personal solicitante."
       />
     );
   }
