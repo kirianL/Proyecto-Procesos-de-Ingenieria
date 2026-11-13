@@ -139,7 +139,7 @@ function SidebarNavContent({ onNavigate }: { onNavigate?: () => void }) {
                 title={
                   disponible
                     ? undefined
-                    : `Restringido a perfil ${rolesTexto} (RNF02).`
+                    : `Disponible para ${rolesTexto}`
                 }
                 className={cn(
                   "group flex items-center gap-2.5 rounded-lg px-2.5 py-[7px] text-[13px] transition-[background-color,color,box-shadow,border-color] duration-150",

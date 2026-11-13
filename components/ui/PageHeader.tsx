@@ -20,7 +20,6 @@ interface PageHeaderProps {
 }
 
 export function PageHeader({
-  codigo,
   eyebrow,
   volver,
   titulo,
@@ -52,21 +51,9 @@ export function PageHeader({
             </Link>
           )}
 
-          {volver && (codigo || eyebrow) && (
+          {volver && eyebrow && (
             <span aria-hidden className="text-grayscale-6">
               /
-            </span>
-          )}
-
-          {codigo && (
-            <span className="font-mono text-[10px] font-medium tracking-wide text-grayscale-8">
-              {codigo}
-            </span>
-          )}
-
-          {codigo && eyebrow && (
-            <span aria-hidden className="text-grayscale-6">
-              ·
             </span>
           )}
 
