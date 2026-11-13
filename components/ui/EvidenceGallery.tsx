@@ -9,6 +9,7 @@ import {
   XIcon,
 } from "@phosphor-icons/react/dist/ssr";
 import { useCallback, useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { cn } from "@/helpers/classname-helper";
 import type { AdjuntoEvidencia } from "@/lib/mantenimiento/types";
 import { GridReveal } from "./grid-reveal";
@@ -55,6 +56,9 @@ export function EvidenceGallery({
   useEffect(() => {
     if (indiceActivo === null) return;
 
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") cerrar();
       if (event.key === "ArrowLeft" && lista.length > 1) anterior();
@@ -62,7 +66,10 @@ export function EvidenceGallery({
     };
 
     window.addEventListener("keydown", onKeyDown);
-    return () => window.removeEventListener("keydown", onKeyDown);
+    return () => {
+      document.body.style.overflow = prevOverflow;
+      window.removeEventListener("keydown", onKeyDown);
+    };
   }, [indiceActivo, lista.length, cerrar, anterior, siguiente]);
 
   if (lista.length === 0) return null;

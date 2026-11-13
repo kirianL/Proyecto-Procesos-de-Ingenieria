@@ -1347,16 +1347,16 @@ export default function IndicadoresPage() {
                     );
                   })()}
 
-                  {/* 3. Cero papel (ODS 12.5): progreso de digitalización */}
+                  {/* 3. Cero papel (ODS 12.5): comparativa vertical Antes → Meta → Hoy */}
                   {(() => {
                     const digitales = (solicitudes ?? []).length;
                     const basePapel =
                       METAS_ACADEMICAS_ODS12.formulariosFisicosMes.base;
                     const metaPapel =
                       METAS_ACADEMICAS_ODS12.formulariosFisicosMes.meta;
-                    const pctDigital = Math.min(
-                      100,
-                      Math.round((digitales / basePapel) * 100),
+                    const pctMetaAltura = Math.max(
+                      18,
+                      Math.round((metaPapel / basePapel) * 100),
                     );
 
                     return (
@@ -1366,36 +1366,68 @@ export default function IndicadoresPage() {
                             <span className="text-[11px] font-medium text-grayscale-9">
                               Cero papel | ODS 12.5
                             </span>
-                            <span className="rounded-md bg-blue-500/10 px-1.5 py-0.5 font-mono text-[10px] font-semibold text-blue-700 dark:text-blue-400">
-                              100% digital
+                            <span className="rounded-md bg-emerald-500/10 px-1.5 py-0.5 font-mono text-[10px] font-semibold text-emerald-700 dark:text-emerald-400">
+                              -100% papel
                             </span>
                           </div>
 
                           <div className="mt-1.5 flex items-baseline gap-1.5 font-mono">
                             <span className="text-[22px] font-bold tracking-tight text-grayscale-12 tabular-nums">
-                              {digitales}
+                              0
                             </span>
                             <span className="text-[11px] text-grayscale-9">
-                              folios sin papel
+                              hojas físicas / mes
                             </span>
                           </div>
                         </div>
 
-                        <div className="mt-5 space-y-1.5">
-                          <div className="relative pt-4">
-                            <div className="absolute inset-x-0 top-0 flex items-center justify-between font-mono text-[9.5px] font-medium text-grayscale-10">
-                              <span>0 hojas físicas</span>
-                              <span>Meta: {metaPapel}/mes</span>
-                            </div>
-                            <div className="relative flex h-4 w-full items-center overflow-hidden rounded-md bg-blue-500/85 px-2">
-                              <span className="font-mono text-[9.5px] font-semibold text-white">
-                                100% digital ({digitales} folios)
+                        <div className="mt-4 space-y-2">
+                          <div className="grid grid-cols-3 items-end gap-3 border-b border-grayscale-4/70 pb-1.5 dark:border-white/[0.08]">
+                            {/* Columna 1: Antes */}
+                            <div className="flex flex-col items-center gap-1">
+                              <span className="font-mono text-[9.5px] text-grayscale-9 tabular-nums">
+                                {basePapel}
                               </span>
+                              <div className="flex h-10 w-full items-end">
+                                <div className="h-full w-full rounded-t-[4px] bg-grayscale-4/85 dark:bg-white/[0.12]" />
+                              </div>
+                            </div>
+
+                            {/* Columna 2: Meta */}
+                            <div className="flex flex-col items-center gap-1">
+                              <span className="font-mono text-[9.5px] text-grayscale-10 tabular-nums">
+                                ≤{metaPapel}
+                              </span>
+                              <div className="flex h-10 w-full items-end">
+                                <div
+                                  className="w-full rounded-t-[4px] border border-b-0 border-dashed border-grayscale-8/70 bg-grayscale-2/70 dark:border-white/30 dark:bg-white/[0.04]"
+                                  style={{ height: `${pctMetaAltura}%` }}
+                                />
+                              </div>
+                            </div>
+
+                            {/* Columna 3: Hoy */}
+                            <div className="flex flex-col items-center gap-1">
+                              <span className="font-mono text-[9.5px] font-semibold text-emerald-700 dark:text-emerald-400 tabular-nums">
+                                0
+                              </span>
+                              <div className="flex h-10 w-full items-end">
+                                <div className="h-[3px] w-full rounded-full bg-emerald-500" />
+                              </div>
                             </div>
                           </div>
-                          <div className="flex items-center justify-between font-mono text-[10px] text-grayscale-9">
-                            <span>Antes: {basePapel} hojas/mes</span>
-                            <span>Ahorro: 100%</span>
+
+                          <div className="grid grid-cols-3 text-center font-mono text-[9.5px] text-grayscale-9">
+                            <span>Antes</span>
+                            <span>Meta</span>
+                            <span className="font-medium text-emerald-700 dark:text-emerald-400">
+                              Hoy
+                            </span>
+                          </div>
+
+                          <div className="flex items-center justify-between pt-0.5 font-mono text-[10px] text-grayscale-9">
+                            <span>{digitales} folios digitales</span>
+                            <span>100% sin papel</span>
                           </div>
                         </div>
                       </div>
