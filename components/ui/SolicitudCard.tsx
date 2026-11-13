@@ -1,28 +1,20 @@
+"use client";
+
 import type { Icon } from "@phosphor-icons/react";
-import {
-  ArrowRightIcon,
-  CalendarBlankIcon,
-  FlagIcon,
-  MapPinIcon,
-} from "@phosphor-icons/react/dist/ssr";
+import { ArrowRightIcon, MapPinIcon } from "@phosphor-icons/react/dist/ssr";
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { EstadoBadge } from "@/components/mantenimiento/EstadoBadge";
-import { SlaBadge } from "@/components/mantenimiento/SlaPanel";
 import { PrioridadChip } from "@/components/ui/PrioridadChip";
 import { TiempoRelativo } from "@/components/ui/TiempoRelativo";
 import { cn } from "@/helpers/classname-helper";
-import type { Estado, Solicitud } from "@/lib/mantenimiento/types";
-
-const TILE: Record<Estado, string> = {
-  REGISTRADA: "text-amber-600 dark:text-amber-400 bg-amber-500/10 border-amber-500/20",
-  EN_PROCESO: "text-blue-600 dark:text-blue-400 bg-blue-500/10 border-blue-500/20",
-  CERRADA: "text-grayscale-10 bg-grayscale-2 border-grayscale-3/80",
-};
+import { calcularEstadoSla } from "@/lib/mantenimiento/sla";
+import type { Solicitud } from "@/lib/mantenimiento/types";
 
 interface SolicitudCardProps {
   solicitud: Solicitud;
-  icon: Icon;
+  /** @deprecated Mantenido por compatibilidad; el diseño actual prescinde de caja de icono */
+  icon?: Icon;
   href?: string;
   acciones?: ReactNode;
   pie?: ReactNode;
@@ -30,18 +22,33 @@ interface SolicitudCardProps {
 }
 
 /**
- * Ficha de solicitud con fusión moderna dual-tone:
- * - Parte superior blanca con título, estado y descripción.
- * - Franja inferior gris con metadatos (ubicación, prioridad, fecha) y acción.
+ * Ficha de solicitud con fusión dual-tone nativa:
+ * - Isla superior blanca con título, folio/ubicación/fecha, estado y descripción.
+ * - Franja inferior gris más oscura con prioridad, telemetría SLA y acción.
  */
 export function SolicitudCard({
   solicitud,
-  icon: IconComponent,
   href,
   acciones,
   pie,
   className,
 }: SolicitudCardProps) {
+  const sla = calcularEstadoSla(solicitud);
+
+  const colorBarraSla =
+    sla.estadoSla === "EXCEDIDO" || sla.estadoSla === "INCUMPLIDO"
+      ? "bg-red-8"
+      : sla.estadoSla === "POR_VENCER"
+        ? "bg-amber-8"
+        : "bg-green-8";
+
+  const textoSlaClass =
+    sla.estadoSla === "EXCEDIDO" || sla.estadoSla === "INCUMPLIDO"
+      ? "text-red-10 dark:text-red-9"
+      : sla.estadoSla === "POR_VENCER"
+        ? "text-amber-10 dark:text-amber-9"
+        : "text-grayscale-11";
+
   const contenido = (
     <article
       className={cn(
@@ -50,61 +57,83 @@ export function SolicitudCard({
         className,
       )}
     >
-      {/* CUERPO SUPERIOR: isla blanca enmarcada dentro del chasis gris */}
+      {/* ISLA SUPERIOR BLANCA: título, metadatos directos, estado y descripción */}
       <div className="rounded-[1rem] border border-grayscale-3/60 bg-white p-4 shadow-[0_1px_2px_rgba(28,22,16,0.03)] dark:border-white/[0.08] dark:bg-[#121211]">
-        <div className="flex items-start gap-3">
-          <span
-            skullet-block=""
-            className={cn(
-              "flex size-9 shrink-0 items-center justify-center rounded-xl border",
-              TILE[solicitud.estado],
-            )}
-          >
-            <IconComponent size={18} weight="duotone" />
-          </span>
-
+        <div className="flex items-start justify-between gap-3">
           <div className="min-w-0 flex-1">
-            <div className="flex items-start justify-between gap-3">
-              <div className="min-w-0">
-                <h3 className="truncate text-[14.5px] font-semibold tracking-[-0.01em] text-grayscale-12">
-                  {solicitud.titulo}
-                </h3>
-                <p className="mt-0.5 flex items-center gap-1.5 font-mono text-[10.5px] text-grayscale-9">
-                  <span>{solicitud.id}</span>
-                  <span aria-hidden className="text-grayscale-6">
-                    ·
-                  </span>
-                  <TiempoRelativo fecha={solicitud.creadaEn} />
-                </p>
-              </div>
-
-              <EstadoBadge estado={solicitud.estado} size="sm" />
+            <h3
+              skullet-block=""
+              className="truncate text-[14.5px] font-semibold tracking-[-0.01em] text-grayscale-12"
+            >
+              {solicitud.titulo}
+            </h3>
+            <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-0.5 font-mono text-[11px] text-grayscale-9">
+              <span className="font-medium text-grayscale-10">
+                # {solicitud.id}
+              </span>
+              <span aria-hidden className="text-grayscale-5 dark:text-white/20">
+                |
+              </span>
+              <span className="inline-flex min-w-0 items-center gap-1 font-sans text-[11.5px] text-grayscale-9">
+                <MapPinIcon size={12} className="shrink-0 text-grayscale-8" />
+                <span className="truncate">{solicitud.ubicacion}</span>
+              </span>
+              <span aria-hidden className="text-grayscale-5 dark:text-white/20">
+                |
+              </span>
+              <TiempoRelativo fecha={solicitud.creadaEn} />
             </div>
-
-            <p className="mt-2 line-clamp-2 max-h-24 text-[12.5px] leading-relaxed text-grayscale-10">
-              {solicitud.descripcion}
-            </p>
           </div>
+
+          <EstadoBadge estado={solicitud.estado} size="sm" />
         </div>
+
+        <p className="mt-2.5 line-clamp-2 max-h-24 text-[12.5px] leading-relaxed text-grayscale-10">
+          {solicitud.descripcion}
+        </p>
       </div>
 
-      {/* PIE INFERIOR: Franja gris suave con metadatos y llamada a la acción */}
+      {/* FRANJA INFERIOR GRIS: prioridad, barras SLA, contexto y acción */}
       <div className="flex flex-wrap items-center justify-between gap-3 px-4 py-2 text-[11px] text-grayscale-10">
-        <div className="flex flex-wrap items-center gap-3">
-          <span className="flex items-center gap-1.5 text-grayscale-11 font-medium">
-            <MapPinIcon size={13} className="text-grayscale-8 shrink-0" />
-            <span className="line-clamp-1">{solicitud.ubicacion}</span>
-          </span>
-          <span className="text-grayscale-5 dark:text-grayscale-5/50">•</span>
+        <div className="flex flex-wrap items-center gap-2.5">
           <PrioridadChip prioridad={solicitud.prioridad} />
-          <span className="text-grayscale-5 dark:text-grayscale-5/50">•</span>
-          <SlaBadge solicitud={solicitud} />
-          {pie && (
+          <span aria-hidden className="text-grayscale-5 dark:text-white/20">
+            |
+          </span>
+          <span className="inline-flex items-center gap-2">
+            <span className="flex flex-col-reverse gap-[1.5px]" aria-hidden>
+              {Array.from({ length: 4 }).map((_, idx) => (
+                <span
+                  key={idx}
+                  className={cn(
+                    "h-[2px] w-2.5 rounded-[1px]",
+                    idx < sla.segmentosActivos
+                      ? colorBarraSla
+                      : "bg-grayscale-4 dark:bg-white/[0.12]",
+                  )}
+                />
+              ))}
+            </span>
+            <span
+              className={cn(
+                "font-mono text-[11px] font-semibold tabular-nums",
+                textoSlaClass,
+              )}
+            >
+              {sla.etiquetaCorta}
+            </span>
+            <span className="hidden text-[10.5px] text-grayscale-9 sm:inline">
+              | {sla.objetivoHoras}h
+            </span>
+          </span>
+          {pie ? (
             <>
-              <span className="text-grayscale-5 dark:text-grayscale-5/50">•</span>
+              <span aria-hidden className="text-grayscale-5 dark:text-white/20">
+                |
+              </span>
               <span className="text-grayscale-9">{pie}</span>
             </>
-          )}
+          ) : null}
         </div>
 
         <div>
@@ -114,7 +143,7 @@ export function SolicitudCard({
                 Ver ficha
                 <ArrowRightIcon
                   size={11}
-                  className="transition-transform duration-150 ease-[cubic-bezier(0.23,1,0.32,1)] group-hover:translate-x-0.5"
+                  className="transition-transform duration-150 ease-[var(--ease-out-soft)] group-hover:translate-x-0.5"
                 />
               </span>
             ))}
