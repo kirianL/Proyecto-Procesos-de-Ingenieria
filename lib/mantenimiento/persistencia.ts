@@ -4,6 +4,7 @@ import {
   type EventoHistorial,
   type Solicitud,
   type Usuario,
+  type Valoracion,
 } from "./types";
 
 function crearSvgDataUri(titulo: string, subtitulo: string, acento: string): string {
@@ -334,9 +335,34 @@ export const HISTORIAL_INICIAL: EventoHistorial[] = [
   },
 ];
 
+export const VALORACIONES_INICIALES: Valoracion[] = [
+  {
+    id: "VAL-104",
+    solicitudId: "SOL-104",
+    calificacion: 5,
+    comentario: "Iluminación restablecida rápido y sin interrumpir capacitaciones.",
+    fecha: new Date(Date.now() - 1000 * 60 * 60 * 30).toISOString(),
+  },
+  {
+    id: "VAL-105",
+    solicitudId: "SOL-105",
+    calificacion: 4,
+    comentario: "Acceso biométrico funcionando con normalidad.",
+    fecha: new Date(Date.now() - 1000 * 60 * 60 * 50).toISOString(),
+  },
+  {
+    id: "VAL-106",
+    solicitudId: "SOL-106",
+    calificacion: 5,
+    comentario: "Extintores recargados y señalizados en tiempo.",
+    fecha: new Date(Date.now() - 1000 * 60 * 60 * 90).toISOString(),
+  },
+];
+
 interface EstadoRepositorio {
   solicitudes: Solicitud[];
   historial: EventoHistorial[];
+  valoraciones: Valoracion[];
   usuarioActualId: string;
   simularFalloHistorial: boolean;
 }
@@ -365,6 +391,7 @@ function obtenerEstadoInterno(): EstadoRepositorio {
     globalStore.__mantenimientoRepo = {
       solicitudes: clonarSolicitudes(SOLICITUDES_INICIALES),
       historial: clonarHistorial(HISTORIAL_INICIAL),
+      valoraciones: VALORACIONES_INICIALES.map((v) => ({ ...v })),
       usuarioActualId: "emp-a",
       simularFalloHistorial: false,
     };
@@ -445,6 +472,7 @@ export function reiniciarRepositorio(): void {
   globalStore.__mantenimientoRepo = {
     solicitudes: clonarSolicitudes(SOLICITUDES_INICIALES),
     historial: clonarHistorial(HISTORIAL_INICIAL),
+    valoraciones: VALORACIONES_INICIALES.map((v) => ({ ...v })),
     usuarioActualId: "emp-a",
     simularFalloHistorial: false,
   };
@@ -478,5 +506,35 @@ export const repositorio = {
         (h) => h.solicitudId === solicitudId,
       ),
     );
+  },
+  obtenerValoraciones(): Valoracion[] {
+    return obtenerEstadoInterno().valoraciones.map((v) => ({ ...v }));
+  },
+  obtenerValoracionPorSolicitud(solicitudId: string): Valoracion | undefined {
+    const encontrada = obtenerEstadoInterno().valoraciones.find(
+      (v) => v.solicitudId === solicitudId,
+    );
+    return encontrada ? { ...encontrada } : undefined;
+  },
+  guardarValoracion(
+    entrada: Omit<Valoracion, "id" | "fecha">,
+  ): Valoracion {
+    const repo = obtenerEstadoInterno();
+    const existente = repo.valoraciones.findIndex(
+      (v) => v.solicitudId === entrada.solicitudId,
+    );
+    const nueva: Valoracion = {
+      id: `VAL-${entrada.solicitudId.replace("SOL-", "")}`,
+      solicitudId: entrada.solicitudId,
+      calificacion: entrada.calificacion,
+      comentario: entrada.comentario?.trim() || null,
+      fecha: new Date().toISOString(),
+    };
+    if (existente >= 0) {
+      repo.valoraciones[existente] = nueva;
+    } else {
+      repo.valoraciones = [...repo.valoraciones, nueva];
+    }
+    return { ...nueva };
   },
 };
