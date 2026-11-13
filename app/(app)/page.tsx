@@ -19,7 +19,6 @@ import { MetricCard } from "@/components/ui/MetricCard";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { PrioridadChip } from "@/components/ui/PrioridadChip";
 import { SegmentedControl } from "@/components/ui/SegmentedControl";
-import { SkeletonContent } from "@/components/ui/Skeleton";
 import { SlotNumber } from "@/components/ui/SlotNumber";
 import { SolicitudCard } from "@/components/ui/SolicitudCard";
 import { TiempoRelativo } from "@/components/ui/TiempoRelativo";
@@ -193,49 +192,47 @@ export default function Home() {
       />
 
       {/* ── 2. METRICAS CLAVE / ESTADO DE SITUACION ── */}
-      <SkeletonContent id="home-kpis" loading={false}>
-        <section className="stagger grid grid-cols-2 gap-3 lg:grid-cols-4">
-          <MetricCard
-            label="Total"
-            valor={kpis.totales}
-            unidad="Solicitudes"
-            detalle="En el sistema"
-            dot="bg-grayscale-8"
-            icon={ClipboardTextIcon}
-            delay={0}
-          />
-          <MetricCard
-            label="Pendientes"
-            valor={kpis.porEstado.REGISTRADA}
-            detalle="Sin iniciar"
-            dot="bg-amber-8"
-            tono="amber"
-            total={kpis.totales}
-            icon={HourglassIcon}
-            delay={1}
-          />
-          <MetricCard
-            label="En atención"
-            valor={kpis.porEstado.EN_PROCESO}
-            detalle="Técnico laborando"
-            dot="bg-blue-8"
-            tono="blue"
-            total={kpis.totales}
-            icon={WrenchIcon}
-            delay={2}
-          />
-          <MetricCard
-            label="Cerradas"
-            valor={kpis.porEstado.CERRADA}
-            detalle={`${kpis.porcentajeCumplimiento}% efectividad`}
-            dot="bg-green-8"
-            tono="emerald"
-            total={kpis.totales}
-            icon={CheckCircleIcon}
-            delay={3}
-          />
-        </section>
-      </SkeletonContent>
+      <section className="stagger grid grid-cols-2 gap-3 lg:grid-cols-4">
+        <MetricCard
+          label="Total"
+          valor={kpis.totales}
+          unidad="Solicitudes"
+          detalle="En el sistema"
+          dot="bg-grayscale-8"
+          icon={ClipboardTextIcon}
+          delay={0}
+        />
+        <MetricCard
+          label="Pendientes"
+          valor={kpis.porEstado.REGISTRADA}
+          detalle="Sin iniciar"
+          dot="bg-amber-8"
+          tono="amber"
+          total={kpis.totales}
+          icon={HourglassIcon}
+          delay={1}
+        />
+        <MetricCard
+          label="En atención"
+          valor={kpis.porEstado.EN_PROCESO}
+          detalle="Técnico laborando"
+          dot="bg-blue-8"
+          tono="blue"
+          total={kpis.totales}
+          icon={WrenchIcon}
+          delay={2}
+        />
+        <MetricCard
+          label="Cerradas"
+          valor={kpis.porEstado.CERRADA}
+          detalle={`${kpis.porcentajeCumplimiento}% efectividad`}
+          dot="bg-green-8"
+          tono="emerald"
+          total={kpis.totales}
+          icon={CheckCircleIcon}
+          delay={3}
+        />
+      </section>
 
       {/* ── 3. CUERPO PRINCIPAL ASIMETRICO: ACTIVIDAD + RADAR OPERATIVO ── */}
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1.8fr)_minmax(0,1.1fr)]">
@@ -273,12 +270,9 @@ export default function Home() {
               descripcion="Actualmente no existen registros bajo el filtro seleccionado."
             />
           ) : (
-            <div className="stagger space-y-3">
-              {listaFiltrada.slice(0, 4).map((solicitud, index) => (
-                <div
-                  key={solicitud.id}
-                  style={{ "--stagger": index } as CSSProperties}
-                >
+            <div className="space-y-3">
+              {listaFiltrada.slice(0, 4).map((solicitud) => (
+                <div key={solicitud.id}>
                   <SolicitudCard
                     solicitud={solicitud}
                     icon={
@@ -297,9 +291,9 @@ export default function Home() {
         {/* COLUMNA DERECHA: Radar de Atención Inmediata & SLA */}
         <aside className="flex flex-col gap-4 min-w-0">
           {/* Card 1: Foco Operativo y Casos en Riesgo de SLA */}
-          <div className="card rounded-[1.25rem] border border-grayscale-4/90 bg-grayscale-2 p-1 shadow-2xs dark:border-white/[0.22] dark:bg-[#191917]">
-            <div className="rounded-[1rem] border border-grayscale-3/60 bg-white p-4 shadow-[0_1px_2px_rgba(28,22,16,0.03)] dark:border-white/[0.08] dark:bg-[#121211]">
-              <div className="flex items-center justify-between gap-2 border-b border-grayscale-3/70 pb-3 dark:border-white/[0.08]">
+          <div className="card rounded-[1.25rem] border border-grayscale-4/90 bg-grayscale-2 p-1 shadow-2xs dark:border-white/[0.32] dark:bg-[#191917]">
+            <div className="rounded-[1rem] border border-grayscale-3/60 bg-white p-4 shadow-[0_1px_2px_rgba(28,22,16,0.03)] dark:border-white/[0.14] dark:bg-[#121211]">
+              <div className="flex items-center justify-between gap-2 border-b border-grayscale-3/70 pb-3 dark:border-white/[0.14]">
                 <div className="flex items-center gap-2">
                   <span className="flex size-6 items-center justify-center rounded-lg bg-red-500/10 text-red-600 dark:text-red-400">
                     <WarningCircleIcon size={14} weight="bold" />
@@ -404,8 +398,8 @@ export default function Home() {
           </div>
 
           {/* Card 2: Desglose de carga activa con visualizador de ticks */}
-          <div className="card rounded-[1.25rem] border border-grayscale-4/90 bg-grayscale-2 p-1 shadow-2xs dark:border-white/[0.22] dark:bg-[#191917]">
-            <div className="rounded-[1rem] border border-grayscale-3/60 bg-white p-4 shadow-[0_1px_2px_rgba(28,22,16,0.03)] dark:border-white/[0.08] dark:bg-[#121211]">
+          <div className="card rounded-[1.25rem] border border-grayscale-4/90 bg-grayscale-2 p-1 shadow-2xs dark:border-white/[0.32] dark:bg-[#191917]">
+            <div className="rounded-[1rem] border border-grayscale-3/60 bg-white p-4 shadow-[0_1px_2px_rgba(28,22,16,0.03)] dark:border-white/[0.14] dark:bg-[#121211]">
               <div className="flex items-baseline justify-between gap-2">
                 <span className="text-[12.5px] font-semibold text-grayscale-12">
                   Carga activa
@@ -508,7 +502,7 @@ export default function Home() {
           {/* Card 3: Atajo rápido de productividad */}
           <Link
             href="/solicitudes/nueva"
-            className="group flex items-center justify-between gap-3 rounded-xl border border-grayscale-3/80 bg-grayscale-1 px-4 py-3 transition-[border-color,background-color,transform] duration-150 ease-[var(--ease-out-soft)] hover:border-grayscale-4 hover:bg-grayscale-2/70 active:scale-[0.985] dark:border-white/[0.08] dark:bg-[#161614] dark:hover:border-white/[0.16] dark:hover:bg-[#1b1b19]"
+            className="group flex items-center justify-between gap-3 rounded-xl border border-grayscale-3/80 bg-grayscale-1 px-4 py-3 transition-[border-color,background-color,transform] duration-150 ease-[var(--ease-out-soft)] hover:border-grayscale-4 hover:bg-grayscale-2/70 active:scale-[0.985] dark:border-white/[0.14] dark:bg-[#161614] dark:hover:border-white/[0.16] dark:hover:bg-[#1b1b19]"
           >
             <div className="flex items-center gap-2.5">
               <span className="flex size-7 items-center justify-center rounded-lg bg-grayscale-2 text-grayscale-11 transition-colors group-hover:bg-grayscale-3 dark:bg-[#20201e] dark:group-hover:bg-[#282825]">

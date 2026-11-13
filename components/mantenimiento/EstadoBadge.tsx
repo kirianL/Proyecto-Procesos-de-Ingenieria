@@ -1,4 +1,3 @@
-import { SlotText } from "@/components/ui/SlotText";
 import { cn } from "@/helpers/classname-helper";
 import type { Estado } from "@/lib/mantenimiento/types";
 
@@ -55,10 +54,7 @@ export function EstadoBadge({
       )}
     >
       <span className={cn("badge-dot", actual.dot)} />
-      <SlotText
-        text={actual.label}
-        options={{ duration: 220, stagger: 14, bounce: 0.2 }}
-      />
+      <span>{actual.label}</span>
     </span>
   );
 }

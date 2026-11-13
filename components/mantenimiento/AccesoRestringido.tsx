@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import {
   ArrowLeftIcon,
@@ -52,9 +52,9 @@ export function AccesoRestringido({
       <div
         role="alert"
         data-testid="acceso-restringido-403"
-        className="card rounded-[1.25rem] border border-grayscale-4/90 bg-grayscale-2 p-1 shadow-2xs dark:border-white/[0.22] dark:bg-[#191917]"
+        className="card rounded-[1.25rem] border border-grayscale-4/90 bg-grayscale-2 p-1 shadow-2xs dark:border-white/[0.32] dark:bg-[#191917]"
       >
-        <div className="rounded-[1rem] border border-grayscale-3/60 bg-white p-6 shadow-[0_1px_2px_rgba(28,22,16,0.03)] dark:border-white/[0.08] dark:bg-[#121211] space-y-5">
+        <div className="rounded-[1rem] border border-grayscale-3/60 bg-white p-6 shadow-[0_1px_2px_rgba(28,22,16,0.03)] dark:border-white/[0.14] dark:bg-[#121211] space-y-5">
           <div className="flex items-start gap-3.5">
             <span className="tile-status mt-0.5 flex size-10 shrink-0 items-center justify-center rounded-xl border border-amber-500/25 bg-amber-500/10 text-amber-700 dark:text-amber-300">
               <ShieldWarningIcon size={20} weight="duotone" />

@@ -5,6 +5,7 @@ import {
   useCallback,
   useContext,
   useEffect,
+  useRef,
   useState,
 } from "react";
 
@@ -34,8 +35,19 @@ function getSystemTheme(): ResolvedTheme {
     : "light";
 }
 
-function applyThemeToDom(resolved: ResolvedTheme) {
+function applyThemeToDom(
+  resolved: ResolvedTheme,
+  rafRef?: React.MutableRefObject<number | null>,
+) {
   const root = document.documentElement;
+  if (rafRef) {
+    if (rafRef.current !== null) {
+      cancelAnimationFrame(rafRef.current);
+      rafRef.current = null;
+    }
+    root.classList.add("theme-switching");
+  }
+
   root.classList.toggle("dark", resolved === "dark");
 
   const color = resolved === "dark" ? "#131312" : "#ffffff";
@@ -46,17 +58,27 @@ function applyThemeToDom(resolved: ResolvedTheme) {
     meta.name = "theme-color";
     meta.content = color;
     document.head.appendChild(meta);
-    return;
+  } else {
+    for (const meta of metas) {
+      meta.setAttribute("content", color);
+    }
   }
 
-  for (const meta of metas) {
-    meta.setAttribute("content", color);
+  if (rafRef) {
+    void window.getComputedStyle(document.body).backgroundColor;
+    rafRef.current = requestAnimationFrame(() => {
+      rafRef.current = requestAnimationFrame(() => {
+        root.classList.remove("theme-switching");
+        rafRef.current = null;
+      });
+    });
   }
 }
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [theme, setThemeState] = useState<Theme>("light");
   const [resolvedTheme, setResolvedTheme] = useState<ResolvedTheme>("light");
+  const rafRef = useRef<number | null>(null);
 
   useEffect(() => {
     const stored = window.localStorage.getItem("theme") as Theme | null;
@@ -67,7 +89,13 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     const resolved = initial === "system" ? getSystemTheme() : initial;
     setThemeState(initial);
     setResolvedTheme(resolved);
-    applyThemeToDom(resolved);
+    applyThemeToDom(resolved, rafRef);
+
+    return () => {
+      if (rafRef.current !== null) {
+        cancelAnimationFrame(rafRef.current);
+      }
+    };
   }, []);
 
   useEffect(() => {
@@ -76,7 +104,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     const onChange = () => {
       const next = mq.matches ? "dark" : "light";
       setResolvedTheme(next);
-      applyThemeToDom(next);
+      applyThemeToDom(next, rafRef);
     };
     mq.addEventListener("change", onChange);
     return () => mq.removeEventListener("change", onChange);
@@ -87,7 +115,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     const resolved = nextTheme === "system" ? getSystemTheme() : nextTheme;
     setThemeState(nextTheme);
     setResolvedTheme(resolved);
-    applyThemeToDom(resolved);
+    applyThemeToDom(resolved, rafRef);
   }, []);
 
   return (

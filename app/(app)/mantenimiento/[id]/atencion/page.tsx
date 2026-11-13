@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import {
   ArrowRightIcon,
@@ -258,8 +258,8 @@ export default function AtencionYCierrePage({ params }: Props) {
           />
 
           {/* 1. Tarjeta de contexto del expediente */}
-          <section className="card rounded-[1.25rem] border border-grayscale-4/90 bg-grayscale-2 p-1 shadow-2xs dark:border-white/[0.22] dark:bg-[#191917]">
-            <div className="rounded-[1rem] border border-grayscale-3/60 bg-white p-4 sm:p-5 shadow-[0_1px_2px_rgba(28,22,16,0.03)] dark:border-white/[0.08] dark:bg-[#121211] space-y-3.5">
+          <section className="card rounded-[1.25rem] border border-grayscale-4/90 bg-grayscale-2 p-1 shadow-2xs dark:border-white/[0.32] dark:bg-[#191917]">
+            <div className="rounded-[1rem] border border-grayscale-3/60 bg-white p-4 sm:p-5 shadow-[0_1px_2px_rgba(28,22,16,0.03)] dark:border-white/[0.14] dark:bg-[#121211] space-y-3.5">
               <div className="flex items-start justify-between gap-3">
                 <div className="flex min-w-0 items-start gap-3">
                   <span
@@ -357,8 +357,8 @@ export default function AtencionYCierrePage({ params }: Props) {
               </div>
             )}
 
-            <div className="card rounded-[1.25rem] border border-grayscale-4/90 bg-grayscale-2 p-1 shadow-2xs dark:border-white/[0.22] dark:bg-[#191917]">
-              <div className="rounded-[1rem] border border-grayscale-3/60 bg-white p-5 shadow-[0_1px_2px_rgba(28,22,16,0.03)] dark:border-white/[0.08] dark:bg-[#121211] space-y-5">
+            <div className="card rounded-[1.25rem] border border-grayscale-4/90 bg-grayscale-2 p-1 shadow-2xs dark:border-white/[0.32] dark:bg-[#191917]">
+              <div className="rounded-[1rem] border border-grayscale-3/60 bg-white p-5 shadow-[0_1px_2px_rgba(28,22,16,0.03)] dark:border-white/[0.14] dark:bg-[#121211] space-y-5">
                 
                 {/* Bloque A: Escala de resolución limpia con separadores `|` */}
                 <div className="rounded-xl border border-grayscale-3/75 bg-grayscale-1/60 p-3.5 dark:border-white/[0.1] dark:bg-[#171715]">
@@ -501,7 +501,7 @@ export default function AtencionYCierrePage({ params }: Props) {
                                 ? "border-grayscale-6 bg-grayscale-1/70 shadow-xs dark:border-grayscale-5 dark:bg-grayscale-3/40"
                                 : habilitada
                                   ? "cursor-pointer border-grayscale-3/85 bg-white hover:border-grayscale-5 dark:border-white/[0.12] dark:bg-[#161614] dark:hover:bg-grayscale-3/60"
-                                  : "cursor-not-allowed border-dashed border-grayscale-3/80 bg-grayscale-1/35 opacity-60 dark:border-white/[0.08] dark:bg-grayscale-3/15",
+                                  : "cursor-not-allowed border-dashed border-grayscale-3/80 bg-grayscale-1/35 opacity-60 dark:border-white/[0.14] dark:bg-grayscale-3/15",
                             )}
                           >
                             <div>
@@ -567,7 +567,7 @@ export default function AtencionYCierrePage({ params }: Props) {
                             </div>
 
                             {/* Fila 4: Pie con mini-barras (`||||||||....`) | regla */}
-                            <div className="mt-3.5 flex items-center justify-between gap-2 border-t border-grayscale-3/60 pt-2.5 text-[10.5px] text-grayscale-9 dark:border-white/[0.08]">
+                            <div className="mt-3.5 flex items-center justify-between gap-2 border-t border-grayscale-3/60 pt-2.5 text-[10.5px] text-grayscale-9 dark:border-white/[0.14]">
                               <div
                                 aria-hidden
                                 skullet-block=""

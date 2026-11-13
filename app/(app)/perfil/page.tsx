@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import {
   BriefcaseIcon,
@@ -289,14 +289,14 @@ export default function PerfilPage() {
           <div className="flex flex-col gap-4 lg:col-span-8">
             {/* Tarjeta cabecera con banner e identidad */}
             <section
-              className="card rounded-[1.25rem] border border-grayscale-4/90 bg-grayscale-2 p-1 shadow-2xs dark:border-white/[0.22] dark:bg-[#191917]"
+              className="card rounded-[1.25rem] border border-grayscale-4/90 bg-grayscale-2 p-1 shadow-2xs dark:border-white/[0.32] dark:bg-[#191917]"
               style={{ "--stagger": 0 } as CSSProperties}
             >
-              <div className="overflow-hidden rounded-[1rem] border border-grayscale-3/60 bg-white shadow-[0_1px_2px_rgba(28,22,16,0.03)] dark:border-white/[0.08] dark:bg-[#121211]">
+              <div className="overflow-hidden rounded-[1rem] border border-grayscale-3/60 bg-white shadow-[0_1px_2px_rgba(28,22,16,0.03)] dark:border-white/[0.14] dark:bg-[#121211]">
                 {/* Banner ilustrado */}
                 <div
                   skullet-block=""
-                  className="relative h-32 w-full overflow-hidden border-b border-grayscale-3/80 bg-emerald-50 sm:h-40 dark:border-white/[0.08] dark:bg-emerald-950/30"
+                  className="relative h-32 w-full overflow-hidden border-b border-grayscale-3/80 bg-emerald-50 sm:h-40 dark:border-white/[0.14] dark:bg-emerald-950/30"
                 >
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
@@ -386,10 +386,10 @@ export default function PerfilPage() {
             {tab === "resumen" && (
               <>
                 <section
-                  className="card rounded-[1.25rem] border border-grayscale-4/90 bg-grayscale-2 p-1 shadow-2xs dark:border-white/[0.22] dark:bg-[#191917]"
+                  className="card rounded-[1.25rem] border border-grayscale-4/90 bg-grayscale-2 p-1 shadow-2xs dark:border-white/[0.32] dark:bg-[#191917]"
                   style={{ "--stagger": 1 } as CSSProperties}
                 >
-                  <div className="rounded-[1rem] border border-grayscale-3/60 bg-white p-5 shadow-[0_1px_2px_rgba(28,22,16,0.03)] dark:border-white/[0.08] dark:bg-[#121211]">
+                  <div className="rounded-[1rem] border border-grayscale-3/60 bg-white p-5 shadow-[0_1px_2px_rgba(28,22,16,0.03)] dark:border-white/[0.14] dark:bg-[#121211]">
                     <div className="mb-3 flex items-center gap-2">
                       <span className="flex size-6.5 items-center justify-center rounded-lg bg-grayscale-2 text-grayscale-10 dark:bg-grayscale-3">
                         <UserIcon size={13} />
@@ -420,10 +420,10 @@ export default function PerfilPage() {
                 </section>
 
                 <section
-                  className="card rounded-[1.25rem] border border-grayscale-4/90 bg-grayscale-2 p-1 shadow-2xs dark:border-white/[0.22] dark:bg-[#191917]"
+                  className="card rounded-[1.25rem] border border-grayscale-4/90 bg-grayscale-2 p-1 shadow-2xs dark:border-white/[0.32] dark:bg-[#191917]"
                   style={{ "--stagger": 1 } as CSSProperties}
                 >
-                  <div className="rounded-[1rem] border border-grayscale-3/60 bg-white p-5 shadow-[0_1px_2px_rgba(28,22,16,0.03)] dark:border-white/[0.08] dark:bg-[#121211]">
+                  <div className="rounded-[1rem] border border-grayscale-3/60 bg-white p-5 shadow-[0_1px_2px_rgba(28,22,16,0.03)] dark:border-white/[0.14] dark:bg-[#121211]">
                     <div className="mb-3 flex items-center justify-between gap-2">
                       <div className="flex items-center gap-2">
                         <span className="flex size-6.5 items-center justify-center rounded-lg bg-grayscale-2 text-grayscale-10 dark:bg-grayscale-3">
@@ -462,8 +462,8 @@ export default function PerfilPage() {
             )}
 
             {tab === "actividad" && (
-              <section className="card rounded-[1.25rem] border border-grayscale-4/90 bg-grayscale-2 p-1 shadow-2xs dark:border-white/[0.22] dark:bg-[#191917]">
-                <div className="rounded-[1rem] border border-grayscale-3/60 bg-white p-5 shadow-[0_1px_2px_rgba(28,22,16,0.03)] dark:border-white/[0.08] dark:bg-[#121211] space-y-3">
+              <section className="card rounded-[1.25rem] border border-grayscale-4/90 bg-grayscale-2 p-1 shadow-2xs dark:border-white/[0.32] dark:bg-[#191917]">
+                <div className="rounded-[1rem] border border-grayscale-3/60 bg-white p-5 shadow-[0_1px_2px_rgba(28,22,16,0.03)] dark:border-white/[0.14] dark:bg-[#121211] space-y-3">
                   <div className="flex items-center justify-between gap-2">
                     <h3 className="text-[13px] font-semibold tracking-[-0.01em] text-grayscale-12">
                       Solicitudes recientes vinculadas
@@ -504,8 +504,8 @@ export default function PerfilPage() {
             )}
 
             {tab === "permisos" && (
-              <section className="card rounded-[1.25rem] border border-grayscale-4/90 bg-grayscale-2 p-1 shadow-2xs dark:border-white/[0.22] dark:bg-[#191917]">
-                <div className="rounded-[1rem] border border-grayscale-3/60 bg-white p-5 shadow-[0_1px_2px_rgba(28,22,16,0.03)] dark:border-white/[0.08] dark:bg-[#121211] space-y-2.5">
+              <section className="card rounded-[1.25rem] border border-grayscale-4/90 bg-grayscale-2 p-1 shadow-2xs dark:border-white/[0.32] dark:bg-[#191917]">
+                <div className="rounded-[1rem] border border-grayscale-3/60 bg-white p-5 shadow-[0_1px_2px_rgba(28,22,16,0.03)] dark:border-white/[0.14] dark:bg-[#121211] space-y-2.5">
                   {PERMISOS_POR_ROL[usuario.rol].map((permiso) => (
                     <div
                       key={permiso.titulo}
@@ -539,8 +539,8 @@ export default function PerfilPage() {
           {/* Columna lateral derecha */}
           <div className="flex flex-col gap-4 lg:col-span-4">
             {/* Jerarquía / Equipo */}
-            <section className="card rounded-[1.25rem] border border-grayscale-4/90 bg-grayscale-2 p-1 shadow-2xs dark:border-white/[0.22] dark:bg-[#191917]">
-              <div className="rounded-[1rem] border border-grayscale-3/60 bg-white p-4 shadow-[0_1px_2px_rgba(28,22,16,0.03)] dark:border-white/[0.08] dark:bg-[#121211]">
+            <section className="card rounded-[1.25rem] border border-grayscale-4/90 bg-grayscale-2 p-1 shadow-2xs dark:border-white/[0.32] dark:bg-[#191917]">
+              <div className="rounded-[1rem] border border-grayscale-3/60 bg-white p-4 shadow-[0_1px_2px_rgba(28,22,16,0.03)] dark:border-white/[0.14] dark:bg-[#121211]">
                 <div className="mb-3 flex items-center gap-2">
                   <span className="flex size-6.5 items-center justify-center rounded-lg bg-grayscale-2 text-grayscale-10 dark:bg-grayscale-3">
                     <UsersThreeIcon size={13} />
@@ -568,7 +568,7 @@ export default function PerfilPage() {
                             "flex size-8 shrink-0 items-center justify-center rounded-full font-mono text-[11px] font-semibold",
                             esActual
                               ? "bg-grayscale-12 text-grayscale-1 dark:bg-white dark:text-[#121211]"
-                              : "border border-grayscale-3/80 bg-grayscale-2 text-grayscale-10 dark:border-white/[0.08] dark:bg-white/[0.06]",
+                              : "border border-grayscale-3/80 bg-grayscale-2 text-grayscale-10 dark:border-white/[0.14] dark:bg-white/[0.06]",
                           )}
                         >
                           {inicialesDe(miembro.nombre)}
@@ -599,8 +599,8 @@ export default function PerfilPage() {
             </section>
 
             {/* Detalles adicionales */}
-            <section className="card rounded-[1.25rem] border border-grayscale-4/90 bg-grayscale-2 p-1 shadow-2xs dark:border-white/[0.22] dark:bg-[#191917]">
-              <div className="rounded-[1rem] border border-grayscale-3/60 bg-white p-4 shadow-[0_1px_2px_rgba(28,22,16,0.03)] dark:border-white/[0.08] dark:bg-[#121211]">
+            <section className="card rounded-[1.25rem] border border-grayscale-4/90 bg-grayscale-2 p-1 shadow-2xs dark:border-white/[0.32] dark:bg-[#191917]">
+              <div className="rounded-[1rem] border border-grayscale-3/60 bg-white p-4 shadow-[0_1px_2px_rgba(28,22,16,0.03)] dark:border-white/[0.14] dark:bg-[#121211]">
                 <div className="mb-3 flex items-center gap-2">
                   <span className="flex size-6.5 items-center justify-center rounded-lg bg-grayscale-2 text-grayscale-10 dark:bg-grayscale-3">
                     <IdentificationBadgeIcon size={13} />

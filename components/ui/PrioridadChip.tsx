@@ -1,4 +1,3 @@
-import { SlotText } from "@/components/ui/SlotText";
 import { cn } from "@/helpers/classname-helper";
 
 export type Prioridad = "BAJA" | "MEDIA" | "ALTA" | "URGENTE";
@@ -58,10 +57,7 @@ export function PrioridadChip({
       )}
     >
       {conTexto ? (
-        <SlotText
-          text={actual.label}
-          options={{ duration: 220, stagger: 16, bounce: 0.25 }}
-        />
+        <span>{actual.label}</span>
       ) : (
         <span className="sr-only">{actual.label}</span>
       )}
