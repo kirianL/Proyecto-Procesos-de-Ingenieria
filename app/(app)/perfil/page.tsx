@@ -572,7 +572,7 @@ export default function PerfilPage() {
                   </span>
                 </div>
 
-                {/* Diagrama jerárquico interactivo con flujo de partículas */}
+                {/* Diagrama jerárquico interactivo con flujo de líneas */}
                 <div className="relative z-10 flex flex-col items-center">
                   {/* Nivel 1: Dirección / Jefatura */}
                   {(() => {
@@ -581,16 +581,19 @@ export default function PerfilPage() {
                     const esActual = lider.id === usuario.id;
 
                     return (
-                      <div className="group relative w-full transition-transform duration-200 hover:-translate-y-0.5">
+                      <div className="group relative w-full">
                         <div
                           className={cn(
-                            "relative flex items-center gap-3 rounded-2xl border p-3 transition-all duration-200",
+                            "relative flex items-center gap-3 rounded-2xl border p-3 transition-[transform,border-color,background-color,box-shadow] duration-180 ease-[cubic-bezier(0.23,1,0.32,1)] hover:-translate-y-0.5 active:scale-[0.985]",
                             esActual
-                              ? "border-emerald-500/40 bg-emerald-500/[0.03] shadow-[0_2px_12px_rgba(16,185,129,0.06)] dark:border-emerald-500/35 dark:bg-emerald-500/[0.05]"
+                              ? "border-grayscale-12/20 bg-grayscale-2/70 shadow-[0_2px_8px_rgba(0,0,0,0.04)] ring-1 ring-grayscale-12/10 dark:border-white/20 dark:bg-white/[0.04] dark:ring-white/15 dark:shadow-[0_4px_16px_rgba(0,0,0,0.4)]"
                               : "border-grayscale-3/80 bg-grayscale-1/70 hover:border-grayscale-5 hover:bg-grayscale-1 hover:shadow-2xs dark:border-white/[0.10] dark:bg-[#161614] dark:hover:border-white/[0.20]",
                           )}
                         >
-                          <div className="relative shrink-0">
+                          <div
+                            skullet-block=""
+                            className="relative shrink-0 overflow-hidden rounded-full"
+                          >
                             <UserAvatar
                               userId={lider.id}
                               name={lider.nombre}
@@ -598,7 +601,7 @@ export default function PerfilPage() {
                               className={cn(
                                 "ring-2 transition-transform duration-200 group-hover:scale-105",
                                 esActual
-                                  ? "ring-emerald-500/50 dark:ring-emerald-400/50"
+                                  ? "ring-grayscale-12/40 dark:ring-white/40"
                                   : "ring-grayscale-3 dark:ring-white/15",
                               )}
                             />
@@ -611,11 +614,11 @@ export default function PerfilPage() {
                               </p>
                               <div className="flex items-center gap-1 shrink-0">
                                 {esActual ? (
-                                  <span className="rounded-md bg-emerald-500/10 px-1.5 py-0.5 font-mono text-[9px] font-medium text-emerald-700 dark:text-emerald-400">
+                                  <span className="rounded-full bg-grayscale-12/10 px-2 py-0.5 font-mono text-[9px] font-semibold text-grayscale-12 border border-grayscale-12/15 dark:bg-white/10 dark:text-grayscale-1 dark:border-white/20">
                                     Tú
                                   </span>
                                 ) : null}
-                                <span className="rounded-md bg-grayscale-2 px-1.5 py-0.5 font-mono text-[9px] text-grayscale-10 dark:bg-white/[0.06] dark:text-grayscale-8">
+                                <span className="rounded-full bg-grayscale-2 px-2 py-0.5 font-mono text-[9px] text-grayscale-10 border border-grayscale-3/60 dark:bg-white/[0.06] dark:text-grayscale-8 dark:border-white/[0.08]">
                                   Dirección
                                 </span>
                               </div>
@@ -632,8 +635,11 @@ export default function PerfilPage() {
                     );
                   })()}
 
-                  {/* Conector dinámico Animado Nivel 1 a Nivel 2 (Flujo de puntitos) */}
-                  <div className="relative flex h-8 w-full items-center justify-center">
+                  {/* Conector dinámico Animado Nivel 1 a Nivel 2 (Recorrido continuo) */}
+                  <div
+                    aria-hidden="true"
+                    className="relative flex h-8 w-full select-none items-center justify-center pointer-events-none"
+                  >
                     <svg
                       className="h-full w-full overflow-visible"
                       xmlns="http://www.w3.org/2000/svg"
@@ -646,18 +652,17 @@ export default function PerfilPage() {
                         y2="100%"
                         className="stroke-grayscale-3/70 stroke-[1.5] dark:stroke-white/[0.08]"
                       />
-                      {/* Flujo animado de puntitos */}
+                      {/* Recorrido animado de la línea */}
                       <line
                         x1="50%"
                         y1="0"
                         x2="50%"
                         y2="100%"
-                        className="animate-flow-dots stroke-grayscale-9 dark:stroke-emerald-400/90"
-                        strokeWidth="2.5"
+                        className="animate-line-flow stroke-grayscale-10 stroke-[2] dark:stroke-white/75"
                       />
                     </svg>
                     {/* Nodo de enlace con pulso suave */}
-                    <div className="animate-pulse-node absolute size-2 rounded-full border border-white bg-grayscale-9 shadow-2xs dark:border-[#121211] dark:bg-emerald-400" />
+                    <div className="animate-pulse-node absolute size-2 rounded-full border border-white bg-grayscale-10 shadow-2xs dark:border-[#121211] dark:bg-white" />
                   </div>
 
                   {/* Nivel 2: Supervisión Técnica */}
@@ -670,19 +675,19 @@ export default function PerfilPage() {
                         {tecnicos.map((tecnico) => {
                           const esActual = tecnico.id === usuario.id;
                           return (
-                            <div
-                              key={tecnico.id}
-                              className="group relative transition-transform duration-200 hover:-translate-y-0.5"
-                            >
+                            <div key={tecnico.id} className="group relative">
                               <div
                                 className={cn(
-                                  "relative flex items-center gap-3 rounded-2xl border p-2.5 transition-all duration-200",
+                                  "relative flex items-center gap-3 rounded-2xl border p-2.5 transition-[transform,border-color,background-color,box-shadow] duration-180 ease-[cubic-bezier(0.23,1,0.32,1)] hover:-translate-y-0.5 active:scale-[0.985]",
                                   esActual
-                                    ? "border-emerald-500/40 bg-emerald-500/[0.03] shadow-[0_2px_12px_rgba(16,185,129,0.06)] dark:border-emerald-500/35 dark:bg-emerald-500/[0.05]"
+                                    ? "border-grayscale-12/20 bg-grayscale-2/70 shadow-[0_2px_8px_rgba(0,0,0,0.04)] ring-1 ring-grayscale-12/10 dark:border-white/20 dark:bg-white/[0.04] dark:ring-white/15 dark:shadow-[0_4px_16px_rgba(0,0,0,0.4)]"
                                     : "border-grayscale-3/80 bg-grayscale-1/70 hover:border-grayscale-5 hover:bg-grayscale-1 hover:shadow-2xs dark:border-white/[0.10] dark:bg-[#161614] dark:hover:border-white/[0.20]",
                                 )}
                               >
-                                <div className="relative shrink-0">
+                                <div
+                                  skullet-block=""
+                                  className="relative shrink-0 overflow-hidden rounded-full"
+                                >
                                   <UserAvatar
                                     userId={tecnico.id}
                                     name={tecnico.nombre}
@@ -690,7 +695,7 @@ export default function PerfilPage() {
                                     className={cn(
                                       "ring-2 transition-transform duration-200 group-hover:scale-105",
                                       esActual
-                                        ? "ring-emerald-500/50 dark:ring-emerald-400/50"
+                                        ? "ring-grayscale-12/40 dark:ring-white/40"
                                         : "ring-grayscale-3 dark:ring-white/15",
                                     )}
                                   />
@@ -703,11 +708,11 @@ export default function PerfilPage() {
                                     </p>
                                     <div className="flex items-center gap-1 shrink-0">
                                       {esActual ? (
-                                        <span className="rounded-md bg-emerald-500/10 px-1.5 py-0.5 font-mono text-[9px] font-medium text-emerald-700 dark:text-emerald-400">
+                                        <span className="rounded-full bg-grayscale-12/10 px-2 py-0.5 font-mono text-[9px] font-semibold text-grayscale-12 border border-grayscale-12/15 dark:bg-white/10 dark:text-grayscale-1 dark:border-white/20">
                                           Tú
                                         </span>
                                       ) : null}
-                                      <span className="rounded-md bg-grayscale-2 px-1.5 py-0.5 font-mono text-[9px] text-grayscale-10 dark:bg-white/[0.06] dark:text-grayscale-8">
+                                      <span className="rounded-full bg-grayscale-2 px-2 py-0.5 font-mono text-[9px] text-grayscale-10 border border-grayscale-3/60 dark:bg-white/[0.06] dark:text-grayscale-8 dark:border-white/[0.08]">
                                         Técnico
                                       </span>
                                     </div>
@@ -727,49 +732,55 @@ export default function PerfilPage() {
                     );
                   })()}
 
-                  {/* Bifurcación en 2 ramas con curvas Bézier y flujo de puntitos */}
-                  <div className="relative h-9 w-full">
+                  {/* Bifurcación en 2 ramas con curvas Bézier y recorrido continuo */}
+                  <div
+                    aria-hidden="true"
+                    className="relative h-9 w-full select-none pointer-events-none"
+                  >
                     <svg
                       className="h-full w-full overflow-visible"
-                      viewBox="0 0 100 36"
+                      viewBox="0 0 320 36"
                       preserveAspectRatio="none"
                       xmlns="http://www.w3.org/2000/svg"
                     >
                       {/* Pistas base estáticas */}
                       <path
-                        d="M 50 0 C 50 16, 25 16, 25 36"
+                        d="M 160 0 C 160 18, 80 18, 80 36"
                         fill="none"
                         vectorEffect="non-scaling-stroke"
                         strokeWidth="1.5"
                         className="stroke-grayscale-3/70 dark:stroke-white/[0.08]"
                       />
                       <path
-                        d="M 50 0 C 50 16, 75 16, 75 36"
+                        d="M 160 0 C 160 18, 240 18, 240 36"
                         fill="none"
                         vectorEffect="non-scaling-stroke"
                         strokeWidth="1.5"
                         className="stroke-grayscale-3/70 dark:stroke-white/[0.08]"
                       />
 
-                      {/* Flujo animado de puntitos por ambas ramas */}
+                      {/* Recorrido animado de las líneas hacia ambas ramas */}
                       <path
-                        d="M 50 0 C 50 16, 25 16, 25 36"
+                        d="M 160 0 C 160 18, 80 18, 80 36"
                         fill="none"
                         vectorEffect="non-scaling-stroke"
-                        strokeWidth="2.5"
-                        className="animate-flow-dots stroke-grayscale-9 dark:stroke-emerald-400/90"
+                        strokeWidth="2"
+                        className="animate-line-flow stroke-grayscale-10 dark:stroke-white/75"
                       />
                       <path
-                        d="M 50 0 C 50 16, 75 16, 75 36"
+                        d="M 160 0 C 160 18, 240 18, 240 36"
                         fill="none"
                         vectorEffect="non-scaling-stroke"
-                        strokeWidth="2.5"
-                        className="animate-flow-dots stroke-grayscale-9 dark:stroke-emerald-400/90"
+                        strokeWidth="2"
+                        className="animate-line-flow stroke-grayscale-10 dark:stroke-white/75"
                       />
                     </svg>
 
                     {/* Nodo central de bifurcación */}
-                    <div className="animate-pulse-node absolute left-1/2 top-0 -translate-x-1/2 size-2 rounded-full border border-white bg-grayscale-9 shadow-2xs dark:border-[#121211] dark:bg-emerald-400" />
+                    <div className="animate-pulse-node absolute left-1/2 top-0 -translate-x-1/2 size-2 rounded-full border border-white bg-grayscale-10 shadow-2xs dark:border-[#121211] dark:bg-white" />
+                    {/* Nodos sutiles de llegada a las dos ramas */}
+                    <div className="absolute left-1/4 bottom-0 -translate-x-1/2 size-1.5 rounded-full bg-grayscale-6 dark:bg-white/40" />
+                    <div className="absolute left-3/4 bottom-0 -translate-x-1/2 size-1.5 rounded-full bg-grayscale-6 dark:bg-white/40" />
                   </div>
 
                   {/* Nivel 3: Base Operativa en 2 Columnas Interactivas */}
@@ -782,20 +793,20 @@ export default function PerfilPage() {
                         {empleados.map((empleado) => {
                           const esActual = empleado.id === usuario.id;
                           return (
-                            <div
-                              key={empleado.id}
-                              className="group relative transition-transform duration-200 hover:-translate-y-0.5"
-                            >
+                            <div key={empleado.id} className="group relative">
                               <div
                                 className={cn(
-                                  "relative flex h-full flex-col justify-between rounded-xl border p-2.5 transition-all duration-200",
+                                  "relative flex h-full flex-col justify-between rounded-xl border p-2.5 transition-[transform,border-color,background-color,box-shadow] duration-180 ease-[cubic-bezier(0.23,1,0.32,1)] hover:-translate-y-0.5 active:scale-[0.985]",
                                   esActual
-                                    ? "border-emerald-500/40 bg-emerald-500/[0.03] shadow-[0_2px_12px_rgba(16,185,129,0.06)] dark:border-emerald-500/35 dark:bg-emerald-500/[0.05]"
+                                    ? "border-grayscale-12/20 bg-grayscale-2/70 shadow-[0_2px_8px_rgba(0,0,0,0.04)] ring-1 ring-grayscale-12/10 dark:border-white/20 dark:bg-white/[0.04] dark:ring-white/15 dark:shadow-[0_4px_16px_rgba(0,0,0,0.4)]"
                                     : "border-grayscale-3/80 bg-grayscale-1/70 hover:border-grayscale-5 hover:bg-grayscale-1 hover:shadow-2xs dark:border-white/[0.10] dark:bg-[#161614] dark:hover:border-white/[0.20]",
                                 )}
                               >
                                 <div className="flex items-center justify-between gap-1.5">
-                                  <div className="relative shrink-0">
+                                  <div
+                                    skullet-block=""
+                                    className="relative shrink-0 overflow-hidden rounded-full"
+                                  >
                                     <UserAvatar
                                       userId={empleado.id}
                                       name={empleado.nombre}
@@ -803,14 +814,14 @@ export default function PerfilPage() {
                                       className={cn(
                                         "ring-1.5 transition-transform duration-200 group-hover:scale-105",
                                         esActual
-                                          ? "ring-emerald-500/50 dark:ring-emerald-400/50"
+                                          ? "ring-grayscale-12/40 dark:ring-white/40"
                                           : "ring-grayscale-3 dark:ring-white/15",
                                       )}
                                     />
                                   </div>
 
                                   {esActual ? (
-                                    <span className="rounded-md bg-emerald-500/10 px-1.5 py-0.5 font-mono text-[8.5px] font-medium text-emerald-700 dark:text-emerald-400">
+                                    <span className="rounded-full bg-grayscale-12/10 px-1.5 py-0.5 font-mono text-[8.5px] font-semibold text-grayscale-12 border border-grayscale-12/15 dark:bg-white/10 dark:text-grayscale-1 dark:border-white/20">
                                       Tú
                                     </span>
                                   ) : null}
