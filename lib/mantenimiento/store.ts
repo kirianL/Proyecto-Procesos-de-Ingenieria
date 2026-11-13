@@ -21,6 +21,7 @@ import type {
   Solicitud,
   SolicitudConDetalles,
   Usuario,
+  Valoracion,
 } from "./types";
 
 export { HISTORIAL_INICIAL, SOLICITUDES_INICIALES, USUARIOS_INICIALES };
@@ -130,6 +131,40 @@ export function getHistorialSolicitud(solicitudId: string): EventoConAutor[] {
 
 export function getIndicadores(): IndicadoresResumen {
   return calcularResumenIndicadores();
+}
+
+export function getValoracionSolicitud(
+  solicitudId: string,
+): Valoracion | undefined {
+  return repositorio.obtenerValoracionPorSolicitud(solicitudId);
+}
+
+export function registrarValoracion(params: {
+  solicitudId: string;
+  calificacion: 1 | 2 | 3 | 4 | 5;
+  comentario?: string;
+}): Valoracion {
+  return repositorio.guardarValoracion(params);
+}
+
+export function getResumenSatisfaccion(): {
+  total: number;
+  favorables: number;
+  porcentajeFavorable: number;
+  promedio: number;
+} {
+  const todas = repositorio.obtenerValoraciones();
+  if (todas.length === 0) {
+    return { total: 0, favorables: 0, porcentajeFavorable: 0, promedio: 0 };
+  }
+  const favorables = todas.filter((v) => v.calificacion >= 4).length;
+  const suma = todas.reduce((acc, v) => acc + v.calificacion, 0);
+  return {
+    total: todas.length,
+    favorables,
+    porcentajeFavorable: Math.round((favorables / todas.length) * 100),
+    promedio: Number((suma / todas.length).toFixed(1)),
+  };
 }
 
 /**

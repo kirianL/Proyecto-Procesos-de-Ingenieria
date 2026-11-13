@@ -57,6 +57,29 @@ export default function NuevaSolicitudPage() {
   const [ubicacion, setUbicacion] = useState("");
   const [descripcion, setDescripcion] = useState("");
   const [prioridad, setPrioridad] = useState<Prioridad>("MEDIA");
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const reincidencia = params.get("reincidencia");
+    const tituloParam = params.get("titulo");
+    const ubicacionParam = params.get("ubicacion");
+    if (reincidencia) {
+      setTitulo((prev) =>
+        prev ||
+        (tituloParam
+          ? `Reincidencia (${reincidencia}): ${tituloParam}`
+          : `Reincidencia de ${reincidencia}`),
+      );
+      if (ubicacionParam) {
+        setUbicacion((prev) => prev || ubicacionParam);
+      }
+      setPrioridad("ALTA");
+      setDescripcion((prev) =>
+        prev ||
+        `Seguimiento por reincidencia de la solicitud ${reincidencia}. El problema persiste después del cierre previo.`,
+      );
+    }
+  }, []);
   const [adjuntos, setAdjuntos] = useState<AdjuntoEvidencia[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [intento, setIntento] = useState(0);

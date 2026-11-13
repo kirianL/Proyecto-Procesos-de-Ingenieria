@@ -1,11 +1,15 @@
 "use client";
 
 import {
+  ArrowCounterClockwiseIcon,
   ArrowRightIcon,
   CalendarBlankIcon,
   CheckCircleIcon,
   ClockCounterClockwiseIcon,
+  DownloadSimpleIcon,
   MapPinIcon,
+  PrinterIcon,
+  StarIcon,
   UserIcon,
   WrenchIcon,
 } from "@phosphor-icons/react/dist/ssr";
@@ -25,6 +29,7 @@ import { PrioridadChip } from "@/components/ui/PrioridadChip";
 import { SkeletonContent } from "@/components/ui/Skeleton";
 import { SlotNumber } from "@/components/ui/SlotNumber";
 import { TiempoRelativo } from "@/components/ui/TiempoRelativo";
+import { cn } from "@/helpers/classname-helper";
 import { fechaCompleta } from "@/helpers/fecha";
 import { nombreLimpio } from "@/helpers/iniciales";
 import { useAtajos } from "@/hooks/useAtajos";
@@ -33,8 +38,14 @@ import {
   DETALLE_MUESTRA,
   getDetalleSolicitud,
   getUsuarioActual,
+  getValoracionSolicitud,
+  registrarValoracion,
 } from "@/lib/mantenimiento/store";
-import type { SolicitudConDetalles, Usuario } from "@/lib/mantenimiento/types";
+import type {
+  SolicitudConDetalles,
+  Usuario,
+  Valoracion,
+} from "@/lib/mantenimiento/types";
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -48,11 +59,30 @@ export default function DetalleSolicitudPage({ params }: Props) {
     SolicitudConDetalles | null | undefined
   >(() => getDetalleSolicitud(id) ?? undefined);
   const [usuario, setUsuario] = useState<Usuario>(getUsuarioActual());
+  const [valoracion, setValoracion] = useState<Valoracion | undefined>(() =>
+    getValoracionSolicitud(id),
+  );
+  const [calificacionSel, setCalificacionSel] = useState<1 | 2 | 3 | 4 | 5>(
+    () => getValoracionSolicitud(id)?.calificacion ?? 5,
+  );
+  const [calificacionHover, setCalificacionHover] = useState<number | null>(
+    null,
+  );
+  const [comentarioVal, setComentarioVal] = useState<string>(
+    () => getValoracionSolicitud(id)?.comentario ?? "",
+  );
+  const [guardadoOk, setGuardadoOk] = useState(false);
 
   useEffect(() => {
     const actualizar = () => {
       setSolicitud(getDetalleSolicitud(id) ?? null);
       setUsuario(getUsuarioActual());
+      const val = getValoracionSolicitud(id);
+      setValoracion(val);
+      if (val) {
+        setCalificacionSel(val.calificacion);
+        setComentarioVal(val.comentario ?? "");
+      }
     };
     actualizar();
     window.addEventListener("usuario-cambiado", actualizar);
@@ -100,6 +130,58 @@ export default function DetalleSolicitudPage({ params }: Props) {
   const cargando = solicitud === undefined;
   const ficha = solicitud ?? DETALLE_MUESTRA;
   const ultimoEvento = ficha.historial[ficha.historial.length - 1];
+  const esCreadorEmpleado =
+    usuario.rol === "EMPLEADO" && usuario.id === ficha.creadorId;
+
+  const exportarFichaCsv = () => {
+    const escapar = (v: string | null | undefined) =>
+      `"${String(v ?? "").replace(/"/g, '""')}"`;
+    const filas = [
+      ["Campo", "Valor"],
+      ["ID", ficha.id],
+      ["Titulo", ficha.titulo],
+      ["Estado", ficha.estado],
+      ["Prioridad", ficha.prioridad],
+      ["Ubicacion", ficha.ubicacion],
+      ["Solicitante", ficha.creador.nombre],
+      ["Departamento", ficha.creador.departamento],
+      ["Creada", ficha.creadaEn],
+      ["Cerrada", ficha.cerradaEn ?? "N/A"],
+      ["Valoracion CSAT", valoracion ? `${valoracion.calificacion}/5` : "Sin valorar"],
+      [],
+      ["Fecha Evento", "Autor", "Rol", "Estado Previo", "Estado Nuevo", "Nota"],
+      ...ficha.historial.map((ev) => [
+        ev.fecha,
+        ev.autor.nombre,
+        ev.autor.rol,
+        ev.estadoPrevio ?? "INICIAL",
+        ev.estadoNuevo,
+        ev.nota ?? "",
+      ]),
+    ];
+    const csv = filas
+      .map((fila) => fila.map((c) => escapar(c)).join(","))
+      .join("\n");
+    const blob = new Blob([`\uFEFF${csv}`], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `ficha-${ficha.id.toLowerCase()}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const guardarValoracion = (e: React.FormEvent) => {
+    e.preventDefault();
+    const nueva = registrarValoracion({
+      solicitudId: ficha.id,
+      calificacion: calificacionSel,
+      comentario: comentarioVal,
+    });
+    setValoracion(nueva);
+    setGuardadoOk(true);
+    window.setTimeout(() => setGuardadoOk(false), 2500);
+  };
 
   return (
     <div className="mx-auto w-full max-w-4xl 2xl:max-w-5xl space-y-6">
@@ -128,6 +210,25 @@ export default function DetalleSolicitudPage({ params }: Props) {
             titulo={ficha.titulo}
             acciones={
               <>
+                <Button
+                  type="button"
+                  onClick={exportarFichaCsv}
+                  variant="secondary"
+                  title="Descargar ficha y bitácora en CSV"
+                >
+                  <DownloadSimpleIcon size={14} weight="bold" />
+                  <span className="hidden sm:inline">Exportar</span>
+                </Button>
+
+                <Button
+                  type="button"
+                  onClick={() => window.print()}
+                  variant="secondary"
+                  title="Imprimir o guardar como PDF"
+                >
+                  <PrinterIcon size={14} weight="bold" />
+                </Button>
+
                 <Button
                   href={`/solicitudes/${ficha.id}/historial`}
                   variant="secondary"
@@ -257,6 +358,133 @@ export default function DetalleSolicitudPage({ params }: Props) {
               Línea de auditoría inmutable
             </div>
           </section>
+
+          {/* Valoración de servicio CSAT y reincidencia (Tabla 14 / Sección 4.7) */}
+          {esCerrada && (esCreadorEmpleado || valoracion) && (
+            <section className="card rounded-[1.25rem] border border-grayscale-4/90 bg-grayscale-2 p-1 shadow-2xs dark:border-white/[0.22] dark:bg-[#191917]">
+              <div className="rounded-[1rem] border border-grayscale-3/60 bg-white p-5 shadow-[0_1px_2px_rgba(28,22,16,0.03)] dark:border-white/[0.08] dark:bg-[#121211] space-y-4">
+                <div className="flex flex-wrap items-center justify-between gap-2 border-b border-grayscale-3/80 pb-3 dark:border-grayscale-3/50">
+                  <div>
+                    <h2 className="text-[13px] font-semibold text-grayscale-12">
+                      Valoración de la atención
+                    </h2>
+                    <p className="text-[11.5px] text-grayscale-9">
+                      Califica el resultado técnico para el indicador de satisfacción (meta 80%).
+                    </p>
+                  </div>
+                  {valoracion ? (
+                    <span className="inline-flex items-center gap-1 rounded-full border border-emerald-500/25 bg-emerald-500/10 px-2.5 py-0.5 font-mono text-[11px] font-semibold text-emerald-700 dark:text-emerald-400">
+                      {valoracion.calificacion}/5 estrellas
+                    </span>
+                  ) : null}
+                </div>
+
+                {esCreadorEmpleado ? (
+                  <form onSubmit={guardarValoracion} className="space-y-3">
+                    <div className="flex flex-wrap items-center gap-1.5">
+                      {([1, 2, 3, 4, 5] as const).map((estrella) => {
+                        const activa =
+                          estrella <= (calificacionHover ?? calificacionSel);
+                        return (
+                          <button
+                            key={estrella}
+                            type="button"
+                            onMouseEnter={() => setCalificacionHover(estrella)}
+                            onMouseLeave={() => setCalificacionHover(null)}
+                            onClick={() => setCalificacionSel(estrella)}
+                            aria-label={`${estrella} ${estrella === 1 ? "estrella" : "estrellas"}`}
+                            className="cursor-pointer rounded-lg p-1.5 transition-transform duration-150 ease-[var(--ease-out-soft)] hover:scale-110 active:scale-95"
+                          >
+                            <StarIcon
+                              size={22}
+                              weight={activa ? "fill" : "regular"}
+                              className={cn(
+                                "transition-colors duration-150",
+                                activa
+                                  ? "text-amber-500"
+                                  : "text-grayscale-6 dark:text-grayscale-7",
+                              )}
+                            />
+                          </button>
+                        );
+                      })}
+                      <span className="ml-2 font-mono text-[11px] text-grayscale-9">
+                        {calificacionSel >= 4
+                          ? "Satisfactoria"
+                          : calificacionSel === 3
+                            ? "Aceptable"
+                            : "Por mejorar"}
+                      </span>
+                    </div>
+
+                    <div className="flex flex-col gap-2 sm:flex-row">
+                      <input
+                        type="text"
+                        value={comentarioVal}
+                        onChange={(e) => setComentarioVal(e.target.value)}
+                        placeholder="Comentario breve opcional sobre el trabajo realizado..."
+                        className="flex-1 rounded-xl border border-grayscale-4/80 bg-grayscale-1 px-3 py-2 text-[12.5px] text-grayscale-12 placeholder:text-grayscale-8 focus:border-grayscale-8 focus:outline-none dark:border-white/[0.12] dark:bg-[#171715]"
+                      />
+                      <Button
+                        type="submit"
+                        variant="primary"
+                        className="h-9 px-3.5 text-[12px]"
+                      >
+                        {guardadoOk
+                          ? "Guardada"
+                          : valoracion
+                            ? "Actualizar"
+                            : "Enviar valoración"}
+                      </Button>
+                    </div>
+                  </form>
+                ) : valoracion ? (
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-1">
+                      {([1, 2, 3, 4, 5] as const).map((estrella) => (
+                        <StarIcon
+                          key={estrella}
+                          size={18}
+                          weight={
+                            estrella <= valoracion.calificacion
+                              ? "fill"
+                              : "regular"
+                          }
+                          className={
+                            estrella <= valoracion.calificacion
+                              ? "text-amber-500"
+                              : "text-grayscale-6"
+                          }
+                        />
+                      ))}
+                    </div>
+                    {valoracion.comentario ? (
+                      <p className="text-[12.5px] text-grayscale-10">
+                        “{valoracion.comentario}”
+                      </p>
+                    ) : null}
+                  </div>
+                ) : null}
+              </div>
+
+              {esCreadorEmpleado ? (
+                <div className="flex flex-wrap items-center justify-between gap-2 px-4 py-2 text-[11px] text-grayscale-9">
+                  <span>¿El problema volvió a presentarse?</span>
+                  <Link
+                    href={`/solicitudes/nueva?reincidencia=${encodeURIComponent(ficha.id)}&titulo=${encodeURIComponent(ficha.titulo)}&ubicacion=${encodeURIComponent(ficha.ubicacion)}`}
+                    className="inline-flex items-center gap-1 font-medium text-grayscale-11 transition-colors hover:text-grayscale-12"
+                  >
+                    <ArrowCounterClockwiseIcon size={12} />
+                    <span>Reportar reincidencia</span>
+                  </Link>
+                </div>
+              ) : (
+                <div className="px-4 py-2 text-[11px] text-grayscale-9">
+                  Valoración registrada por el solicitante
+                </div>
+              )}
+            </section>
+          )}
         </div>
       </SkeletonContent>
 

@@ -30,6 +30,7 @@ import { calcularEstadoSla } from "@/lib/mantenimiento/sla";
 import {
   getBandejaMantenimiento,
   getIndicadores,
+  getResumenSatisfaccion,
   getSolicitudesPorCreador,
   getUsuarioActual,
   INDICADORES_MUESTRA,
@@ -141,15 +142,17 @@ export default function Home() {
       abiertas.filter((s) => s.prioridad === p).length;
 
     return [
-      { key: "URGENTE" as const, label: "Urgente", count: contar("URGENTE"), bar: "bg-red-8", dot: "bg-red-8" },
-      { key: "ALTA" as const, label: "Alta", count: contar("ALTA"), bar: "bg-amber-8", dot: "bg-amber-8" },
-      { key: "MEDIA" as const, label: "Media", count: contar("MEDIA"), bar: "bg-blue-8", dot: "bg-blue-8" },
+      { key: "URGENTE" as const, label: "Urgente", count: contar("URGENTE"), bar: "bg-red-500", dot: "bg-red-500" },
+      { key: "ALTA" as const, label: "Alta", count: contar("ALTA"), bar: "bg-amber-500", dot: "bg-amber-500" },
+      { key: "MEDIA" as const, label: "Media", count: contar("MEDIA"), bar: "bg-blue-500", dot: "bg-blue-500" },
       { key: "BAJA" as const, label: "Baja", count: contar("BAJA"), bar: "bg-grayscale-7", dot: "bg-grayscale-7" },
     ].map((item) => ({
       ...item,
       pct: total > 0 ? Math.round((item.count / total) * 100) : 0,
     }));
   }, [solicitudes]);
+
+  const resumenCsat = useMemo(() => getResumenSatisfaccion(), [solicitudes]);
 
   return (
     <div className="flex flex-1 flex-col gap-6">
@@ -419,13 +422,13 @@ export default function Home() {
 
               {/* Barra de 24 ticks verticales proporcionales */}
               <div
-                className="mt-3 flex items-center justify-between gap-[3px]"
+                className="mt-3 flex h-6 w-full items-stretch gap-[3px]"
                 aria-hidden
               >
                 {Array.from({ length: 24 }).map((_, idx) => {
                   const totalTicks = 24;
                   let acumulado = 0;
-                  let colorTick = "bg-grayscale-3/90 dark:bg-white/[0.08]";
+                  let colorTick = "bg-grayscale-3 dark:bg-white/[0.10]";
 
                   if (abiertasTotal > 0) {
                     for (const item of desglosePrioridad) {
@@ -442,7 +445,7 @@ export default function Home() {
                     <span
                       key={idx}
                       className={cn(
-                        "h-5 flex-1 rounded-[2px] transition-colors duration-200 ease-[var(--ease-out-soft)]",
+                        "block h-full flex-1 rounded-[2px] transition-colors duration-200 ease-[var(--ease-out-soft)]",
                         colorTick,
                       )}
                     />
@@ -470,25 +473,34 @@ export default function Home() {
                   </div>
                 ))}
               </div>
+
+              {/* Pulso CSAT + ODS 12 */}
+              <div className="mt-3 grid grid-cols-2 gap-2 border-t border-grayscale-3/60 pt-3 dark:border-white/[0.07]">
+                <div className="rounded-lg bg-grayscale-1/90 px-2.5 py-1.5 dark:bg-white/[0.04]">
+                  <span className="block text-[10px] text-grayscale-9">
+                    Satisfacción CSAT
+                  </span>
+                  <span className="font-mono text-[12px] font-semibold text-grayscale-12">
+                    {resumenCsat.total > 0
+                      ? `${resumenCsat.porcentajeFavorable}% (${resumenCsat.promedio}/5)`
+                      : "Sin votos"}
+                  </span>
+                </div>
+                <div className="rounded-lg bg-grayscale-1/90 px-2.5 py-1.5 dark:bg-white/[0.04]">
+                  <span className="block text-[10px] text-grayscale-9">
+                    ODS 12 · Digitales
+                  </span>
+                  <span className="font-mono text-[12px] font-semibold text-grayscale-12">
+                    {kpis.totales} folios
+                  </span>
+                </div>
+              </div>
             </div>
 
             <div className="flex items-center justify-between px-3.5 py-2 font-mono text-[10.5px] text-grayscale-9">
               <span>Meta 48h</span>
-              <span
-                className={cn(
-                  "inline-flex items-center gap-1.5 font-semibold",
-                  kpis.tiempoMedioHoras <= 48
-                    ? "text-green-9"
-                    : "text-amber-9",
-                )}
-              >
-                <span
-                  className={cn(
-                    "h-1.5 w-1.5 rounded-full",
-                    kpis.tiempoMedioHoras <= 48 ? "bg-green-8" : "bg-amber-8",
-                  )}
-                />
-                {kpis.tiempoMedioHoras <= 48 ? "En meta" : "Sobre meta"}
+              <span className="font-semibold text-grayscale-11">
+                {kpis.tiempoMedioHoras}h prom.
               </span>
             </div>
           </div>

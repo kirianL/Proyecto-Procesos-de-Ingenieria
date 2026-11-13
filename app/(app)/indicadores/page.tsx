@@ -36,6 +36,7 @@ import { METAS_ACADEMICAS_ODS12 } from "@/lib/mantenimiento/consultas";
 import { calcularEstadoSla } from "@/lib/mantenimiento/sla";
 import {
   getBandejaMantenimiento,
+  getResumenSatisfaccion,
   getUsuarioActual,
   getUsuarios,
   SOLICITUDES_MUESTRA,
@@ -1186,48 +1187,189 @@ export default function IndicadoresPage() {
                   </span>
                 </div>
 
-                <div className="grid gap-3 sm:grid-cols-3 text-[12px]">
-                  <div className="surface-soft rounded-xl p-3.5 space-y-1">
-                    <span className="text-[11px] text-grayscale-9 block">
-                      Tiempo medio de atención
-                    </span>
-                    <div className="flex items-baseline gap-2 font-mono">
-                      <span className="text-[13.5px] font-bold text-grayscale-12">
-                        Meta: ≤ {METAS_ACADEMICAS_ODS12.tiempoMedio.metaHoras} h
-                      </span>
-                      <span className="text-[11px] text-grayscale-9">
-                        (Anterior: {METAS_ACADEMICAS_ODS12.tiempoMedio.baseHoras} h)
-                      </span>
-                    </div>
-                  </div>
+                <div className="grid gap-3.5 sm:grid-cols-3">
+                  {/* 1. Tiempo medio de atención: comparador visual vs base 72h y meta 48h */}
+                  {(() => {
+                    const baseH = METAS_ACADEMICAS_ODS12.tiempoMedio.baseHoras;
+                    const metaH = METAS_ACADEMICAS_ODS12.tiempoMedio.metaHoras;
+                    const actualH = tiempoMedioHoras ?? 0;
+                    const pctActual =
+                      tiempoMedioHoras !== null
+                        ? Math.min(100, Math.round((actualH / baseH) * 100))
+                        : 0;
+                    const pctMeta = Math.round((metaH / baseH) * 100);
+                    const mejoraPct =
+                      tiempoMedioHoras !== null && actualH < baseH
+                        ? Math.round(((baseH - actualH) / baseH) * 100)
+                        : null;
+                    const cumple =
+                      tiempoMedioHoras !== null && actualH <= metaH;
 
-                  <div className="surface-soft rounded-xl p-3.5 space-y-1">
-                    <span className="text-[11px] text-grayscale-9 block">
-                      Satisfacción de usuarios internos
-                    </span>
-                    <div className="flex items-baseline gap-2 font-mono">
-                      <span className="text-[13.5px] font-bold text-grayscale-12">
-                        Meta: ≥ {METAS_ACADEMICAS_ODS12.satisfaccion.metaPorcentaje}%
-                      </span>
-                      <span className="text-[11px] text-grayscale-9">
-                        (Anterior: {METAS_ACADEMICAS_ODS12.satisfaccion.basePorcentaje}%)
-                      </span>
-                    </div>
-                  </div>
+                    return (
+                      <div className="surface-soft flex flex-col justify-between rounded-xl p-4">
+                        <div>
+                          <div className="flex items-center justify-between gap-2">
+                            <span className="text-[11px] font-medium text-grayscale-9">
+                              Tiempo medio
+                            </span>
+                            {mejoraPct !== null ? (
+                              <span className="rounded-md bg-emerald-500/10 px-1.5 py-0.5 font-mono text-[10px] font-semibold text-emerald-700 dark:text-emerald-400">
+                                -{mejoraPct}% vs {baseH}h
+                              </span>
+                            ) : null}
+                          </div>
 
-                  <div className="surface-soft rounded-xl p-3.5 space-y-1">
-                    <span className="text-[11px] text-grayscale-9 block">
-                      Formularios físicos en papel
-                    </span>
-                    <div className="flex items-baseline gap-2 font-mono">
-                      <span className="text-[13.5px] font-bold text-grayscale-12">
-                        Meta: ≤ {METAS_ACADEMICAS_ODS12.formulariosFisicosMes.meta}/mes
-                      </span>
-                      <span className="text-[11px] text-grayscale-9">
-                        (Anterior: {METAS_ACADEMICAS_ODS12.formulariosFisicosMes.base}/mes)
-                      </span>
-                    </div>
-                  </div>
+                          <div className="mt-1.5 flex items-baseline gap-1.5 font-mono">
+                            <span className="text-[22px] font-bold tracking-tight text-grayscale-12 tabular-nums">
+                              {tiempoMedioHoras !== null
+                                ? `${tiempoMedioHoras}h`
+                                : "—"}
+                            </span>
+                            <span className="text-[11px] text-grayscale-9">
+                              / {metaH}h objetivo
+                            </span>
+                          </div>
+                        </div>
+
+                        <div className="mt-4 space-y-2">
+                          <div className="relative h-2 w-full overflow-hidden rounded-full bg-grayscale-3 dark:bg-white/[0.08]">
+                            <div
+                              className={cn(
+                                "h-full rounded-full transition-[width] duration-300 ease-[var(--ease-out-soft)]",
+                                cumple ? "bg-emerald-500" : "bg-amber-500",
+                              )}
+                              style={{ width: `${pctActual}%` }}
+                            />
+                            <span
+                              aria-hidden
+                              title={`Meta ${metaH}h`}
+                              className="absolute top-0 bottom-0 w-[2px] bg-grayscale-12/60"
+                              style={{ left: `${pctMeta}%` }}
+                            />
+                          </div>
+                          <div className="flex items-center justify-between font-mono text-[10px] text-grayscale-9">
+                            <span>0h</span>
+                            <span>Meta {metaH}h</span>
+                            <span>Base {baseH}h</span>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })()}
+
+                  {/* 2. Satisfacción CSAT: 10 segmentos visuales con umbral 80% */}
+                  {(() => {
+                    const csat = getResumenSatisfaccion();
+                    const pct = csat.total > 0 ? csat.porcentajeFavorable : 0;
+                    const metaPct =
+                      METAS_ACADEMICAS_ODS12.satisfaccion.metaPorcentaje;
+                    const basePct =
+                      METAS_ACADEMICAS_ODS12.satisfaccion.basePorcentaje;
+                    const segmentosActivos = Math.round(pct / 10);
+
+                    return (
+                      <div className="surface-soft flex flex-col justify-between rounded-xl p-4">
+                        <div>
+                          <div className="flex items-center justify-between gap-2">
+                            <span className="text-[11px] font-medium text-grayscale-9">
+                              Satisfacción CSAT
+                            </span>
+                            {csat.total > 0 ? (
+                              <span className="rounded-md bg-amber-500/10 px-1.5 py-0.5 font-mono text-[10px] font-semibold text-amber-700 dark:text-amber-400">
+                                {csat.promedio}/5 ★
+                              </span>
+                            ) : null}
+                          </div>
+
+                          <div className="mt-1.5 flex items-baseline gap-1.5 font-mono">
+                            <span className="text-[22px] font-bold tracking-tight text-grayscale-12 tabular-nums">
+                              {csat.total > 0 ? `${pct}%` : "—"}
+                            </span>
+                            <span className="text-[11px] text-grayscale-9">
+                              / {metaPct}% meta
+                            </span>
+                          </div>
+                        </div>
+
+                        <div className="mt-4 space-y-2">
+                          <div className="flex h-3 items-stretch gap-1" aria-hidden>
+                            {Array.from({ length: 10 }).map((_, idx) => (
+                              <span
+                                key={idx}
+                                className={cn(
+                                  "flex-1 rounded-[2px] transition-colors duration-200",
+                                  idx < segmentosActivos
+                                    ? pct >= metaPct
+                                      ? "bg-emerald-500"
+                                      : "bg-amber-500"
+                                    : "bg-grayscale-3 dark:bg-white/[0.08]",
+                                  idx === 7 &&
+                                    "ring-1 ring-grayscale-12/30 ring-offset-1 ring-offset-transparent",
+                                )}
+                              />
+                            ))}
+                          </div>
+                          <div className="flex items-center justify-between font-mono text-[10px] text-grayscale-9">
+                            <span>Base {basePct}%</span>
+                            <span>
+                              {csat.total}{" "}
+                              {csat.total === 1 ? "voto" : "votos"}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })()}
+
+                  {/* 3. Cero papel (ODS 12.5): progreso de digitalización */}
+                  {(() => {
+                    const digitales = (solicitudes ?? []).length;
+                    const basePapel =
+                      METAS_ACADEMICAS_ODS12.formulariosFisicosMes.base;
+                    const metaPapel =
+                      METAS_ACADEMICAS_ODS12.formulariosFisicosMes.meta;
+                    const pctDigital = Math.min(
+                      100,
+                      Math.round((digitales / basePapel) * 100),
+                    );
+
+                    return (
+                      <div className="surface-soft flex flex-col justify-between rounded-xl p-4">
+                        <div>
+                          <div className="flex items-center justify-between gap-2">
+                            <span className="text-[11px] font-medium text-grayscale-9">
+                              Cero papel · ODS 12.5
+                            </span>
+                            <span className="rounded-md bg-blue-500/10 px-1.5 py-0.5 font-mono text-[10px] font-semibold text-blue-700 dark:text-blue-400">
+                              100% digital
+                            </span>
+                          </div>
+
+                          <div className="mt-1.5 flex items-baseline gap-1.5 font-mono">
+                            <span className="text-[22px] font-bold tracking-tight text-grayscale-12 tabular-nums">
+                              {digitales}
+                            </span>
+                            <span className="text-[11px] text-grayscale-9">
+                              folios sin papel
+                            </span>
+                          </div>
+                        </div>
+
+                        <div className="mt-4 space-y-2">
+                          <div className="h-2 w-full overflow-hidden rounded-full bg-grayscale-3 dark:bg-white/[0.08]">
+                            <div
+                              className="h-full rounded-full bg-blue-500 transition-[width] duration-300 ease-[var(--ease-out-soft)]"
+                              style={{ width: `${Math.max(pctDigital, 8)}%` }}
+                            />
+                          </div>
+                          <div className="flex items-center justify-between font-mono text-[10px] text-grayscale-9">
+                            <span>Base papel: {basePapel}/mes</span>
+                            <span>Meta ≤ {metaPapel}</span>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })()}
                 </div>
               </div>
             </section>
