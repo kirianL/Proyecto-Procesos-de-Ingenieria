@@ -159,11 +159,11 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="app-canvas relative flex min-h-screen w-full flex-col justify-between overflow-hidden px-5 py-6 text-grayscale-12 sm:px-8 sm:py-8">
+    <div className="app-canvas relative flex min-h-dvh w-full flex-col justify-between overflow-hidden px-5 py-4 text-grayscale-12 sm:px-8 sm:py-8">
       {/* Auroras ambientales arriba y abajo estilo Vercel */}
       <div
         aria-hidden
-        className="pointer-events-none fixed inset-0 overflow-hidden"
+        className="aurora-wrapper pointer-events-none fixed inset-0 overflow-hidden"
       >
         <div className="aurora-top" />
         <div className="aurora-bottom" />
@@ -189,7 +189,7 @@ export default function LoginPage() {
       {/* Bloque central abierto (sin contenedor exterior que encierre el login) */}
       <main
         className={cn(
-          "login-enter relative z-10 mx-auto my-auto w-full max-w-[400px] py-8 transition-[opacity,transform] duration-150 ease-out",
+          "login-enter relative z-10 mx-auto my-auto w-full max-w-[400px] py-4 sm:py-8 transition-[opacity,transform] duration-150 ease-out",
           enviando && "scale-[0.992] opacity-75",
         )}
       >

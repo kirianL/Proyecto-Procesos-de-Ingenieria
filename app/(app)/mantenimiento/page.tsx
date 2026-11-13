@@ -198,7 +198,7 @@ export default function BandejaMantenimientoPage() {
               onChange={(event) => setBusqueda(event.target.value)}
               placeholder="Buscar por ID, título o ubicación…"
               aria-label="Buscar solicitudes"
-              className="campo w-full py-2 pl-9 pr-3 text-[13px]"
+              className="campo w-full py-2 pl-9 pr-3 text-[16px] sm:text-[13px]"
             />
           </div>
 
@@ -212,7 +212,7 @@ export default function BandejaMantenimientoPage() {
               onChange={(event) =>
                 setPrioridad(event.target.value as PrioridadFiltro)
               }
-              className="campo h-[38px] w-full cursor-pointer px-3 text-[12.5px] sm:w-auto"
+              className="campo h-[38px] w-full cursor-pointer px-3 text-[16px] sm:w-auto sm:text-[12.5px]"
             >
               <option value="TODAS">Todas las prioridades</option>
               {OPCIONES_PRIORIDAD.map((opcion) => (

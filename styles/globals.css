@@ -43,6 +43,7 @@
 }
 
 html {
+  background-color: var(--canvas);
   scrollbar-gutter: stable;
   -webkit-tap-highlight-color: transparent;
 }
@@ -118,6 +119,15 @@ body {
   -webkit-text-fill-color: var(--sand-12);
   caret-color: var(--sand-11);
   transition: background-color 5000s ease-in-out 0s;
+}
+
+@media (max-width: 767px) {
+  input,
+  textarea,
+  select,
+  .campo {
+    font-size: 16px !important;
+  }
 }
 
 /* ── Entrada de página rápida y sin parpadeo (sin opacity: 0 agresivo) ── */
@@ -456,6 +466,41 @@ body {
       rgba(236, 72, 153, 0.15) 0%,
       transparent 75%
     );
+}
+
+@media (max-width: 639px) {
+  .aurora-wrapper {
+    -webkit-mask-image: linear-gradient(
+      to bottom,
+      transparent 0%,
+      transparent 7%,
+      black 24%,
+      black 76%,
+      transparent 93%,
+      transparent 100%
+    );
+    mask-image: linear-gradient(
+      to bottom,
+      transparent 0%,
+      transparent 7%,
+      black 24%,
+      black 76%,
+      transparent 93%,
+      transparent 100%
+    );
+  }
+
+  .aurora-top {
+    top: 28px;
+    height: 210px;
+    opacity: 0.72;
+  }
+
+  .aurora-bottom {
+    bottom: 36px;
+    height: 210px;
+    opacity: 0.68;
+  }
 }
 
 @keyframes login-enter {
