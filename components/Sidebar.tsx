@@ -8,6 +8,7 @@ import {
   SidebarSimpleIcon,
   SignOutIcon,
   SquaresFourIcon,
+  UserCircleIcon,
   WrenchIcon,
 } from "@phosphor-icons/react/dist/ssr";
 import Link from "next/link";
@@ -266,6 +267,38 @@ function SidebarNavContent({
           ) : (
             <div className="section-label px-3 pb-0.5">Cuenta</div>
           )}
+          <Link
+            href="/perfil"
+            prefetch
+            title={colapsado ? "Mi perfil" : undefined}
+            onClick={() => {
+              onNavigate?.();
+            }}
+            className={cn(
+              "group flex items-center text-[13px] transition-[background-color,color,transform] duration-150 ease-[var(--ease-out-soft)] active:scale-[0.985]",
+              colapsado
+                ? "mx-auto size-9 justify-center rounded-xl"
+                : "justify-between gap-2.5 rounded-lg px-3 py-1.5",
+              pathname === "/perfil"
+                ? "bg-white font-medium text-grayscale-12 shadow-[0_1px_2px_rgba(28,22,16,0.06)] ring-1 ring-black/[0.06] dark:bg-white/[0.10] dark:ring-white/[0.08]"
+                : "text-grayscale-10 hover:bg-black/[0.045] hover:text-grayscale-12 dark:hover:bg-white/[0.06]",
+            )}
+          >
+            <span className="flex min-w-0 items-center gap-2.5">
+              <UserCircleIcon
+                size={15}
+                weight={pathname === "/perfil" ? "fill" : "regular"}
+                className={cn(
+                  "shrink-0 transition-transform duration-150 ease-[var(--ease-out-soft)] group-hover:scale-110",
+                  pathname === "/perfil"
+                    ? "text-grayscale-12"
+                    : "text-grayscale-9 group-hover:text-grayscale-11",
+                )}
+              />
+              {!colapsado ? <span className="truncate">Mi perfil</span> : null}
+            </span>
+          </Link>
+
           <Link
             href="/login"
             prefetch
