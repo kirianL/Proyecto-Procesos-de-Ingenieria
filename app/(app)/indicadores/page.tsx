@@ -123,7 +123,7 @@ const DOT_ESTADO: Record<Estado, string> = {
 export default function IndicadoresPage() {
   const router = useRouter();
   const [usuario, setUsuario] = useState<Usuario>(getUsuarioActual());
-  const [solicitudes, setSolicitudes] = useState<Solicitud[] | null>(null);
+  const [solicitudes, setSolicitudes] = useState<Solicitud[] | null>(() => getBandejaMantenimiento());
   const [periodo, setPeriodo] = useState<Periodo>("TODO");
   const [fechaDesde, setFechaDesde] = useState<string>(() =>
     fechaInputHaceDias(30),

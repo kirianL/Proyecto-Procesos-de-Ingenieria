@@ -59,7 +59,7 @@ export default function BandejaMantenimientoPage() {
   const [filtro, setFiltro] = useState<TabFilter>("TODAS");
   const [prioridad, setPrioridad] = useState<PrioridadFiltro>("TODAS");
   const [busqueda, setBusqueda] = useState("");
-  const [solicitudes, setSolicitudes] = useState<Solicitud[] | null>(null);
+  const [solicitudes, setSolicitudes] = useState<Solicitud[] | null>(() => getBandejaMantenimiento());
 
   useEffect(() => {
     const refrescar = () => {

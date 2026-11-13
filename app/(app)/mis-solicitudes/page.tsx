@@ -28,7 +28,10 @@ import type { Solicitud, Usuario } from "@/lib/mantenimiento/types";
 export default function MisSolicitudesPage() {
   const router = useRouter();
   const [usuario, setUsuario] = useState<Usuario>(getUsuarioActual());
-  const [solicitudes, setSolicitudes] = useState<Solicitud[] | null>(null);
+  const [solicitudes, setSolicitudes] = useState<Solicitud[] | null>(() => {
+    const actual = getUsuarioActual();
+    return getSolicitudesPorCreador(actual.id);
+  });
 
   useEffect(() => {
     const refrescar = () => {

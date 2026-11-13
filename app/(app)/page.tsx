@@ -76,10 +76,15 @@ const ACCIONES = [
 export default function Home() {
   const router = useRouter();
   const [usuario, setUsuario] = useState<Usuario>(getUsuarioActual());
-  const [indicadores, setIndicadores] = useState<IndicadoresResumen | null>(
-    null,
-  );
-  const [recientes, setRecientes] = useState<Solicitud[] | null>(null);
+  const [indicadores, setIndicadores] = useState<IndicadoresResumen | null>(() => getIndicadores());
+  const [recientes, setRecientes] = useState<Solicitud[] | null>(() => {
+    const actual = getUsuarioActual();
+    const bandeja =
+      actual.rol === "EMPLEADO"
+        ? getSolicitudesPorCreador(actual.id)
+        : getBandejaMantenimiento();
+    return bandeja.slice(0, 3);
+  });
 
   useEffect(() => {
     const refrescar = () => {
