@@ -56,7 +56,7 @@ export function AppLayout({ children }: AppLayoutProps) {
   const seccionActual = getRutaActualLabel(pathname);
 
   return (
-    <div className="flex min-h-dvh w-full bg-[#F3F2EF] text-grayscale-12 xl:h-dvh xl:overflow-hidden dark:bg-[#0B0B0A]">
+    <div className="flex min-h-dvh w-full bg-[#ECEBE7] text-grayscale-12 xl:h-dvh xl:overflow-hidden dark:bg-[#090908]">
       <SesionSync>
         <Sidebar
           abierto={sidebarAbierto}
@@ -67,7 +67,7 @@ export function AppLayout({ children }: AppLayoutProps) {
         <main
           className={cn(
             "flex min-h-dvh w-full flex-1 flex-col pt-[4.5rem] transition-[padding-left] duration-250 ease-[var(--ease-out-soft)] md:pt-0 xl:h-dvh xl:min-h-0 xl:overflow-hidden",
-            sidebarAbierto ? "xl:pl-64 2xl:pl-72" : "xl:pl-0",
+            sidebarAbierto ? "xl:pl-64 2xl:pl-72" : "xl:pl-[68px]",
           )}
         >
           {/* Franja superior fija conectada al sidebar */}
@@ -76,9 +76,9 @@ export function AppLayout({ children }: AppLayoutProps) {
               <button
                 type="button"
                 onClick={() => setSidebarAbierto(true)}
-                aria-label="Abrir barra lateral"
-                title="Abrir barra lateral (Ctrl+B)"
-                className="flex size-7 cursor-pointer items-center justify-center rounded-lg text-grayscale-10 transition-[background-color,color,transform] duration-150 ease-[var(--ease-out-soft)] hover:bg-black/[0.05] hover:text-grayscale-12 active:scale-[0.94] dark:hover:bg-white/[0.07]"
+                aria-label="Expandir barra lateral"
+                title="Expandir barra lateral (Ctrl+B)"
+                className="flex size-7 cursor-pointer items-center justify-center rounded-lg text-grayscale-10 transition-[background-color,color,transform] duration-150 ease-[var(--ease-out-soft)] hover:bg-black/[0.06] hover:text-grayscale-12 active:scale-[0.94] dark:hover:bg-white/[0.08]"
               >
                 <SidebarSimpleIcon size={16} />
               </button>
@@ -96,15 +96,12 @@ export function AppLayout({ children }: AppLayoutProps) {
             </div>
           </div>
 
-          {/* Lienzo principal redondeado con scroll interno sin barra visible */}
-          <div
-            className={cn(
-              "no-scrollbar flex flex-1 flex-col transition-[margin-left,border-radius] duration-250 ease-[var(--ease-out-soft)] xl:min-h-0 xl:overflow-y-auto xl:rounded-tl-[18px] xl:border-l xl:border-t xl:border-[#E3E1DC] xl:bg-white xl:shadow-[-2px_2px_12px_-6px_rgba(28,22,16,0.06)] dark:xl:border-white/[0.12] dark:xl:bg-[#131312] dark:xl:shadow-none",
-              !sidebarAbierto && "xl:ml-2",
-            )}
-          >
-            <div className="mx-auto flex w-full max-w-[84rem] flex-1 flex-col px-4 pb-8 pt-4 md:px-8 md:pb-10 md:pt-8 xl:px-10 xl:py-8 2xl:px-12 2xl:py-10">
-              {children}
+          {/* Marco redondeado fijo con recorte limpio y scroll interno */}
+          <div className="flex flex-1 flex-col xl:min-h-0 xl:overflow-hidden xl:rounded-tl-[20px] xl:border-l xl:border-t xl:border-[#DAD8D2] xl:bg-white dark:xl:border-white/[0.12] dark:xl:bg-[#131312]">
+            <div className="no-scrollbar flex flex-1 flex-col xl:overflow-y-auto">
+              <div className="mx-auto flex w-full max-w-[84rem] flex-1 flex-col px-4 pb-8 pt-4 md:px-8 md:pb-10 md:pt-8 xl:px-10 xl:py-8 2xl:px-12 2xl:py-10">
+                {children}
+              </div>
             </div>
           </div>
         </main>

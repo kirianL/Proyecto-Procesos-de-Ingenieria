@@ -79,9 +79,14 @@ const ETIQUETA_ROL: Record<Usuario["rol"], string> = {
 interface SidebarNavContentProps {
   onNavigate?: () => void;
   onToggle?: () => void;
+  colapsado?: boolean;
 }
 
-function SidebarNavContent({ onNavigate, onToggle }: SidebarNavContentProps) {
+function SidebarNavContent({
+  onNavigate,
+  onToggle,
+  colapsado = false,
+}: SidebarNavContentProps) {
   const pathname = usePathname();
   const [usuarioActual, setUsuarioActualState] = useState<Usuario>(
     getUsuarioActual(),
@@ -119,12 +124,23 @@ function SidebarNavContent({ onNavigate, onToggle }: SidebarNavContentProps) {
           onNavigate?.();
         }}
         aria-current={activo ? "page" : undefined}
-        title={disponible ? undefined : `Disponible para ${rolesTexto}`}
+        title={
+          colapsado
+            ? disponible
+              ? item.label
+              : `${item.label} (${rolesTexto})`
+            : disponible
+              ? undefined
+              : `Disponible para ${rolesTexto}`
+        }
         className={cn(
-          "group flex items-center gap-2.5 rounded-lg px-2.5 py-[7px] text-[13px] transition-[background-color,color,box-shadow,border-color,transform] duration-150 ease-[var(--ease-out-soft)] active:scale-[0.985]",
+          "group flex items-center rounded-[10px] text-[13px] outline-none transition-[background-color,color,box-shadow,border-color,transform] duration-150 ease-[var(--ease-out-soft)] active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-grayscale-7/40",
+          colapsado
+            ? "mx-auto size-9 justify-center px-0"
+            : "gap-2.5 px-3 py-2",
           activo
-            ? "border border-grayscale-3/80 bg-white font-medium text-grayscale-12 shadow-[0_1px_2px_rgba(28,22,16,0.06)] dark:border-white/[0.10] dark:bg-[#191917] dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]"
-            : "border border-transparent text-grayscale-10 hover:bg-black/[0.04] hover:text-grayscale-12 dark:hover:bg-white/[0.04]",
+            ? "border border-black/[0.08] bg-white font-medium text-grayscale-12 shadow-[0_1px_2px_rgba(28,22,16,0.06)] dark:border-white/[0.11] dark:bg-[#191917] dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]"
+            : "border border-transparent text-grayscale-10 hover:bg-black/[0.05] hover:text-grayscale-12 dark:hover:bg-white/[0.06]",
           !disponible && !activo && "text-grayscale-9",
         )}
       >
@@ -132,29 +148,41 @@ function SidebarNavContent({ onNavigate, onToggle }: SidebarNavContentProps) {
           size={16}
           weight={activo ? "fill" : "regular"}
           className={cn(
-            "shrink-0 transition-colors duration-150",
-            activo ? "text-grayscale-12" : "text-grayscale-9 group-hover:text-grayscale-11",
+            "shrink-0 transition-[color,transform] duration-150 ease-[var(--ease-out-soft)] group-hover:scale-[1.06]",
+            activo
+              ? "text-grayscale-12"
+              : "text-grayscale-9 group-hover:text-grayscale-12",
           )}
         />
-        <span className="truncate">{item.label}</span>
+        {!colapsado ? <span className="truncate">{item.label}</span> : null}
 
-        {disponible && item.href === "/mis-solicitudes" && (
+        {!colapsado && disponible && item.href === "/mis-solicitudes" && (
           <SlotNumber
             value={conteoMisSolicitudes}
             duration={260}
-            className="ml-auto rounded-full bg-black/[0.06] px-1.5 py-0.5 font-mono text-[10.5px] text-grayscale-10 group-hover:text-grayscale-12 dark:bg-white/[0.08]"
+            className={cn(
+              "ml-auto rounded-full px-1.5 py-0.5 font-mono text-[10.5px] transition-colors duration-150",
+              activo
+                ? "bg-grayscale-2 text-grayscale-11 dark:bg-white/[0.08]"
+                : "bg-black/[0.055] text-grayscale-10 group-hover:bg-black/[0.08] group-hover:text-grayscale-12 dark:bg-white/[0.08]",
+            )}
           />
         )}
 
-        {disponible && item.href === "/mantenimiento" && (
+        {!colapsado && disponible && item.href === "/mantenimiento" && (
           <SlotNumber
             value={conteoBandeja}
             duration={260}
-            className="ml-auto rounded-full bg-black/[0.06] px-1.5 py-0.5 font-mono text-[10.5px] text-grayscale-10 group-hover:text-grayscale-12 dark:bg-white/[0.08]"
+            className={cn(
+              "ml-auto rounded-full px-1.5 py-0.5 font-mono text-[10.5px] transition-colors duration-150",
+              activo
+                ? "bg-grayscale-2 text-grayscale-11 dark:bg-white/[0.08]"
+                : "bg-black/[0.055] text-grayscale-10 group-hover:bg-black/[0.08] group-hover:text-grayscale-12 dark:bg-white/[0.08]",
+            )}
           />
         )}
 
-        {!disponible && (
+        {!colapsado && !disponible && (
           <LockSimpleIcon
             size={12}
             className="ml-auto shrink-0 text-grayscale-8"
@@ -167,29 +195,50 @@ function SidebarNavContent({ onNavigate, onToggle }: SidebarNavContentProps) {
 
   return (
     <div className="flex h-full flex-col gap-4">
-      {/* Cabecera del sidebar: Marca + Botón de colapsar */}
-      <div className="flex items-center justify-between gap-2 px-1 pt-0.5">
+      {/* Cabecera del sidebar: Marca + Botón de colapsar/expandir */}
+      <div
+        className={cn(
+          "flex pt-0.5",
+          colapsado
+            ? "flex-col items-center gap-2.5 px-0"
+            : "items-center justify-between gap-2 px-1",
+        )}
+      >
         <Link
           href="/"
           prefetch
           onClick={onNavigate}
+          title={colapsado ? "Mantenimiento" : undefined}
           className="group flex min-w-0 items-center gap-2.5"
         >
           <span className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-grayscale-12 text-grayscale-1 shadow-2xs transition-transform duration-150 ease-[var(--ease-out-soft)] group-hover:-rotate-3">
             <WrenchIcon size={14} weight="fill" />
           </span>
-          <span className="truncate text-[14px] font-semibold tracking-[-0.02em] text-grayscale-12">
-            Mantenimiento
-          </span>
+          {!colapsado ? (
+            <span className="truncate text-[14px] font-semibold tracking-[-0.02em] text-grayscale-12">
+              Mantenimiento
+            </span>
+          ) : null}
         </Link>
 
         {onToggle ? (
           <button
             type="button"
             onClick={onToggle}
-            aria-label="Cerrar barra lateral"
-            title="Cerrar barra lateral (Ctrl+B)"
-            className="flex size-7 shrink-0 cursor-pointer items-center justify-center rounded-lg text-grayscale-9 transition-[background-color,color,transform] duration-150 ease-[var(--ease-out-soft)] hover:bg-black/[0.05] hover:text-grayscale-12 active:scale-[0.94] dark:hover:bg-white/[0.07]"
+            aria-label={
+              colapsado ? "Expandir barra lateral" : "Colapsar barra lateral"
+            }
+            title={
+              colapsado
+                ? "Expandir barra lateral (Ctrl+B)"
+                : "Colapsar barra lateral (Ctrl+B)"
+            }
+            className={cn(
+              "flex shrink-0 cursor-pointer items-center justify-center rounded-lg text-grayscale-9 transition-[background-color,color,transform] duration-150 ease-[var(--ease-out-soft)] hover:bg-black/[0.06] hover:text-grayscale-12 active:scale-[0.94] dark:hover:bg-white/[0.08]",
+              colapsado
+                ? "size-8 border border-grayscale-4/70 bg-white/70 dark:border-white/[0.10] dark:bg-white/[0.04]"
+                : "size-7",
+            )}
           >
             <SidebarSimpleIcon size={16} />
           </button>
@@ -197,45 +246,69 @@ function SidebarNavContent({ onNavigate, onToggle }: SidebarNavContentProps) {
       </div>
 
       {/* Navegación principal */}
-      <nav className="mt-1 flex flex-col gap-5">
-        <div className="flex flex-col gap-0.5">
+      <nav className={cn("mt-1 flex flex-col", colapsado ? "gap-3.5" : "gap-5")}>
+        <div className="flex flex-col gap-1.5">
           {NAV_PRINCIPALES.map(renderNavLink)}
         </div>
 
-        <div className="flex flex-col gap-0.5">
-          <div className="section-label px-2.5 pb-1">Operación</div>
+        <div className="flex flex-col gap-1.5">
+          {colapsado ? (
+            <div className="mx-auto my-0.5 h-px w-6 bg-grayscale-4/70 dark:bg-white/[0.10]" />
+          ) : (
+            <div className="section-label px-3 pb-0.5">Operación</div>
+          )}
           {NAV_OPERACION.map(renderNavLink)}
         </div>
 
-        <div className="flex flex-col gap-0.5">
-          <div className="section-label px-2.5 pb-1">Cuenta</div>
+        <div className="flex flex-col gap-1.5">
+          {colapsado ? (
+            <div className="mx-auto my-0.5 h-px w-6 bg-grayscale-4/70 dark:bg-white/[0.10]" />
+          ) : (
+            <div className="section-label px-3 pb-0.5">Cuenta</div>
+          )}
           <Link
             href="/login"
             prefetch
+            title={colapsado ? "Cerrar sesión" : undefined}
             onClick={() => {
               onNavigate?.();
             }}
-            className="group flex items-center gap-2.5 rounded-lg border border-transparent px-2.5 py-[7px] text-[13px] text-grayscale-10 transition-[background-color,color,transform] duration-150 ease-[var(--ease-out-soft)] hover:bg-black/[0.04] hover:text-grayscale-12 active:scale-[0.985] dark:hover:bg-white/[0.04]"
+            className={cn(
+              "group flex items-center rounded-[10px] border border-transparent text-[13px] text-grayscale-10 outline-none transition-[background-color,color,transform] duration-150 ease-[var(--ease-out-soft)] hover:bg-black/[0.05] hover:text-grayscale-12 active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-grayscale-7/40 dark:hover:bg-white/[0.06]",
+              colapsado
+                ? "mx-auto size-9 justify-center px-0"
+                : "gap-2.5 px-3 py-2",
+            )}
           >
             <SignOutIcon
               size={16}
-              className="shrink-0 text-grayscale-9 transition-colors duration-150 group-hover:text-grayscale-11"
+              className="shrink-0 text-grayscale-9 transition-[color,transform] duration-150 ease-[var(--ease-out-soft)] group-hover:scale-[1.06] group-hover:text-grayscale-12"
             />
-            <span className="truncate">Cerrar sesión</span>
+            {!colapsado ? <span className="truncate">Cerrar sesión</span> : null}
           </Link>
         </div>
       </nav>
 
       {/* Pie del sidebar: Tema + Perfil activo abajo */}
       <div className="mt-auto flex flex-col gap-3 pt-2">
-        <div className="flex items-center justify-between gap-2 px-1.5">
-          <span className="text-[11px] font-medium text-grayscale-9">
-            Apariencia
-          </span>
-          <ThemeToggle />
-        </div>
+        {!colapsado ? (
+          <div className="flex items-center justify-between gap-2 px-1.5">
+            <span className="text-[11px] font-medium text-grayscale-9">
+              Apariencia
+            </span>
+            <ThemeToggle />
+          </div>
+        ) : (
+          <div className="flex justify-center">
+            <ThemeToggle />
+          </div>
+        )}
 
-        <RoleSelector usuarioActual={usuarioActual} placement="top" />
+        <RoleSelector
+          usuarioActual={usuarioActual}
+          placement="top"
+          iconOnly={colapsado}
+        />
       </div>
     </div>
   );
@@ -249,15 +322,12 @@ interface SidebarProps {
 export default function Sidebar({ abierto = true, onToggle }: SidebarProps) {
   return (
     <aside
-      aria-hidden={!abierto}
       className={cn(
-        "no-scrollbar fixed left-0 top-0 z-40 hidden h-full w-64 shrink-0 flex-col overflow-y-auto bg-[#F3F2EF] p-4 transition-[transform,opacity] duration-250 ease-[var(--ease-out-soft)] xl:flex 2xl:w-72 dark:bg-[#0B0B0A]",
-        abierto
-          ? "translate-x-0 opacity-100"
-          : "-translate-x-full pointer-events-none opacity-0",
+        "no-scrollbar fixed left-0 top-0 z-40 hidden h-full shrink-0 flex-col overflow-y-auto overflow-x-hidden bg-[#ECEBE7] transition-[width,padding] duration-250 ease-[var(--ease-out-soft)] xl:flex dark:bg-[#090908]",
+        abierto ? "w-64 p-4 2xl:w-72" : "w-[68px] px-2.5 py-4",
       )}
     >
-      <SidebarNavContent onToggle={onToggle} />
+      <SidebarNavContent onToggle={onToggle} colapsado={!abierto} />
     </aside>
   );
 }

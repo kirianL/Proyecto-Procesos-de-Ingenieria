@@ -400,48 +400,83 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Card 2: Desglose de carga activa por prioridad */}
-          <div className="rounded-[1.25rem] border border-grayscale-3/85 bg-white p-4 shadow-2xs dark:border-white/[0.12] dark:bg-[#161614]">
-            <div className="flex items-center justify-between gap-2 border-b border-grayscale-3/70 pb-2.5 dark:border-white/[0.08]">
-              <span className="text-[12px] font-semibold text-grayscale-12">
-                Carga activa por prioridad
-              </span>
-              <span className="font-mono text-[10.5px] text-grayscale-9">
-                {abiertasTotal} abiertas
-              </span>
-            </div>
+          {/* Card 2: Desglose de carga activa con visualizador de ticks */}
+          <div className="card rounded-[1.25rem] border border-grayscale-4/90 bg-grayscale-2 p-1 shadow-2xs dark:border-white/[0.22] dark:bg-[#191917]">
+            <div className="rounded-[1rem] border border-grayscale-3/60 bg-white p-4 shadow-[0_1px_2px_rgba(28,22,16,0.03)] dark:border-white/[0.08] dark:bg-[#121211]">
+              <div className="flex items-baseline justify-between gap-2">
+                <span className="text-[12.5px] font-semibold text-grayscale-12">
+                  Carga activa
+                </span>
+                <div className="flex items-baseline gap-1 font-mono">
+                  <span className="text-[18px] font-bold tracking-tight text-grayscale-12 tabular-nums">
+                    {abiertasTotal}
+                  </span>
+                  <span className="text-[11px] text-grayscale-9">
+                    / {solicitudes.length}
+                  </span>
+                </div>
+              </div>
 
-            <div className="mt-3 space-y-2.5">
-              {desglosePrioridad.map((item) => (
-                <div key={item.key} className="space-y-1">
-                  <div className="flex items-center justify-between text-[11px]">
+              {/* Barra de 24 ticks verticales proporcionales */}
+              <div
+                className="mt-3 flex items-center justify-between gap-[3px]"
+                aria-hidden
+              >
+                {Array.from({ length: 24 }).map((_, idx) => {
+                  const totalTicks = 24;
+                  let acumulado = 0;
+                  let colorTick = "bg-grayscale-3/90 dark:bg-white/[0.08]";
+
+                  if (abiertasTotal > 0) {
+                    for (const item of desglosePrioridad) {
+                      const span = (item.pct / 100) * totalTicks;
+                      if (item.count > 0 && idx >= acumulado && idx < acumulado + span) {
+                        colorTick = item.bar;
+                        break;
+                      }
+                      acumulado += span;
+                    }
+                  }
+
+                  return (
+                    <span
+                      key={idx}
+                      className={cn(
+                        "h-5 flex-1 rounded-[2px] transition-colors duration-200 ease-[var(--ease-out-soft)]",
+                        colorTick,
+                      )}
+                    />
+                  );
+                })}
+              </div>
+
+              {/* Leyenda 2x2 limpia y enfocada */}
+              <div className="mt-3.5 grid grid-cols-2 gap-x-4 gap-y-2 border-t border-grayscale-3/60 pt-3 dark:border-white/[0.07]">
+                {desglosePrioridad.map((item) => (
+                  <div
+                    key={item.key}
+                    className={cn(
+                      "flex items-center justify-between text-[11.5px]",
+                      item.count === 0 && "opacity-45",
+                    )}
+                  >
                     <span className="inline-flex items-center gap-1.5 text-grayscale-11">
-                      <span className={cn("h-1.5 w-1.5 rounded-full", item.dot)} />
+                      <span className={cn("h-2 w-2 rounded-full", item.dot)} />
                       {item.label}
                     </span>
-                    <span className="font-mono text-[10.5px] text-grayscale-9 tabular-nums">
-                      {item.count}{" "}
-                      <span className="text-grayscale-8">({item.pct}%)</span>
+                    <span className="font-mono text-[11px] font-semibold text-grayscale-12 tabular-nums">
+                      {item.count}
                     </span>
                   </div>
-                  <div className="h-1 w-full overflow-hidden rounded-full bg-grayscale-3/70 dark:bg-white/[0.07]">
-                    <div
-                      className={cn(
-                        "h-full rounded-full transition-[width] duration-300 ease-[var(--ease-out-soft)]",
-                        item.bar,
-                      )}
-                      style={{ width: `${item.pct}%` }}
-                    />
-                  </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
 
-            <div className="mt-3 flex items-center justify-between border-t border-grayscale-3/60 pt-2.5 font-mono text-[10.5px] text-grayscale-9 dark:border-white/[0.07]">
-              <span>Meta SLA objetivo: 48h</span>
+            <div className="flex items-center justify-between px-3.5 py-2 font-mono text-[10.5px] text-grayscale-9">
+              <span>Meta 48h</span>
               <span
                 className={cn(
-                  "inline-flex items-center gap-1 font-semibold",
+                  "inline-flex items-center gap-1.5 font-semibold",
                   kpis.tiempoMedioHoras <= 48
                     ? "text-green-9"
                     : "text-amber-9",
