@@ -1,6 +1,11 @@
 "use client";
 
-import { CaretRightIcon, CheckIcon } from "@phosphor-icons/react/dist/ssr";
+import {
+  CaretRightIcon,
+  CheckIcon,
+  SignOutIcon,
+} from "@phosphor-icons/react/dist/ssr";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { recordarUsuario } from "@/components/mantenimiento/SesionSync";
@@ -109,7 +114,7 @@ export function RoleSelector({
             aria-label="Cambiar perfil activo"
             className="menu-pop absolute left-0 right-0 top-full z-50 mt-1.5 flex flex-col rounded-xl border border-grayscale-3 bg-grayscale-1 p-1.5 shadow-[0_18px_40px_-16px_rgba(28,22,16,0.35)] dark:border-grayscale-4 dark:bg-grayscale-2"
           >
-            <div className="section-label px-2 py-1.5">Cambiar perfil</div>
+            <div className="section-label px-2 py-1.5">Cuentas disponibles</div>
 
             <div className="flex flex-col gap-0.5">
               {USUARIOS_INICIALES.map((user) => {
@@ -152,6 +157,17 @@ export function RoleSelector({
                   </button>
                 );
               })}
+            </div>
+
+            <div className="mt-1 border-t border-grayscale-3/70 pt-1 dark:border-grayscale-4/40">
+              <Link
+                href="/login"
+                onClick={() => setOpen(false)}
+                className="flex w-full items-center gap-2 rounded-lg px-2 py-2 text-[12px] font-medium text-grayscale-11 transition-colors duration-150 hover:bg-grayscale-2 hover:text-grayscale-12 dark:hover:bg-grayscale-3/70"
+              >
+                <SignOutIcon size={14} className="shrink-0 text-grayscale-9" />
+                <span>Cerrar sesión</span>
+              </Link>
             </div>
           </div>
         </>

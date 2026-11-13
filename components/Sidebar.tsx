@@ -3,9 +3,9 @@
 import {
   ChartLineIcon,
   ClipboardTextIcon,
-  IdentificationBadgeIcon,
   LockSimpleIcon,
   PlusCircleIcon,
+  SignOutIcon,
   WrenchIcon,
 } from "@phosphor-icons/react/dist/ssr";
 import Link from "next/link";
@@ -54,8 +54,8 @@ const NAV_LINKS: {
   },
   {
     href: "/login",
-    label: "Cambiar perfil",
-    icon: IdentificationBadgeIcon,
+    label: "Cerrar sesión",
+    icon: SignOutIcon,
     roles: ["EMPLEADO", "TECNICO", "JEFATURA"],
   },
 ];
