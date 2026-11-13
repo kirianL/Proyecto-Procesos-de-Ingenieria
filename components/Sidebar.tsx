@@ -81,12 +81,14 @@ interface SidebarNavContentProps {
   onNavigate?: () => void;
   onToggle?: () => void;
   colapsado?: boolean;
+  ocultarMarca?: boolean;
 }
 
 function SidebarNavContent({
   onNavigate,
   onToggle,
   colapsado = false,
+  ocultarMarca = false,
 }: SidebarNavContentProps) {
   const pathname = usePathname();
   const [usuarioActual, setUsuarioActualState] = useState<Usuario>(
@@ -197,54 +199,56 @@ function SidebarNavContent({
   return (
     <div className="flex h-full flex-col gap-4">
       {/* Cabecera del sidebar: Marca + Botón de colapsar/expandir */}
-      <div
-        className={cn(
-          "flex pt-0.5",
-          colapsado
-            ? "flex-col items-center gap-2.5 px-0"
-            : "items-center justify-between gap-2 px-1",
-        )}
-      >
-        <Link
-          href="/"
-          prefetch
-          onClick={onNavigate}
-          title={colapsado ? "Mantenimiento" : undefined}
-          className="group flex min-w-0 items-center gap-2.5"
+      {!ocultarMarca ? (
+        <div
+          className={cn(
+            "flex pt-0.5",
+            colapsado
+              ? "flex-col items-center gap-2.5 px-0"
+              : "items-center justify-between gap-2 px-1",
+          )}
         >
-          <span className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-grayscale-12 text-grayscale-1 shadow-2xs transition-transform duration-150 ease-[var(--ease-out-soft)] group-hover:-rotate-3">
-            <WrenchIcon size={14} weight="fill" />
-          </span>
-          {!colapsado ? (
-            <span className="truncate text-[14px] font-semibold tracking-[-0.02em] text-grayscale-12">
-              Mantenimiento
-            </span>
-          ) : null}
-        </Link>
-
-        {onToggle ? (
-          <button
-            type="button"
-            onClick={onToggle}
-            aria-label={
-              colapsado ? "Expandir barra lateral" : "Colapsar barra lateral"
-            }
-            title={
-              colapsado
-                ? "Expandir barra lateral (Ctrl+B)"
-                : "Colapsar barra lateral (Ctrl+B)"
-            }
-            className={cn(
-              "flex shrink-0 cursor-pointer items-center justify-center rounded-lg text-grayscale-9 transition-[background-color,color,transform] duration-150 ease-[var(--ease-out-soft)] hover:bg-black/[0.06] hover:text-grayscale-12 active:scale-[0.94] dark:hover:bg-white/[0.08]",
-              colapsado
-                ? "size-8 border border-grayscale-4/70 bg-white/70 dark:border-white/[0.10] dark:bg-white/[0.04]"
-                : "size-7",
-            )}
+          <Link
+            href="/"
+            prefetch
+            onClick={onNavigate}
+            title={colapsado ? "Mantenimiento" : undefined}
+            className="group flex min-w-0 items-center gap-2.5"
           >
-            <SidebarSimpleIcon size={16} />
-          </button>
-        ) : null}
-      </div>
+            <span className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-grayscale-12 text-grayscale-1 shadow-2xs transition-transform duration-150 ease-[var(--ease-out-soft)] group-hover:-rotate-3">
+              <WrenchIcon size={14} weight="fill" />
+            </span>
+            {!colapsado ? (
+              <span className="truncate text-[14px] font-semibold tracking-[-0.02em] text-grayscale-12">
+                Mantenimiento
+              </span>
+            ) : null}
+          </Link>
+
+          {onToggle ? (
+            <button
+              type="button"
+              onClick={onToggle}
+              aria-label={
+                colapsado ? "Expandir barra lateral" : "Colapsar barra lateral"
+              }
+              title={
+                colapsado
+                  ? "Expandir barra lateral (Ctrl+B)"
+                  : "Colapsar barra lateral (Ctrl+B)"
+              }
+              className={cn(
+                "flex shrink-0 cursor-pointer items-center justify-center rounded-lg text-grayscale-9 transition-[background-color,color,transform] duration-150 ease-[var(--ease-out-soft)] hover:bg-black/[0.06] hover:text-grayscale-12 active:scale-[0.94] dark:hover:bg-white/[0.08]",
+                colapsado
+                  ? "size-8 border border-grayscale-4/70 bg-white/70 dark:border-white/[0.10] dark:bg-white/[0.04]"
+                  : "size-7",
+              )}
+            >
+              <SidebarSimpleIcon size={16} />
+            </button>
+          ) : null}
+        </div>
+      ) : null}
 
       {/* Navegación principal */}
       <nav className={cn("mt-1 flex flex-col", colapsado ? "gap-3.5" : "gap-5")}>

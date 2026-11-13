@@ -51,12 +51,12 @@ export default function MobileHeader() {
             <Dialog.Close
               aria-label="Cerrar navegación"
               title="Cerrar navegación"
-              className="flex size-7 cursor-pointer items-center justify-center rounded-lg border border-grayscale-3 bg-grayscale-1 text-grayscale-11 transition-[background-color,transform] duration-150 ease-[var(--ease-out-soft)] hover:bg-grayscale-2 active:scale-[0.95] dark:bg-grayscale-3"
+              className="flex size-9 cursor-pointer items-center justify-center rounded-xl border border-grayscale-3 bg-grayscale-1 text-grayscale-11 transition-[background-color,transform] duration-150 ease-[var(--ease-out-soft)] hover:bg-grayscale-2 active:scale-[0.95] dark:bg-grayscale-3"
             >
-              <XIcon size={14} weight="bold" />
+              <XIcon size={15} weight="bold" />
             </Dialog.Close>
           </div>
-          <SidebarNavContent onNavigate={() => setOpen(false)} />
+          <SidebarNavContent onNavigate={() => setOpen(false)} ocultarMarca />
         </Dialog.Popup>
       </Dialog.Portal>
     </Dialog.Root>

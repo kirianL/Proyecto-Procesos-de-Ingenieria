@@ -78,7 +78,7 @@ export function SegmentedControl<T extends string>({
       role="group"
       aria-label={ariaLabel}
       className={cn(
-        "relative inline-flex flex-wrap items-center gap-0.5 rounded-xl bg-grayscale-2 p-1 dark:border dark:border-white/[0.09] dark:bg-[#161614]",
+        "no-scrollbar relative flex max-w-full flex-nowrap items-center gap-0.5 overflow-x-auto overscroll-x-contain touch-pan-x rounded-xl bg-grayscale-2 p-1 sm:inline-flex dark:border dark:border-white/[0.09] dark:bg-[#161614]",
         className,
       )}
       onKeyDown={(e) => {
@@ -123,7 +123,7 @@ export function SegmentedControl<T extends string>({
             aria-pressed={activo}
             onClick={() => onChange(item.id)}
             className={cn(
-              "relative z-10 flex cursor-pointer items-center gap-1.5 rounded-lg px-3 py-1.5 text-[13px] font-medium transition-[color,transform] duration-150 ease-[cubic-bezier(0.23,1,0.32,1)] active:scale-[0.98]",
+              "relative z-10 flex shrink-0 cursor-pointer items-center gap-1.5 whitespace-nowrap rounded-lg px-2.5 py-1.5 text-[12.5px] font-medium transition-[color,transform] duration-150 ease-[cubic-bezier(0.23,1,0.32,1)] active:scale-[0.98] sm:px-3 sm:text-[13px]",
               activo
                 ? "text-grayscale-12"
                 : "text-grayscale-10 hover:text-grayscale-12",
