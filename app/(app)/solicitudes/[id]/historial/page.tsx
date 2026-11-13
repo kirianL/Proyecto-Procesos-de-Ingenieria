@@ -29,7 +29,7 @@ export default function HistorialSolicitudPage({ params }: Props) {
   const router = useRouter();
   const [solicitud, setSolicitud] = useState<
     SolicitudConDetalles | null | undefined
-  >(undefined);
+  >(() => getDetalleSolicitud(id) ?? undefined);
   const [usuario, setUsuario] = useState<Usuario>(getUsuarioActual());
 
   useEffect(() => {
@@ -114,7 +114,6 @@ export default function HistorialSolicitudPage({ params }: Props) {
               </>
             }
             titulo="Historial de cambios"
-            descripcion="Registro cronológico de cada transición, intervención y resolución."
             acciones={
               <Button href={`/solicitudes/${ficha.id}`} variant="secondary">
                 Volver a la ficha

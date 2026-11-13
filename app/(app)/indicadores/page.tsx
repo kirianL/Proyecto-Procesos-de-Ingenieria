@@ -583,7 +583,6 @@ export default function IndicadoresPage() {
           codigo="I08"
           eyebrow="Jefatura de operaciones"
           titulo="Resumen e indicadores"
-          descripcion="Desempeño de la infraestructura, tiempos de ciclo y tasa de resolución del período."
           acciones={
             <div className="flex flex-wrap items-center gap-2">
               <button

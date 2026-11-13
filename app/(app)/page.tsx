@@ -116,7 +116,6 @@ export default function Home() {
       <PageHeader
         eyebrow="Panel de trabajo"
         titulo={`Hola, ${primerNombre}`}
-        descripcion="Este es el estado de las solicitudes de infraestructura y lo que tienes pendiente por revisar."
         acciones={
           <>
             {usuario.rol === "EMPLEADO" && (

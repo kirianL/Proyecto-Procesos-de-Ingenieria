@@ -174,7 +174,6 @@ export default function BandejaMantenimientoPage() {
           codigo="I05"
           eyebrow="Personal técnico"
           titulo="Bandeja de mantenimiento"
-          descripcion="Solicitudes de infraestructura listas para diagnóstico, atención y cierre."
           meta={
             <span className="badge bg-green-3 px-2.5 py-1 text-[12px] text-green-11 inline-flex items-center gap-1.5">
               <span className="badge-dot bg-green-9" />

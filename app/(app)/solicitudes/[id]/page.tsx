@@ -46,7 +46,7 @@ export default function DetalleSolicitudPage({ params }: Props) {
 
   const [solicitud, setSolicitud] = useState<
     SolicitudConDetalles | null | undefined
-  >(undefined);
+  >(() => getDetalleSolicitud(id) ?? undefined);
   const [usuario, setUsuario] = useState<Usuario>(getUsuarioActual());
 
   useEffect(() => {

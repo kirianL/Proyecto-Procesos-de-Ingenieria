@@ -184,7 +184,6 @@ export default function NuevaSolicitudPage() {
           eyebrow="Registro"
           volver={{ href: "/mis-solicitudes", label: "Mis solicitudes" }}
           titulo="Nueva solicitud"
-          descripcion="Cuéntanos qué ocurre, dónde y desde cuándo. Cuanto más concreto sea el detalle, más rápida será la atención."
         />
 
         <SkeletonContent

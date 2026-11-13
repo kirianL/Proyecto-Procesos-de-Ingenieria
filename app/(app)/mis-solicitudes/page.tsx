@@ -70,7 +70,6 @@ export default function MisSolicitudesPage() {
         <PageHeader
           eyebrow="Portal del solicitante"
           titulo="Mis solicitudes"
-          descripcion={`Todo lo que has reportado como ${nombreLimpio(usuario.nombre)}, con su estado y fecha de registro.`}
           meta={
             <span className="badge bg-grayscale-2 px-2.5 py-1 text-[12px] text-grayscale-11 inline-flex items-center gap-1.5">
               <span className="badge-dot bg-grayscale-8" />

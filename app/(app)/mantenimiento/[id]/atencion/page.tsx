@@ -119,7 +119,7 @@ export default function AtencionYCierrePage({ params }: Props) {
 
   const [solicitud, setSolicitud] = useState<
     SolicitudConDetalles | null | undefined
-  >(undefined);
+  >(() => getDetalleSolicitud(id) ?? undefined);
   const [usuario, setUsuario] = useState<Usuario>(getUsuarioActual());
   const [nuevoEstado, setNuevoEstado] = useState<Estado>("EN_PROCESO");
   const [nota, setNota] = useState("");
@@ -255,7 +255,6 @@ export default function AtencionYCierrePage({ params }: Props) {
               </>
             }
             titulo="Atención y cierre"
-            descripcion="Selecciona la etapa del flujo técnico y documenta el dictamen de intervención."
           />
 
           {/* 1. Tarjeta de contexto del expediente */}
