@@ -50,3 +50,7 @@ CLAUDE.md
 .cursor/
 .claude/
 .gemini/
+.agents/
+plans/
+skills-lock.json
+

@@ -4,6 +4,7 @@ import {
   BriefcaseIcon,
   BuildingsIcon,
   CheckIcon,
+  CopyIcon,
   EnvelopeSimpleIcon,
   GlobeIcon,
   IdentificationBadgeIcon,
@@ -13,6 +14,7 @@ import {
   TagIcon,
   UserIcon,
   UsersThreeIcon,
+  XIcon,
 } from "@phosphor-icons/react/dist/ssr";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -168,16 +170,145 @@ function nombreLimpio(nombre: string): string {
   return nombre.replace(/\s*\([^)]*\)\s*$/, "").trim();
 }
 
-function inicialesDe(nombre: string): string {
-  return nombreLimpio(nombre)
-    .split(/\s+/)
-    .slice(0, 2)
-    .map((p) => p[0]?.toUpperCase() ?? "")
-    .join("");
-}
-
 function storageKey(usuarioId: string): string {
   return `perfil-usuario:${usuarioId}`;
+}
+
+function cargarPerfilGuardado(usuario: Usuario): PerfilExtendido {
+  const base = PERFILES_POR_ROL[usuario.rol];
+  try {
+    const raw = window.localStorage.getItem(storageKey(usuario.id));
+    if (!raw) return base;
+    const parsed = JSON.parse(raw) as Partial<PerfilExtendido>;
+    return {
+      resumen: parsed.resumen ?? base.resumen,
+      ubicacion: parsed.ubicacion ?? base.ubicacion,
+      extension: parsed.extension ?? base.extension,
+      idiomas: parsed.idiomas ?? base.idiomas,
+      etiquetas:
+        Array.isArray(parsed.etiquetas) && parsed.etiquetas.length > 0
+          ? parsed.etiquetas
+          : base.etiquetas,
+    };
+  } catch {
+    return base;
+  }
+}
+
+function NodoJerarquia({
+  miembro,
+  esActual,
+  resaltado,
+  atenuado,
+  etiquetaNivel,
+  variante = "row",
+  avatarSize = 36,
+  onHover,
+}: {
+  miembro: Usuario;
+  esActual: boolean;
+  resaltado: boolean;
+  atenuado: boolean;
+  etiquetaNivel?: string;
+  variante?: "row" | "compact";
+  avatarSize?: number;
+  onHover: (id: string | null) => void;
+}) {
+  const esCompacto = variante === "compact";
+
+  return (
+    <div
+      className={cn(
+        "group relative w-full transition-opacity duration-160 ease-[cubic-bezier(0.23,1,0.32,1)]",
+        atenuado ? "opacity-55" : "opacity-100",
+      )}
+      onMouseEnter={() => onHover(miembro.id)}
+      onMouseLeave={() => onHover(null)}
+      onFocus={() => onHover(miembro.id)}
+      onBlur={() => onHover(null)}
+    >
+      <div
+        className={cn(
+          "hover-lift relative flex border transition-[transform,border-color,background-color,box-shadow] duration-180 ease-[cubic-bezier(0.23,1,0.32,1)] active:scale-[0.985]",
+          esCompacto
+            ? "h-full flex-col justify-between rounded-xl p-2.5"
+            : "items-center gap-3 rounded-2xl p-2.5 sm:p-3",
+          esActual || resaltado
+            ? "border-grayscale-12/25 bg-grayscale-2/80 shadow-[0_2px_8px_rgba(0,0,0,0.04)] dark:border-white/25 dark:bg-white/[0.05] dark:shadow-[0_4px_16px_rgba(0,0,0,0.4)]"
+            : "border-grayscale-3/80 bg-grayscale-1/70 hover:border-grayscale-5 hover:bg-grayscale-1 hover:shadow-2xs dark:border-white/[0.10] dark:bg-[#161614] dark:hover:border-white/[0.20]",
+        )}
+      >
+        <div
+          className={cn(
+            "flex items-center",
+            esCompacto ? "justify-between gap-1.5" : "shrink-0",
+          )}
+        >
+          <div
+            skullet-block=""
+            className="relative shrink-0 overflow-hidden rounded-full"
+          >
+            <UserAvatar
+              userId={miembro.id}
+              name={miembro.nombre}
+              size={avatarSize}
+              className={cn(
+                "transition-transform duration-180 ease-[cubic-bezier(0.23,1,0.32,1)] group-hover:scale-105",
+                esActual || resaltado
+                  ? "ring-2 ring-grayscale-12/40 dark:ring-white/40"
+                  : "ring-1 ring-grayscale-3 dark:ring-white/15",
+              )}
+            />
+          </div>
+
+          {esCompacto && esActual ? (
+            <span className="rounded-full border border-grayscale-12/15 bg-grayscale-12/10 px-1.5 py-0.5 font-mono text-[8.5px] font-semibold text-grayscale-12 dark:border-white/20 dark:bg-white/10 dark:text-grayscale-1">
+              Tú
+            </span>
+          ) : null}
+        </div>
+
+        <div className={cn("min-w-0", esCompacto ? "mt-2" : "flex-1")}>
+          {esCompacto ? (
+            <>
+              <p className="truncate text-[11.5px] font-semibold text-grayscale-12">
+                {nombreLimpio(miembro.nombre)}
+              </p>
+              <p className="truncate font-mono text-[9.5px] text-grayscale-9">
+                {miembro.cargo}
+              </p>
+            </>
+          ) : (
+            <>
+              <div className="flex items-center justify-between gap-1.5">
+                <p className="truncate text-[12.5px] font-semibold text-grayscale-12 sm:text-[13px]">
+                  {nombreLimpio(miembro.nombre)}
+                </p>
+                <div className="flex shrink-0 items-center gap-1">
+                  {esActual ? (
+                    <span className="rounded-full border border-grayscale-12/15 bg-grayscale-12/10 px-2 py-0.5 font-mono text-[9px] font-semibold text-grayscale-12 dark:border-white/20 dark:bg-white/10 dark:text-grayscale-1">
+                      Tú
+                    </span>
+                  ) : null}
+                  {etiquetaNivel ? (
+                    <span className="rounded-full border border-grayscale-3/60 bg-grayscale-2 px-2 py-0.5 font-mono text-[9px] text-grayscale-10 dark:border-white/[0.08] dark:bg-white/[0.06] dark:text-grayscale-8">
+                      {etiquetaNivel}
+                    </span>
+                  ) : null}
+                </div>
+              </div>
+              <p className="truncate text-[11px] font-medium text-grayscale-10">
+                {miembro.cargo}
+              </p>
+              <p className="truncate font-mono text-[9.5px] text-grayscale-8">
+                {miembro.departamento}
+              </p>
+            </>
+          )}
+        </div>
+      </div>
+    </div>
+  );
 }
 
 export default function PerfilPage() {
@@ -188,6 +319,8 @@ export default function PerfilPage() {
   const [tab, setTab] = useState<TabPerfil>("resumen");
   const [editando, setEditando] = useState(false);
   const [guardado, setGuardado] = useState(false);
+  const [copiado, setCopiado] = useState(false);
+  const [hoverId, setHoverId] = useState<string | null>(null);
 
   const [perfil, setPerfil] = useState<PerfilExtendido>(
     PERFILES_POR_ROL[usuario.rol],
@@ -196,35 +329,26 @@ export default function PerfilPage() {
     Solicitud[]
   >([]);
 
-  useAtajos({ escape: () => router.push("/") }, !editando);
+  useAtajos(
+    {
+      escape: () => {
+        if (editando) {
+          cancelarEdicion();
+        } else {
+          router.push("/");
+        }
+      },
+    },
+    true,
+  );
 
   useEffect(() => {
     const cargar = () => {
       const actual = getUsuarioActual();
       setUsuario(actual);
       setUsuarios(getUsuarios());
-
-      const base = PERFILES_POR_ROL[actual.rol];
-      try {
-        const raw = window.localStorage.getItem(storageKey(actual.id));
-        if (raw) {
-          const parsed = JSON.parse(raw) as Partial<PerfilExtendido>;
-          setPerfil({
-            resumen: parsed.resumen ?? base.resumen,
-            ubicacion: parsed.ubicacion ?? base.ubicacion,
-            extension: parsed.extension ?? base.extension,
-            idiomas: parsed.idiomas ?? base.idiomas,
-            etiquetas:
-              Array.isArray(parsed.etiquetas) && parsed.etiquetas.length > 0
-                ? parsed.etiquetas
-                : base.etiquetas,
-          });
-        } else {
-          setPerfil(base);
-        }
-      } catch {
-        setPerfil(base);
-      }
+      setEditando(false);
+      setPerfil(cargarPerfilGuardado(actual));
 
       const relacionadas =
         actual.rol === "EMPLEADO"
@@ -252,6 +376,11 @@ export default function PerfilPage() {
     return [...usuarios].sort((a, b) => orden[a.rol] - orden[b.rol]);
   }, [usuarios]);
 
+  function cancelarEdicion() {
+    setPerfil(cargarPerfilGuardado(usuario));
+    setEditando(false);
+  }
+
   function guardarCambios() {
     try {
       window.localStorage.setItem(
@@ -264,6 +393,16 @@ export default function PerfilPage() {
     setEditando(false);
     setGuardado(true);
     window.setTimeout(() => setGuardado(false), 2000);
+  }
+
+  async function copiarCorreo() {
+    try {
+      await navigator.clipboard.writeText(usuario.correo);
+      setCopiado(true);
+      window.setTimeout(() => setCopiado(false), 1800);
+    } catch {
+      // Ignorar si el portapapeles no está disponible
+    }
   }
 
   return (
@@ -331,30 +470,42 @@ export default function PerfilPage() {
                       </div>
                     </div>
 
-                    <button
-                      type="button"
-                      onClick={() =>
-                        editando ? guardarCambios() : setEditando(true)
-                      }
-                      className={cn(
-                        "inline-flex h-9 cursor-pointer items-center gap-1.5 rounded-md border px-3.5 text-[12.5px] font-medium transition-colors duration-150",
-                        editando
-                          ? "border-emerald-600/30 bg-emerald-500/10 text-emerald-700 hover:bg-emerald-500/15 dark:text-emerald-400"
-                          : "border-grayscale-4 bg-grayscale-1 text-grayscale-11 hover:bg-grayscale-2 dark:border-white/[0.12] dark:bg-white/[0.04]",
-                      )}
-                    >
+                    <div className="flex items-center gap-2">
                       {editando ? (
-                        <>
-                          <CheckIcon size={13} weight="bold" />
-                          Guardar perfil
-                        </>
-                      ) : (
-                        <>
-                          <PencilSimpleIcon size={13} />
-                          {guardado ? "Guardado" : "Editar perfil"}
-                        </>
-                      )}
-                    </button>
+                        <button
+                          type="button"
+                          onClick={cancelarEdicion}
+                          className="inline-flex h-9 cursor-pointer items-center gap-1.5 rounded-md border border-grayscale-4 bg-grayscale-1 px-3 text-[12.5px] font-medium text-grayscale-10 transition-[transform,background-color,border-color,color] duration-160 ease-[cubic-bezier(0.23,1,0.32,1)] hover:bg-grayscale-2 active:scale-[0.97] dark:border-white/[0.12] dark:bg-white/[0.04] dark:hover:bg-white/[0.08]"
+                        >
+                          <XIcon size={13} />
+                          Cancelar
+                        </button>
+                      ) : null}
+                      <button
+                        type="button"
+                        onClick={() =>
+                          editando ? guardarCambios() : setEditando(true)
+                        }
+                        className={cn(
+                          "inline-flex h-9 cursor-pointer items-center gap-1.5 rounded-md border px-3.5 text-[12.5px] font-medium transition-[transform,background-color,border-color,color] duration-160 ease-[cubic-bezier(0.23,1,0.32,1)] active:scale-[0.97]",
+                          editando
+                            ? "border-emerald-600/30 bg-emerald-500/10 text-emerald-700 hover:bg-emerald-500/15 dark:text-emerald-400"
+                            : "border-grayscale-4 bg-grayscale-1 text-grayscale-11 hover:bg-grayscale-2 dark:border-white/[0.12] dark:bg-white/[0.04]",
+                        )}
+                      >
+                        {editando ? (
+                          <>
+                            <CheckIcon size={13} weight="bold" />
+                            Guardar perfil
+                          </>
+                        ) : (
+                          <>
+                            <PencilSimpleIcon size={13} />
+                            {guardado ? "Guardado" : "Editar perfil"}
+                          </>
+                        )}
+                      </button>
+                    </div>
                   </div>
 
                   <div className="mt-3.5 flex flex-wrap items-center gap-2">
@@ -388,7 +539,8 @@ export default function PerfilPage() {
             </section>
 
             {/* Contenido según pestaña */}
-            {tab === "resumen" && (
+            <div key={tab} className="tab-panel-enter flex flex-col gap-4">
+              {tab === "resumen" && (
               <>
                 <section
                   className="card rounded-[1.25rem] border border-grayscale-4/90 bg-grayscale-2 p-1 shadow-2xs dark:border-white/[0.32] dark:bg-[#191917]"
@@ -539,6 +691,7 @@ export default function PerfilPage() {
                 </div>
               </section>
             )}
+            </div>
           </div>
 
           {/* Columna lateral derecha */}
@@ -549,6 +702,7 @@ export default function PerfilPage() {
                 {/* Patrón de fondo técnico sutil */}
                 <div
                   aria-hidden="true"
+                  skullet-ignore=""
                   className="pointer-events-none absolute inset-0 bg-[radial-gradient(#00000008_1px,transparent_1px)] dark:bg-[radial-gradient(#ffffff0a_1px,transparent_1px)] [background-size:12px_12px]"
                 />
 
@@ -568,281 +722,198 @@ export default function PerfilPage() {
                     </div>
                   </div>
                   <span className="inline-flex items-center rounded-md bg-grayscale-2 px-2 py-0.5 font-mono text-[10px] text-grayscale-9 dark:bg-white/[0.06]">
-                    4 miembros
+                    {jerarquia.length}{" "}
+                    {jerarquia.length === 1 ? "miembro" : "miembros"}
                   </span>
                 </div>
 
                 {/* Diagrama jerárquico interactivo con flujo de líneas */}
-                <div className="relative z-10 flex flex-col items-center">
-                  {/* Nivel 1: Dirección / Jefatura */}
-                  {(() => {
-                    const lider = jerarquia.find((u) => u.rol === "JEFATURA");
-                    if (!lider) return null;
-                    const esActual = lider.id === usuario.id;
+                {(() => {
+                  const lider = jerarquia.find((u) => u.rol === "JEFATURA");
+                  const tecnicos = jerarquia.filter((u) => u.rol === "TECNICO");
+                  const empleados = jerarquia.filter((u) => u.rol === "EMPLEADO");
+                  const hoverUsuario = hoverId
+                    ? jerarquia.find((u) => u.id === hoverId)
+                    : null;
 
-                    return (
-                      <div className="group relative w-full">
-                        <div
-                          className={cn(
-                            "relative flex items-center gap-3 rounded-2xl border p-3 transition-[transform,border-color,background-color,box-shadow] duration-180 ease-[cubic-bezier(0.23,1,0.32,1)] hover:-translate-y-0.5 active:scale-[0.985]",
-                            esActual
-                              ? "border-grayscale-12/20 bg-grayscale-2/70 shadow-[0_2px_8px_rgba(0,0,0,0.04)] ring-1 ring-grayscale-12/10 dark:border-white/20 dark:bg-white/[0.04] dark:ring-white/15 dark:shadow-[0_4px_16px_rgba(0,0,0,0.4)]"
-                              : "border-grayscale-3/80 bg-grayscale-1/70 hover:border-grayscale-5 hover:bg-grayscale-1 hover:shadow-2xs dark:border-white/[0.10] dark:bg-[#161614] dark:hover:border-white/[0.20]",
-                          )}
+                  const conector1Activo = Boolean(hoverUsuario);
+                  const ramaIzqActiva =
+                    hoverUsuario?.rol === "JEFATURA" ||
+                    hoverUsuario?.rol === "TECNICO" ||
+                    (empleados[0] != null && hoverId === empleados[0].id);
+                  const ramaDerActiva =
+                    hoverUsuario?.rol === "JEFATURA" ||
+                    hoverUsuario?.rol === "TECNICO" ||
+                    (empleados[1] != null && hoverId === empleados[1].id);
+
+                  return (
+                    <div className="relative z-10 flex flex-col items-center">
+                      {lider ? (
+                        <NodoJerarquia
+                          miembro={lider}
+                          esActual={lider.id === usuario.id}
+                          resaltado={Boolean(hoverUsuario)}
+                          atenuado={false}
+                          etiquetaNivel="Dirección"
+                          avatarSize={40}
+                          onHover={setHoverId}
+                        />
+                      ) : null}
+
+                      {/* Conector dinámico Animado Nivel 1 a Nivel 2 */}
+                      <div
+                        aria-hidden="true"
+                        skullet-ignore=""
+                        className="pointer-events-none relative flex h-8 w-full select-none items-center justify-center"
+                      >
+                        <svg
+                          skullet-ignore=""
+                          className="h-full w-full overflow-visible"
+                          xmlns="http://www.w3.org/2000/svg"
                         >
+                          <line
+                            x1="50%"
+                            y1="0"
+                            x2="50%"
+                            y2="100%"
+                            className="stroke-grayscale-3/70 stroke-[1.5] dark:stroke-white/[0.08]"
+                          />
+                          <line
+                            x1="50%"
+                            y1="0"
+                            x2="50%"
+                            y2="100%"
+                            className={cn(
+                              "animate-line-flow stroke-[2] transition-opacity duration-180",
+                              conector1Activo
+                                ? "stroke-grayscale-12 opacity-100 dark:stroke-white"
+                                : "stroke-grayscale-10 opacity-75 dark:stroke-white/70",
+                            )}
+                          />
+                        </svg>
+                        <div
+                          skullet-ignore=""
+                          className="animate-pulse-node absolute size-2 rounded-full border border-white bg-grayscale-10 shadow-2xs dark:border-[#121211] dark:bg-white"
+                        />
+                      </div>
+
+                      {tecnicos.length > 0 ? (
+                        <div className="relative z-10 w-full space-y-2">
+                          {tecnicos.map((tecnico) => (
+                            <NodoJerarquia
+                              key={tecnico.id}
+                              miembro={tecnico}
+                              esActual={tecnico.id === usuario.id}
+                              resaltado={Boolean(hoverUsuario)}
+                              atenuado={false}
+                              etiquetaNivel="Técnico"
+                              avatarSize={36}
+                              onHover={setHoverId}
+                            />
+                          ))}
+                        </div>
+                      ) : null}
+
+                      {/* Bifurcación en 2 ramas con curvas Bézier y recorrido continuo */}
+                      {empleados.length > 0 ? (
+                        <>
                           <div
-                            skullet-block=""
-                            className="relative shrink-0 overflow-hidden rounded-full"
+                            aria-hidden="true"
+                            skullet-ignore=""
+                            className="pointer-events-none relative h-9 w-full select-none"
                           >
-                            <UserAvatar
-                              userId={lider.id}
-                              name={lider.nombre}
-                              size={40}
-                              className={cn(
-                                "ring-2 transition-transform duration-200 group-hover:scale-105",
-                                esActual
-                                  ? "ring-grayscale-12/40 dark:ring-white/40"
-                                  : "ring-grayscale-3 dark:ring-white/15",
-                              )}
+                            <svg
+                              skullet-ignore=""
+                              className="h-full w-full overflow-visible"
+                              viewBox="0 0 320 36"
+                              preserveAspectRatio="none"
+                              xmlns="http://www.w3.org/2000/svg"
+                            >
+                              <path
+                                d="M 160 0 C 160 18, 80 18, 80 36"
+                                fill="none"
+                                vectorEffect="non-scaling-stroke"
+                                strokeWidth="1.5"
+                                className="stroke-grayscale-3/70 dark:stroke-white/[0.08]"
+                              />
+                              <path
+                                d="M 160 0 C 160 18, 240 18, 240 36"
+                                fill="none"
+                                vectorEffect="non-scaling-stroke"
+                                strokeWidth="1.5"
+                                className="stroke-grayscale-3/70 dark:stroke-white/[0.08]"
+                              />
+
+                              <path
+                                d="M 160 0 C 160 18, 80 18, 80 36"
+                                fill="none"
+                                vectorEffect="non-scaling-stroke"
+                                strokeWidth="2"
+                                className={cn(
+                                  "animate-line-flow transition-opacity duration-180",
+                                  ramaIzqActiva
+                                    ? "stroke-grayscale-12 opacity-100 dark:stroke-white"
+                                    : hoverUsuario
+                                      ? "stroke-grayscale-8 opacity-30 dark:stroke-white/30"
+                                      : "stroke-grayscale-10 opacity-75 dark:stroke-white/70",
+                                )}
+                              />
+                              <path
+                                d="M 160 0 C 160 18, 240 18, 240 36"
+                                fill="none"
+                                vectorEffect="non-scaling-stroke"
+                                strokeWidth="2"
+                                className={cn(
+                                  "animate-line-flow transition-opacity duration-180",
+                                  ramaDerActiva
+                                    ? "stroke-grayscale-12 opacity-100 dark:stroke-white"
+                                    : hoverUsuario
+                                      ? "stroke-grayscale-8 opacity-30 dark:stroke-white/30"
+                                      : "stroke-grayscale-10 opacity-75 dark:stroke-white/70",
+                                )}
+                              />
+                            </svg>
+
+                            <div
+                              skullet-ignore=""
+                              className="animate-pulse-node absolute left-1/2 top-0 size-2 -translate-x-1/2 rounded-full border border-white bg-grayscale-10 shadow-2xs dark:border-[#121211] dark:bg-white"
+                            />
+                            <div
+                              skullet-ignore=""
+                              className="absolute bottom-0 left-1/4 size-1.5 -translate-x-1/2 rounded-full bg-grayscale-6 dark:bg-white/40"
+                            />
+                            <div
+                              skullet-ignore=""
+                              className="absolute bottom-0 left-3/4 size-1.5 -translate-x-1/2 rounded-full bg-grayscale-6 dark:bg-white/40"
                             />
                           </div>
 
-                          <div className="min-w-0 flex-1">
-                            <div className="flex items-center justify-between gap-1.5">
-                              <p className="truncate text-[13px] font-semibold text-grayscale-12">
-                                {nombreLimpio(lider.nombre)}
-                              </p>
-                              <div className="flex items-center gap-1 shrink-0">
-                                {esActual ? (
-                                  <span className="rounded-full bg-grayscale-12/10 px-2 py-0.5 font-mono text-[9px] font-semibold text-grayscale-12 border border-grayscale-12/15 dark:bg-white/10 dark:text-grayscale-1 dark:border-white/20">
-                                    Tú
-                                  </span>
-                                ) : null}
-                                <span className="rounded-full bg-grayscale-2 px-2 py-0.5 font-mono text-[9px] text-grayscale-10 border border-grayscale-3/60 dark:bg-white/[0.06] dark:text-grayscale-8 dark:border-white/[0.08]">
-                                  Dirección
-                                </span>
-                              </div>
-                            </div>
-                            <p className="truncate text-[11px] font-medium text-grayscale-10">
-                              {lider.cargo}
-                            </p>
-                            <p className="truncate font-mono text-[9.5px] text-grayscale-8">
-                              {lider.departamento}
-                            </p>
+                          <div className="relative z-10 grid w-full grid-cols-2 gap-2">
+                            {empleados.map((empleado) => {
+                              const enRuta =
+                                hoverUsuario?.rol === "JEFATURA" ||
+                                hoverUsuario?.rol === "TECNICO" ||
+                                hoverId === empleado.id;
+
+                              return (
+                                <NodoJerarquia
+                                  key={empleado.id}
+                                  miembro={empleado}
+                                  esActual={empleado.id === usuario.id}
+                                  resaltado={Boolean(hoverUsuario && enRuta)}
+                                  atenuado={Boolean(hoverUsuario && !enRuta)}
+                                  variante="compact"
+                                  avatarSize={30}
+                                  onHover={setHoverId}
+                                />
+                              );
+                            })}
                           </div>
-                        </div>
-                      </div>
-                    );
-                  })()}
-
-                  {/* Conector dinámico Animado Nivel 1 a Nivel 2 (Recorrido continuo) */}
-                  <div
-                    aria-hidden="true"
-                    className="relative flex h-8 w-full select-none items-center justify-center pointer-events-none"
-                  >
-                    <svg
-                      className="h-full w-full overflow-visible"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      {/* Línea base estática */}
-                      <line
-                        x1="50%"
-                        y1="0"
-                        x2="50%"
-                        y2="100%"
-                        className="stroke-grayscale-3/70 stroke-[1.5] dark:stroke-white/[0.08]"
-                      />
-                      {/* Recorrido animado de la línea */}
-                      <line
-                        x1="50%"
-                        y1="0"
-                        x2="50%"
-                        y2="100%"
-                        className="animate-line-flow stroke-grayscale-10 stroke-[2] dark:stroke-white/75"
-                      />
-                    </svg>
-                    {/* Nodo de enlace con pulso suave */}
-                    <div className="animate-pulse-node absolute size-2 rounded-full border border-white bg-grayscale-10 shadow-2xs dark:border-[#121211] dark:bg-white" />
-                  </div>
-
-                  {/* Nivel 2: Supervisión Técnica */}
-                  {(() => {
-                    const tecnicos = jerarquia.filter((u) => u.rol === "TECNICO");
-                    if (tecnicos.length === 0) return null;
-
-                    return (
-                      <div className="relative z-10 w-full space-y-2">
-                        {tecnicos.map((tecnico) => {
-                          const esActual = tecnico.id === usuario.id;
-                          return (
-                            <div key={tecnico.id} className="group relative">
-                              <div
-                                className={cn(
-                                  "relative flex items-center gap-3 rounded-2xl border p-2.5 transition-[transform,border-color,background-color,box-shadow] duration-180 ease-[cubic-bezier(0.23,1,0.32,1)] hover:-translate-y-0.5 active:scale-[0.985]",
-                                  esActual
-                                    ? "border-grayscale-12/20 bg-grayscale-2/70 shadow-[0_2px_8px_rgba(0,0,0,0.04)] ring-1 ring-grayscale-12/10 dark:border-white/20 dark:bg-white/[0.04] dark:ring-white/15 dark:shadow-[0_4px_16px_rgba(0,0,0,0.4)]"
-                                    : "border-grayscale-3/80 bg-grayscale-1/70 hover:border-grayscale-5 hover:bg-grayscale-1 hover:shadow-2xs dark:border-white/[0.10] dark:bg-[#161614] dark:hover:border-white/[0.20]",
-                                )}
-                              >
-                                <div
-                                  skullet-block=""
-                                  className="relative shrink-0 overflow-hidden rounded-full"
-                                >
-                                  <UserAvatar
-                                    userId={tecnico.id}
-                                    name={tecnico.nombre}
-                                    size={36}
-                                    className={cn(
-                                      "ring-2 transition-transform duration-200 group-hover:scale-105",
-                                      esActual
-                                        ? "ring-grayscale-12/40 dark:ring-white/40"
-                                        : "ring-grayscale-3 dark:ring-white/15",
-                                    )}
-                                  />
-                                </div>
-
-                                <div className="min-w-0 flex-1">
-                                  <div className="flex items-center justify-between gap-1.5">
-                                    <p className="truncate text-[12.5px] font-semibold text-grayscale-12">
-                                      {nombreLimpio(tecnico.nombre)}
-                                    </p>
-                                    <div className="flex items-center gap-1 shrink-0">
-                                      {esActual ? (
-                                        <span className="rounded-full bg-grayscale-12/10 px-2 py-0.5 font-mono text-[9px] font-semibold text-grayscale-12 border border-grayscale-12/15 dark:bg-white/10 dark:text-grayscale-1 dark:border-white/20">
-                                          Tú
-                                        </span>
-                                      ) : null}
-                                      <span className="rounded-full bg-grayscale-2 px-2 py-0.5 font-mono text-[9px] text-grayscale-10 border border-grayscale-3/60 dark:bg-white/[0.06] dark:text-grayscale-8 dark:border-white/[0.08]">
-                                        Técnico
-                                      </span>
-                                    </div>
-                                  </div>
-                                  <p className="truncate text-[11px] font-medium text-grayscale-10">
-                                    {tecnico.cargo}
-                                  </p>
-                                  <p className="truncate font-mono text-[9px] text-grayscale-8">
-                                    {tecnico.departamento}
-                                  </p>
-                                </div>
-                              </div>
-                            </div>
-                          );
-                        })}
-                      </div>
-                    );
-                  })()}
-
-                  {/* Bifurcación en 2 ramas con curvas Bézier y recorrido continuo */}
-                  <div
-                    aria-hidden="true"
-                    className="relative h-9 w-full select-none pointer-events-none"
-                  >
-                    <svg
-                      className="h-full w-full overflow-visible"
-                      viewBox="0 0 320 36"
-                      preserveAspectRatio="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      {/* Pistas base estáticas */}
-                      <path
-                        d="M 160 0 C 160 18, 80 18, 80 36"
-                        fill="none"
-                        vectorEffect="non-scaling-stroke"
-                        strokeWidth="1.5"
-                        className="stroke-grayscale-3/70 dark:stroke-white/[0.08]"
-                      />
-                      <path
-                        d="M 160 0 C 160 18, 240 18, 240 36"
-                        fill="none"
-                        vectorEffect="non-scaling-stroke"
-                        strokeWidth="1.5"
-                        className="stroke-grayscale-3/70 dark:stroke-white/[0.08]"
-                      />
-
-                      {/* Recorrido animado de las líneas hacia ambas ramas */}
-                      <path
-                        d="M 160 0 C 160 18, 80 18, 80 36"
-                        fill="none"
-                        vectorEffect="non-scaling-stroke"
-                        strokeWidth="2"
-                        className="animate-line-flow stroke-grayscale-10 dark:stroke-white/75"
-                      />
-                      <path
-                        d="M 160 0 C 160 18, 240 18, 240 36"
-                        fill="none"
-                        vectorEffect="non-scaling-stroke"
-                        strokeWidth="2"
-                        className="animate-line-flow stroke-grayscale-10 dark:stroke-white/75"
-                      />
-                    </svg>
-
-                    {/* Nodo central de bifurcación */}
-                    <div className="animate-pulse-node absolute left-1/2 top-0 -translate-x-1/2 size-2 rounded-full border border-white bg-grayscale-10 shadow-2xs dark:border-[#121211] dark:bg-white" />
-                    {/* Nodos sutiles de llegada a las dos ramas */}
-                    <div className="absolute left-1/4 bottom-0 -translate-x-1/2 size-1.5 rounded-full bg-grayscale-6 dark:bg-white/40" />
-                    <div className="absolute left-3/4 bottom-0 -translate-x-1/2 size-1.5 rounded-full bg-grayscale-6 dark:bg-white/40" />
-                  </div>
-
-                  {/* Nivel 3: Base Operativa en 2 Columnas Interactivas */}
-                  {(() => {
-                    const empleados = jerarquia.filter((u) => u.rol === "EMPLEADO");
-                    if (empleados.length === 0) return null;
-
-                    return (
-                      <div className="relative z-10 grid w-full grid-cols-2 gap-2">
-                        {empleados.map((empleado) => {
-                          const esActual = empleado.id === usuario.id;
-                          return (
-                            <div key={empleado.id} className="group relative">
-                              <div
-                                className={cn(
-                                  "relative flex h-full flex-col justify-between rounded-xl border p-2.5 transition-[transform,border-color,background-color,box-shadow] duration-180 ease-[cubic-bezier(0.23,1,0.32,1)] hover:-translate-y-0.5 active:scale-[0.985]",
-                                  esActual
-                                    ? "border-grayscale-12/20 bg-grayscale-2/70 shadow-[0_2px_8px_rgba(0,0,0,0.04)] ring-1 ring-grayscale-12/10 dark:border-white/20 dark:bg-white/[0.04] dark:ring-white/15 dark:shadow-[0_4px_16px_rgba(0,0,0,0.4)]"
-                                    : "border-grayscale-3/80 bg-grayscale-1/70 hover:border-grayscale-5 hover:bg-grayscale-1 hover:shadow-2xs dark:border-white/[0.10] dark:bg-[#161614] dark:hover:border-white/[0.20]",
-                                )}
-                              >
-                                <div className="flex items-center justify-between gap-1.5">
-                                  <div
-                                    skullet-block=""
-                                    className="relative shrink-0 overflow-hidden rounded-full"
-                                  >
-                                    <UserAvatar
-                                      userId={empleado.id}
-                                      name={empleado.nombre}
-                                      size={30}
-                                      className={cn(
-                                        "ring-1.5 transition-transform duration-200 group-hover:scale-105",
-                                        esActual
-                                          ? "ring-grayscale-12/40 dark:ring-white/40"
-                                          : "ring-grayscale-3 dark:ring-white/15",
-                                      )}
-                                    />
-                                  </div>
-
-                                  {esActual ? (
-                                    <span className="rounded-full bg-grayscale-12/10 px-1.5 py-0.5 font-mono text-[8.5px] font-semibold text-grayscale-12 border border-grayscale-12/15 dark:bg-white/10 dark:text-grayscale-1 dark:border-white/20">
-                                      Tú
-                                    </span>
-                                  ) : null}
-                                </div>
-
-                                <div className="mt-2 min-w-0">
-                                  <p className="truncate text-[11.5px] font-semibold text-grayscale-12">
-                                    {nombreLimpio(empleado.nombre)}
-                                  </p>
-                                  <p className="truncate font-mono text-[9.5px] text-grayscale-9">
-                                    {empleado.cargo}
-                                  </p>
-                                </div>
-                              </div>
-                            </div>
-                          );
-                        })}
-                      </div>
-                    );
-                  })()}
-                </div>
+                        </>
+                      ) : null}
+                    </div>
+                  );
+                })()}
               </div>
             </section>
 
@@ -864,13 +935,36 @@ export default function PerfilPage() {
                       size={15}
                       className="mt-0.5 shrink-0 text-grayscale-8"
                     />
-                    <div className="min-w-0">
+                    <div className="min-w-0 flex-1">
                       <span className="block font-mono text-[9.5px] uppercase tracking-wider text-grayscale-8">
                         Correo
                       </span>
-                      <span className="truncate font-medium text-emerald-700 dark:text-emerald-400">
-                        {usuario.correo}
-                      </span>
+                      <div className="flex items-center justify-between gap-2">
+                        <a
+                          href={`mailto:${usuario.correo}`}
+                          className="truncate font-medium text-emerald-700 hover:underline dark:text-emerald-400"
+                        >
+                          {usuario.correo}
+                        </a>
+                        <button
+                          type="button"
+                          onClick={copiarCorreo}
+                          aria-label="Copiar correo"
+                          className="inline-flex shrink-0 cursor-pointer items-center gap-1 rounded-md border border-grayscale-3/80 bg-grayscale-1 px-1.5 py-0.5 font-mono text-[9.5px] text-grayscale-10 transition-[transform,background-color] duration-150 hover:bg-grayscale-2 active:scale-[0.96] dark:border-white/[0.10] dark:bg-white/[0.04] dark:hover:bg-white/[0.08]"
+                        >
+                          {copiado ? (
+                            <>
+                              <CheckIcon size={10} weight="bold" />
+                              Copiado
+                            </>
+                          ) : (
+                            <>
+                              <CopyIcon size={10} />
+                              Copiar
+                            </>
+                          )}
+                        </button>
+                      </div>
                     </div>
                   </div>
 
@@ -936,13 +1030,27 @@ export default function PerfilPage() {
                       size={15}
                       className="mt-0.5 shrink-0 text-grayscale-8"
                     />
-                    <div className="min-w-0">
+                    <div className="min-w-0 flex-1">
                       <span className="block font-mono text-[9.5px] uppercase tracking-wider text-grayscale-8">
                         Idiomas
                       </span>
-                      <span className="font-medium text-grayscale-12">
-                        {perfil.idiomas}
-                      </span>
+                      {editando ? (
+                        <input
+                          type="text"
+                          value={perfil.idiomas}
+                          onChange={(e) =>
+                            setPerfil((prev) => ({
+                              ...prev,
+                              idiomas: e.target.value,
+                            }))
+                          }
+                          className="mt-1 w-full rounded-lg border border-grayscale-4/80 bg-grayscale-1 px-2 py-1 text-[11.5px] text-grayscale-12 dark:border-white/[0.12] dark:bg-[#171715]"
+                        />
+                      ) : (
+                        <span className="font-medium text-grayscale-12">
+                          {perfil.idiomas}
+                        </span>
+                      )}
                     </div>
                   </div>
                 </div>

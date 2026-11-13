@@ -690,35 +690,6 @@ button,
   animation: line-flow 1.2s linear infinite;
 }
 
-@keyframes pulse-flow {
-  0% {
-    stroke-dashoffset: 24;
-  }
-  100% {
-    stroke-dashoffset: 0;
-  }
-}
-
-.animate-pulse-flow {
-  stroke-dasharray: 6 6;
-  animation: pulse-flow 1.2s linear infinite;
-}
-
-@keyframes signal-glow {
-  0%, 100% {
-    transform: scale(0.92);
-    opacity: 0.6;
-  }
-  50% {
-    transform: scale(1.18);
-    opacity: 1;
-  }
-}
-
-.animate-signal-glow {
-  animation: signal-glow 2.2s ease-in-out infinite;
-}
-
 @keyframes pulse-node {
   0%, 100% {
     transform: scale(0.92);
@@ -732,6 +703,27 @@ button,
 
 .animate-pulse-node {
   animation: pulse-node 2.2s ease-in-out infinite;
+}
+
+@keyframes tab-panel-enter {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.tab-panel-enter {
+  animation: tab-panel-enter 160ms var(--ease-out-soft) both;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .hover-lift:hover {
+    transform: translateY(-2px);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
