@@ -492,7 +492,7 @@ export default function DetalleSolicitudPage({ params }: Props) {
         statusInfo={{
           title: `Ficha ${id}`,
           subtitle: solicitud
-            ? `${solicitud.estado} · ${solicitud.historial.length} movimientos`
+            ? `${solicitud.estado} | ${solicitud.historial.length} movimientos`
             : undefined,
         }}
         primaryLabel={esTecnico && !esCerrada ? "Atender solicitud" : undefined}

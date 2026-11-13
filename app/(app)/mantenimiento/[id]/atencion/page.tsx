@@ -440,7 +440,7 @@ export default function AtencionYCierrePage({ params }: Props) {
                           )}
                         >
                           {etapa.label}
-                          {esActual && " · actual"}
+                          {esActual && " | actual"}
                         </span>
                       );
                     })}
@@ -748,7 +748,7 @@ export default function AtencionYCierrePage({ params }: Props) {
             : `Transición: ${ficha.estado.replace("_", " ").toLowerCase()} → ${nuevoEstado
                 .replace("_", " ")
                 .toLowerCase()}`,
-          subtitle: `Operador: ${nombreLimpio(usuario.nombre)} · ${usuario.cargo}`,
+          subtitle: `Operador: ${nombreLimpio(usuario.nombre)} | ${usuario.cargo}`,
         }}
         shortcuts={[
           { key: "Ctrl + Enter", label: "Aplicar cambio" },

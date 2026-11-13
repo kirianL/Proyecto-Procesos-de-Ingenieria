@@ -106,7 +106,7 @@ export function Timeline({ eventos, className }: TimelineProps) {
                     </span>
                     <span className="text-grayscale-8">
                       {" "}
-                      · <TiempoRelativo fecha={evento.fecha} />
+                      | <TiempoRelativo fecha={evento.fecha} />
                     </span>
                   </p>
 

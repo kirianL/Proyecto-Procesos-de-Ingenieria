@@ -30,8 +30,8 @@ export const viewport: Viewport = {
 
 export const metadata: Metadata = {
   title: {
-    default: "Mantenimiento · Gestión de solicitudes internas",
-    template: "%s · Mantenimiento",
+    default: "Mantenimiento | Gestión de solicitudes internas",
+    template: "%s | Mantenimiento",
   },
   description:
     "Sistema web de gestión y resolución de solicitudes de mantenimiento interno.",

@@ -140,7 +140,7 @@ export default function HistorialSolicitudPage({ params }: Props) {
                     Línea de tiempo
                   </h2>
                   <span className="text-[11px] text-grayscale-9">
-                    Orden ascendente · autor y fecha por evento
+                    Orden ascendente | autor y fecha por evento
                   </span>
                 </div>
 

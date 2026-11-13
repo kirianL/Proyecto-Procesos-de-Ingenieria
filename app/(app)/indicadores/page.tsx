@@ -500,7 +500,7 @@ export default function IndicadoresPage() {
 <html lang="es">
 <head>
   <meta charset="utf-8" />
-  <title>Reporte Ejecutivo de Mantenimiento · ${escaparHtml(fechaInputHoy())}</title>
+  <title>Reporte Ejecutivo de Mantenimiento | ${escaparHtml(fechaInputHoy())}</title>
   <style>
     @page { margin: 18mm; }
     body { font-family: -apple-system, BlinkMacSystemFont, "Inter", sans-serif; color: #18181b; margin: 0; padding: 24px; line-height: 1.45; }
@@ -523,12 +523,12 @@ export default function IndicadoresPage() {
 <body>
   <div class="header">
     <div>
-      <div class="eyebrow">Servicios Internos · Mantenimiento</div>
+      <div class="eyebrow">Servicios Internos | Mantenimiento</div>
       <h1>Balance Operativo e Indicadores</h1>
     </div>
     <div class="meta">
       <div>Período: ${escaparHtml(etiquetaPeriodo)}</div>
-      <div>Emitido: ${escaparHtml(fechaInputHoy())} · ${escaparHtml(nombreLimpio(usuario.nombre))}</div>
+      <div>Emitido: ${escaparHtml(fechaInputHoy())} | ${escaparHtml(nombreLimpio(usuario.nombre))}</div>
     </div>
   </div>
 
@@ -738,7 +738,7 @@ export default function IndicadoresPage() {
                     <div className="flex items-center justify-between text-[11px] text-grayscale-9">
                       <span className="flex items-center gap-1.5">
                         <TargetIcon size={13} />
-                        Meta corporativa · {META_HORAS} h
+                        Meta corporativa | {META_HORAS} h
                       </span>
                       <span
                         className={cn(
@@ -855,7 +855,7 @@ export default function IndicadoresPage() {
                             value={fila.total}
                             className="font-mono text-[11.5px] text-grayscale-11 font-medium"
                           />
-                          <span>·</span>
+                          <span>|</span>
                           <SlotNumber
                             value={fila.pct}
                             suffix="%"
@@ -1123,7 +1123,7 @@ export default function IndicadoresPage() {
                               value={dep.totales}
                               className="font-bold text-grayscale-12"
                             />{" "}
-                            · {dep.pctCarga}%
+                            | {dep.pctCarga}%
                           </span>
                         </div>
 
@@ -1152,11 +1152,11 @@ export default function IndicadoresPage() {
 
                         <div className="mt-2.5 flex flex-wrap items-center justify-between gap-2 font-mono text-[10.5px] text-grayscale-9">
                           <span>
-                            {dep.cerradas} cerradas · {dep.abiertas} abiertas
+                            {dep.cerradas} cerradas | {dep.abiertas} abiertas
                           </span>
                           <span>
                             {dep.tiempoMedio !== null
-                              ? `${dep.tiempoMedio}h prom · `
+                              ? `${dep.tiempoMedio}h prom | `
                               : ""}
                             SLA {dep.pctSla}%
                           </span>
@@ -1177,8 +1177,13 @@ export default function IndicadoresPage() {
               <div className="rounded-[1rem] border border-grayscale-3/60 bg-white p-5 shadow-[0_1px_2px_rgba(28,22,16,0.03)] dark:border-white/[0.08] dark:bg-[#121211] space-y-3.5">
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <div className="flex items-center gap-2">
-                    <TargetIcon size={15} weight="duotone" className="text-sand-9/80" />
-                    <h2 className="text-[13px] font-semibold text-grayscale-12">
+                    <span
+                      skullet-block=""
+                      className="flex size-6.5 items-center justify-center rounded-lg bg-grayscale-2 text-grayscale-10 dark:bg-grayscale-3"
+                    >
+                      <TargetIcon size={13} />
+                    </span>
+                    <h2 className="text-[13px] font-semibold tracking-[-0.01em] text-grayscale-12">
                       Metas operativas y de eficiencia del servicio
                     </h2>
                   </div>
@@ -1231,26 +1236,37 @@ export default function IndicadoresPage() {
                           </div>
                         </div>
 
-                        <div className="mt-4 space-y-2">
-                          <div className="relative h-2 w-full overflow-hidden rounded-full bg-grayscale-3 dark:bg-white/[0.08]">
-                            <div
-                              className={cn(
-                                "h-full rounded-full transition-[width] duration-300 ease-[var(--ease-out-soft)]",
-                                cumple ? "bg-emerald-500" : "bg-amber-500",
-                              )}
-                              style={{ width: `${pctActual}%` }}
-                            />
+                        <div className="mt-5 space-y-1.5">
+                          <div className="relative pt-4">
                             <span
-                              aria-hidden
-                              title={`Meta ${metaH}h`}
-                              className="absolute top-0 bottom-0 w-[2px] bg-grayscale-12/60"
+                              className="absolute top-0 -translate-x-1/2 whitespace-nowrap font-mono text-[9.5px] font-medium text-grayscale-10"
                               style={{ left: `${pctMeta}%` }}
-                            />
+                            >
+                              Meta ≤ {metaH}h
+                            </span>
+                            <div className="relative h-4 w-full overflow-hidden rounded-md bg-grayscale-3/80 dark:bg-white/[0.07]">
+                              <div
+                                className={cn(
+                                  "h-full rounded-md transition-[width] duration-300 ease-[var(--ease-out-soft)]",
+                                  cumple ? "bg-emerald-500/85" : "bg-amber-500/85",
+                                )}
+                                style={{ width: `${pctActual}%` }}
+                              />
+                              <span
+                                aria-hidden
+                                className="absolute top-0 bottom-0 w-[1.5px] -translate-x-1/2 bg-grayscale-12/70 dark:bg-white/70"
+                                style={{ left: `${pctMeta}%` }}
+                              />
+                            </div>
                           </div>
                           <div className="flex items-center justify-between font-mono text-[10px] text-grayscale-9">
-                            <span>0h</span>
-                            <span>Meta {metaH}h</span>
-                            <span>Base {baseH}h</span>
+                            <span>
+                              Actual:{" "}
+                              {tiempoMedioHoras !== null
+                                ? `${tiempoMedioHoras}h`
+                                : "—"}
+                            </span>
+                            <span>Antes: {baseH}h</span>
                           </div>
                         </div>
                       </div>
@@ -1291,26 +1307,36 @@ export default function IndicadoresPage() {
                           </div>
                         </div>
 
-                        <div className="mt-4 space-y-2">
-                          <div className="flex h-3 items-stretch gap-1" aria-hidden>
-                            {Array.from({ length: 10 }).map((_, idx) => (
+                        <div className="mt-5 space-y-1.5">
+                          <div className="relative pt-4">
+                            <span
+                              className="absolute top-0 -translate-x-1/2 whitespace-nowrap font-mono text-[9.5px] font-medium text-grayscale-10"
+                              style={{ left: `calc(${metaPct}% + 1.2px)` }}
+                            >
+                              Meta ≥ {metaPct}%
+                            </span>
+                            <div className="relative grid grid-cols-10 h-4 gap-1" aria-hidden>
+                              {Array.from({ length: 10 }).map((_, idx) => (
+                                <span
+                                  key={idx}
+                                  className={cn(
+                                    "rounded-[3px] transition-colors duration-200",
+                                    idx < segmentosActivos
+                                      ? pct >= metaPct
+                                        ? "bg-emerald-500/85"
+                                        : "bg-amber-500/85"
+                                      : "bg-grayscale-3/80 dark:bg-white/[0.07]",
+                                  )}
+                                />
+                              ))}
                               <span
-                                key={idx}
-                                className={cn(
-                                  "flex-1 rounded-[2px] transition-colors duration-200",
-                                  idx < segmentosActivos
-                                    ? pct >= metaPct
-                                      ? "bg-emerald-500"
-                                      : "bg-amber-500"
-                                    : "bg-grayscale-3 dark:bg-white/[0.08]",
-                                  idx === 7 &&
-                                    "ring-1 ring-grayscale-12/30 ring-offset-1 ring-offset-transparent",
-                                )}
+                                className="pointer-events-none absolute -top-0.5 -bottom-0.5 w-[1.5px] -translate-x-1/2 bg-grayscale-12/70 dark:bg-white/70"
+                                style={{ left: `calc(${metaPct}% + 1.2px)` }}
                               />
-                            ))}
+                            </div>
                           </div>
                           <div className="flex items-center justify-between font-mono text-[10px] text-grayscale-9">
-                            <span>Base {basePct}%</span>
+                            <span>Antes: {basePct}%</span>
                             <span>
                               {csat.total}{" "}
                               {csat.total === 1 ? "voto" : "votos"}
@@ -1338,7 +1364,7 @@ export default function IndicadoresPage() {
                         <div>
                           <div className="flex items-center justify-between gap-2">
                             <span className="text-[11px] font-medium text-grayscale-9">
-                              Cero papel · ODS 12.5
+                              Cero papel | ODS 12.5
                             </span>
                             <span className="rounded-md bg-blue-500/10 px-1.5 py-0.5 font-mono text-[10px] font-semibold text-blue-700 dark:text-blue-400">
                               100% digital
@@ -1355,16 +1381,21 @@ export default function IndicadoresPage() {
                           </div>
                         </div>
 
-                        <div className="mt-4 space-y-2">
-                          <div className="h-2 w-full overflow-hidden rounded-full bg-grayscale-3 dark:bg-white/[0.08]">
-                            <div
-                              className="h-full rounded-full bg-blue-500 transition-[width] duration-300 ease-[var(--ease-out-soft)]"
-                              style={{ width: `${Math.max(pctDigital, 8)}%` }}
-                            />
+                        <div className="mt-5 space-y-1.5">
+                          <div className="relative pt-4">
+                            <div className="absolute inset-x-0 top-0 flex items-center justify-between font-mono text-[9.5px] font-medium text-grayscale-10">
+                              <span>0 hojas físicas</span>
+                              <span>Meta: {metaPapel}/mes</span>
+                            </div>
+                            <div className="relative flex h-4 w-full items-center overflow-hidden rounded-md bg-blue-500/85 px-2">
+                              <span className="font-mono text-[9.5px] font-semibold text-white">
+                                100% digital ({digitales} folios)
+                              </span>
+                            </div>
                           </div>
                           <div className="flex items-center justify-between font-mono text-[10px] text-grayscale-9">
-                            <span>Base papel: {basePapel}/mes</span>
-                            <span>Meta ≤ {metaPapel}</span>
+                            <span>Antes: {basePapel} hojas/mes</span>
+                            <span>Ahorro: 100%</span>
                           </div>
                         </div>
                       </div>
@@ -1393,8 +1424,8 @@ export default function IndicadoresPage() {
 
       <BottomBar
         statusInfo={{
-          title: `${totales} solicitudes consolidadas · ${etiquetaPeriodo}`,
-          subtitle: `Supervisión de ${nombreLimpio(usuario.nombre)} · ${usuario.cargo}`,
+          title: `${totales} solicitudes consolidadas | ${etiquetaPeriodo}`,
+          subtitle: `Supervisión de ${nombreLimpio(usuario.nombre)} | ${usuario.cargo}`,
         }}
         primaryLabel="Ver bandeja general"
         primaryHref="/mantenimiento"

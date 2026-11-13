@@ -34,8 +34,8 @@ const ETIQUETA = "block text-[12.5px] font-medium text-grayscale-11";
 const TOTAL_SEGMENTOS = 12;
 
 const UBICACIONES_SUGERIDAS = [
-  "Nave 1 · Planta",
-  "Edificio B · Piso 2",
+  "Nave 1 | Planta",
+  "Edificio B | Piso 2",
   "Laboratorio de calidad 2",
   "Cuarto de máquinas",
   "Sala de servidores",
@@ -447,7 +447,7 @@ export default function NuevaSolicitudPage() {
                       id="ubicacion"
                       type="text"
                       aria-invalid={faltaUbicacion}
-                      placeholder="Ej. Edificio B · Piso 2, Oficina 204"
+                      placeholder="Ej. Edificio B | Piso 2, Oficina 204"
                       value={ubicacion}
                       onChange={(event) => {
                         const val = event.target.value;

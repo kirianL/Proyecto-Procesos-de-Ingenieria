@@ -158,7 +158,7 @@ export function EvidenceGallery({
                 {activo.etapa === "ATENCION"
                   ? "Evidencia de atención técnica"
                   : "Evidencia de reporte inicial"}{" "}
-                · {formatearTamano(activo.tamanoBytes)} · {indiceActivo + 1} /{" "}
+                | {formatearTamano(activo.tamanoBytes)} | {indiceActivo + 1} /{" "}
                 {lista.length}
               </p>
             </div>

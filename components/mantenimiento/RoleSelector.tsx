@@ -98,7 +98,7 @@ export function RoleSelector({
                 {nombreLimpio(usuarioActual.nombre)}
               </span>
               <span className="mt-1 truncate text-[10.5px] text-grayscale-9">
-                {usuarioActual.rol.toLowerCase()} · {usuarioActual.departamento}
+                {usuarioActual.rol.toLowerCase()} | {usuarioActual.departamento}
               </span>
             </div>
           ) : null}
@@ -161,7 +161,7 @@ export function RoleSelector({
                           {nombreLimpio(user.nombre)}
                         </span>
                         <span className="mt-1 truncate text-[10px] text-grayscale-9">
-                          {user.rol.toLowerCase()} · {user.departamento}
+                          {user.rol.toLowerCase()} | {user.departamento}
                         </span>
                       </div>
                     </div>

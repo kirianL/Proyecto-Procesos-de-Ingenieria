@@ -164,7 +164,7 @@ export function EvidenceUploader({
                   : "Arrastra fotos aquí o selecciona desde tu dispositivo"}
               </p>
               <p className="font-mono text-[10.5px] text-grayscale-9">
-                Opcional · Máx. {maxArchivos} imágenes ({value.length}/{maxArchivos})
+                Opcional | Máx. {maxArchivos} imágenes ({value.length}/{maxArchivos})
               </p>
             </div>
           </div>

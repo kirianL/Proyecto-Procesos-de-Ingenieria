@@ -488,7 +488,7 @@ export default function Home() {
                 </div>
                 <div className="rounded-lg bg-grayscale-1/90 px-2.5 py-1.5 dark:bg-white/[0.04]">
                   <span className="block text-[10px] text-grayscale-9">
-                    ODS 12 · Digitales
+                    ODS 12 | Digitales
                   </span>
                   <span className="font-mono text-[12px] font-semibold text-grayscale-12">
                     {kpis.totales} folios

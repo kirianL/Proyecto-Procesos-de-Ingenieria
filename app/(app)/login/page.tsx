@@ -68,7 +68,7 @@ function QuickProfilePicker({
                 {nombreLimpio(user.nombre)}
               </span>
               <span aria-hidden className="text-grayscale-6">
-                ·
+                |
               </span>
               <span className="truncate text-[12px] text-grayscale-8 transition-colors duration-150 group-hover:text-grayscale-10">
                 {user.departamento}

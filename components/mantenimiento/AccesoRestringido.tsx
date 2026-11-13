@@ -76,7 +76,7 @@ export function AccesoRestringido({
             <div className="space-y-0.5">
               <span className="text-grayscale-9 block">Cuenta activa</span>
               <span className="font-medium text-grayscale-12">
-                {nombreLimpio(usuario.nombre)} · {ETIQUETA_ROL[usuario.rol]}
+                {nombreLimpio(usuario.nombre)} | {ETIQUETA_ROL[usuario.rol]}
               </span>
             </div>
             <div className="space-y-0.5">

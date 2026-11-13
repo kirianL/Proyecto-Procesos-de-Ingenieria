@@ -72,13 +72,7 @@ const TOTAL_SEGMENTOS = 12;
  * Glifo de nivel: barras que crecen con la urgencia. El color lo hereda del
  * contenedor para que la escala se lea por proporción y altura.
  */
-function Barras({
-  nivel,
-  className,
-}: {
-  nivel: number;
-  className?: string;
-}) {
+function Barras({ nivel, className }: { nivel: number; className?: string }) {
   return (
     <div
       aria-hidden
@@ -154,7 +148,10 @@ export function PriorityPicker({
               className={cn(
                 "group relative flex cursor-pointer flex-col justify-between rounded-xl border p-3 text-left transition-[border-color,background-color,box-shadow,transform] duration-150 ease-[var(--ease-out-soft)] active:scale-[0.985]",
                 activo
-                  ? cn(opcion.pastilla, "shadow-[0_1px_2px_rgba(28,22,16,0.06)]")
+                  ? cn(
+                      opcion.pastilla,
+                      "shadow-[0_1px_2px_rgba(28,22,16,0.06)]",
+                    )
                   : "border-grayscale-3/85 bg-white hover:border-grayscale-4 hover:bg-grayscale-1/70 dark:border-white/[0.11] dark:bg-[#171715] dark:hover:border-white/[0.2] dark:hover:bg-[#1e1e1c]",
               )}
             >
@@ -237,11 +234,7 @@ export function PriorityPicker({
 
       {/* Barra inferior de llenado acumulativo uniforme en 12 segmentos */}
       <div className="rounded-xl border border-grayscale-3/75 bg-grayscale-1/60 px-3 py-2.5 dark:border-white/[0.1] dark:bg-[#171715]">
-        <div
-          aria-hidden
-          skullet-block=""
-          className="grid grid-cols-12 gap-1"
-        >
+        <div aria-hidden skullet-block="" className="grid grid-cols-12 gap-1">
           {Array.from({ length: TOTAL_SEGMENTOS }).map((_, idx) => {
             const encendido = idx < segmentosActivos;
 
@@ -267,7 +260,7 @@ export function PriorityPicker({
             />
           </span>
           <span className="shrink-0 font-mono text-[10.5px] font-semibold text-grayscale-12">
-            Nivel {seleccionada.nivel}/4 · {seleccionada.label}
+            Nivel {seleccionada.nivel}/4 | {seleccionada.label}
           </span>
         </div>
       </div>

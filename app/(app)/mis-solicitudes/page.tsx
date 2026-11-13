@@ -138,7 +138,7 @@ export default function MisSolicitudesPage() {
                     ? "solicitud registrada"
                     : "solicitudes registradas"
                 }`,
-          subtitle: `Sesión de ${nombreLimpio(usuario.nombre)} · ${usuario.rol.toLowerCase()}`,
+          subtitle: `Sesión de ${nombreLimpio(usuario.nombre)} | ${usuario.rol.toLowerCase()}`,
         }}
         primaryLabel="Nueva solicitud"
         primaryHref="/solicitudes/nueva"

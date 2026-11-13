@@ -177,7 +177,7 @@ export default function BandejaMantenimientoPage() {
           meta={
             <span className="badge bg-green-3 px-2.5 py-1 text-[12px] text-green-11 inline-flex items-center gap-1.5">
               <span className="badge-dot bg-green-9" />
-              <span>{nombreLimpio(usuario.nombre)} ·</span>
+              <span>{nombreLimpio(usuario.nombre)} |</span>
               <SlotNumber value={abiertas} className="font-semibold text-green-12" />
               <span>abiertas</span>
             </span>
@@ -333,7 +333,7 @@ export default function BandejaMantenimientoPage() {
               : `${solicitudesFiltradas.length} de ${lista.length} solicitudes visibles`,
           subtitle: `${totalRegistradas} ${
             totalRegistradas === 1 ? "pendiente" : "pendientes"
-          } · ${totalEnProceso} en proceso · ${totalCerradas} ${
+          } | ${totalEnProceso} en proceso | ${totalCerradas} ${
             totalCerradas === 1 ? "cerrada" : "cerradas"
           }`,
         }}
